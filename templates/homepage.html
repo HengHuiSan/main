@@ -1,0 +1,101 @@
+{% load static %}
+{% static "images/furniture" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Homepage</title>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <main class="main">
+        <!-- banner -->
+        <section class="home" id="home">
+            <img src="{% static 'images/banner/banner2.jpg' %}" alt="" class="home__img">
+
+            <div class="home__container container grid">
+                <div class="home__data">
+                    <span class="home__data-subtitle">Discover your place</span>
+                    <h1 class="home__data-title">Explore The <br> Best <b>Beautiful <br> Beaches</b></h1>
+                    <button type="button" class="btn home__button primary-button mr-4 text-uppercase">Go Catalog</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- recommendation part -->
+        <section class="recommendation__area">
+            <div class="recommendation__container">
+                <div class="section__title">
+                    <h1 class="text-uppercase title-h1">Recommend For You</h1>
+                </div>
+    
+                
+                <form action="choose" method="POST">
+                    <div class="buttons__group mb-5">
+                        {% csrf_token %}
+                        <!-- <button type="button" name="btnAll" class="rec__btn active-btn" id="btnAll">All</button>
+                        <button type="button" name="btnTopPicks" class="rec__btn">Top Picks</button>
+                        <button type="button" name="btnPopular" class="rec__btn">Popular</button>
+                        <button type="button" name="btnLatest" class="rec__btn">Latest</button> -->
+                        <input type="submit" class="rec__btn active__input" value="All" name="btnAll">
+                        <input type="submit" class="rec__btn" value="Top Picks" name="btnTopPicks">
+                        <input type="submit" class="rec__btn" value="Popular" name="btnPopular">
+                        <input type="submit" class="rec__btn" value="Latest" name="btnLatest">
+                    </div>
+                </form>
+
+                <!-- <div class="container row d-flex justify-content-center">
+                    {% for getdata in furniture %}
+                    <div class="col-md-3 element-item latest">
+                        <div style="text-align: center;">
+                            <div class="card__img">
+                                <a class="test-popup-link" href="#">
+                                    <img src="{{baseUrl}}/{{getdata.furnitureId}}.jpg" alt="" class="img-fluid">
+                                </a>
+                            </div>
+
+                            <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
+                            <h2 class="card__fPrice">${{getdata.price}}</h2>
+                            <div class="mb-3">
+                                <button type="button" class="btn card__button text-uppercase mb-5">
+                                    <i class="uil uil-shopping-cart icon__size"></i>
+                                    Add To Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div> -->
+            </div>
+        </section>
+
+
+        <h1>hello {{result}}</h1>
+        {{can}}
+
+           <br> <hr><br>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>desc</th>
+            <th>price</th>
+        </tr>
+        {% for getdata in furniture %}
+        <tr>
+            <!-- <td>{{getdata.}}</td> -->
+            <td>{{getdata.furnitureId}}</td>
+            <td>{{getdata.furnitureName}}</td>
+            <td>{{getdata.description}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% for getdata in similar_items %}
+        <h3>{{getdata}}</h3>
+    {% endfor %}
+</body>
+</html>

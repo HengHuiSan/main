@@ -1,0 +1,83 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <!-- <link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon"> -->
+
+    <!-- Box icons -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" /> -->
+
+    <!-- Unicons -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
+
+    <!-- Google icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- REMIXICONS -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- SWIPER CSS -->
+    <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
+
+    <!-- Boostrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom StyleSheet -->
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}"/>
+
+</head>
+<body>
+        <!-- Navigation -->
+        <header class="header" id="header">
+            <nav class="nav container">
+                <a href="#" class="nav__logo">LOGO</a>
+
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a href="{% url 'homepage' %}" class="nav__link active">Home</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="{% url 'catalog' %}" class="nav__link">Catalog</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="{% url 'donate' %}" class="nav__link">Donate</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="{% url 'about' %}" class="nav__link">About</a>
+                        </li>
+                    </ul>
+
+                    <!-- change to cart
+                    <div class="nav__dark">
+                        Theme change button
+                        <span class="change-theme-name">Dark mode</span>
+                        <i class="ri-moon-line change-theme" id="theme-button"></i>
+                    </div> -->
+
+                    <i class="ri-close-line nav__close" id="nav-close"></i>
+                </div>
+
+                <div class="nav__toggle" id="nav--toggle">
+                    <!-- <i class="ri-function-line"></i> -->
+                    <i class="uil uil-bars"></i>
+            </nav>
+        </header>
+
+        <!--========== SCROLL UP ==========-->
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="ri-arrow-up-line scrollup__icon"></i>
+        </a>
+
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/jquery.3.4.1.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+</body>
+</html>
