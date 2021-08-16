@@ -24,6 +24,7 @@ class Furniture(models.Model):
     furnitureId = models.CharField(primary_key=True, max_length=50)
     furnitureName = models.CharField(max_length=50)
     furnitureImg = models.ImageField(upload_to='furniture')
+    furnitureDesc = models.TextField(max_length=1000)
     unitPrice = models.DecimalField(max_digits=5, decimal_places=2)
     categoryId = models.ForeignKey(Category, on_delete=models.CASCADE)
 
