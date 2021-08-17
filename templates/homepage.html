@@ -1,5 +1,5 @@
 {% load static %}
-{% static "images/furniture" as baseUrl %}
+{% static "images/" as baseUrl %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,18 +47,18 @@
                     </div>
                 </form>
 
-                <!-- <div class="container row d-flex justify-content-center">
+                <div class="container row d-flex justify-content-center">
                     {% for getdata in furniture %}
                     <div class="col-md-3 element-item latest">
                         <div style="text-align: center;">
                             <div class="card__img">
                                 <a class="test-popup-link" href="#">
-                                    <img src="{{baseUrl}}/{{getdata.furnitureId}}.jpg" alt="" class="img-fluid">
+                                    <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="img-fluid">
                                 </a>
                             </div>
 
                             <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
-                            <h2 class="card__fPrice">${{getdata.price}}</h2>
+                            <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
                             <div class="mb-3">
                                 <button type="button" class="btn card__button text-uppercase mb-5">
                                     <i class="uil uil-shopping-cart icon__size"></i>
@@ -68,34 +68,9 @@
                         </div>
                     </div>
                     {% endfor %}
-                </div> -->
+                </div>
             </div>
         </section>
 
-
-        <h1>hello {{result}}</h1>
-        {{can}}
-
-           <br> <hr><br>
-    <table>
-        <tr>
-            <th>id</th>
-            <th>name</th>
-            <th>desc</th>
-            <th>price</th>
-        </tr>
-        {% for getdata in furniture %}
-        <tr>
-            <!-- <td>{{getdata.}}</td> -->
-            <td>{{getdata.furnitureId}}</td>
-            <td>{{getdata.furnitureName}}</td>
-            <td>{{getdata.description}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    {% for getdata in similar_items %}
-        <h3>{{getdata}}</h3>
-    {% endfor %}
 </body>
 </html>
