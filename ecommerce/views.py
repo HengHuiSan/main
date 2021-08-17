@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from ecommerce.models import *
+from django.http.response import HttpResponse
 import pandas as pd
 
 # Create your views here.
@@ -19,4 +20,6 @@ def goAbout(request):
 
 def getAllRecomemdation(request):
     furniture_df = pd.DataFrame(list(Furniture.objects.all.values()))
-    
+
+
+

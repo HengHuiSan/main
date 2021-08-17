@@ -31,7 +31,7 @@ class Customer_Addresses(models.Model):
         unique_together = (("userId","addressId"),)
 
     def __str__(self):
-        return self.userId + " and " + self.addressId
+        return self.userId,  " and ", self.addressId
 
 class Category(models.Model):
     categoryId = models.CharField(primary_key=True, max_length=10,auto_created=True)
@@ -52,16 +52,15 @@ class Furniture(models.Model):
     def __str__(self):
         return self.furnitureId
 
+    
+
 class User_Profile(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     furnitureId = models.ForeignKey(Furniture, on_delete=models.CASCADE)
     viewCount = models.IntegerField()
 
-    class Meta: 
-        unique_together = (("userId","furnitureId"),)
-
-    # def __str__(self):
-    #     return self.userId + " and " + self.furnitureId
+    def __str__(self):
+        return self.userId, " and ", self.furnitureId
 
 class Cart_Products(models.Model):
     cartId = models.IntegerField(primary_key=True, auto_created=True)
@@ -88,5 +87,5 @@ class Order_Products(models.Model):
     class Meta:
         unique_together = (("orderId", "furnitureId"),)
     
-    # def __str__(self):
-    #     return self.orderId + " and " + self.furnitureId
+    def __str__(self):
+        return self.orderId, " and ", self.furnitureId
