@@ -46,13 +46,11 @@ class Furniture(models.Model):
     furnitureImg = models.ImageField(upload_to='furniture')
     furnitureDesc = models.TextField(max_length=1000)
     unitPrice = models.DecimalField(max_digits=5, decimal_places=2)
-    soldOut = models.BooleanField(default=0)
+    stock = models.IntegerField(default=0)
     categoryId = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.furnitureId
-
-    
 
 class User_Profile(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -83,9 +81,14 @@ class Order(models.Model):
 class Order_Products(models.Model):
     orderId = models.ForeignKey(Order, on_delete=models.CASCADE)
     furnitureId = models.ForeignKey(Furniture, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (("orderId", "furnitureId"),)
     
     def __str__(self):
         return self.orderId, " and ", self.furnitureId
+
+class Rating(models.Model):
+    furnitureId = models.ForeignKey(Furniture, on_delete=models.CASCADE)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(null=True)
+
+    def __str__(self):
+        return self.furnitureId, " and ", self.userId, " and ", self.rating
