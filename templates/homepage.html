@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Homepage</title>
+
+    <!-- Custom StyleSheet -->
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}"/>    
+
 </head>
 <body>
     {% include 'header.html' %}
@@ -27,14 +31,14 @@
 
         <!-- recommendation part -->
         <section class="recommendation__area">
-            <div class="recommendation__container">
-                <div class="section__title">
-                    <h1 class="text-uppercase title-h1">Recommend For You</h1>
+            <div>
+                <div class="section__title ml-5">
+                    <h1 class="text-uppercase">Recommend For You</h1>
                 </div>
     
                 
                 <form action="choose" method="POST">
-                    <div class="buttons__group mb-5">
+                    <div class="buttons__group mb-5 mr-5">
                         {% csrf_token %}
                         <!-- <button type="button" name="btnAll" class="rec__btn active-btn" id="btnAll">All</button>
                         <button type="button" name="btnTopPicks" class="rec__btn">Top Picks</button>
@@ -43,31 +47,33 @@
                         <input type="submit" class="rec__btn active__input" value="All" name="btnAll">
                         <input type="submit" class="rec__btn" value="Top Picks" name="btnTopPicks">
                         <input type="submit" class="rec__btn" value="Popular" name="btnPopular">
-                        <input type="submit" class="rec__btn" value="Latest" name="btnLatest">
+                        <!-- <input type="submit" class="rec__btn" value="Latest" name="btnLatest"> -->
                     </div>
                 </form>
 
-                <div class="container row d-flex justify-content-center">
-                    {% for getdata in furniture %}
-                    <div class="col-md-3 element-item latest">
-                        <div style="text-align: center;">
-                            <div class="card__img">
-                                <a class="test-popup-link" href="#">
-                                    <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="img-fluid">
-                                </a>
-                            </div>
+                <div class="d-flex justify-content-center">
+                    <div class="container row">
+                        {% for getdata in furniture %}
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="card__img">
+                                    <a class="" href="#">
+                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="img-fluid">
+                                    </a>
+                                </div>
 
-                            <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
-                            <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
-                            <div class="mb-3">
-                                <button type="button" class="btn card__button text-uppercase mb-5">
-                                    <i class="uil uil-shopping-cart icon__size"></i>
-                                    Add To Cart
-                                </button>
+                                <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
+                                <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
+                                <div class="mb-3">
+                                    <button type="button" class="card__button text-uppercase mb-5">
+                                        <i class="uil uil-shopping-cart icon__size"></i>
+                                        Add To Cart
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
         </section>

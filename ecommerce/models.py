@@ -1,7 +1,7 @@
 from enum import unique
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
-from django.db.models.base import Model
 from django.utils import timezone # get today date and time 
 
 class Customer(models.Model):
@@ -11,7 +11,7 @@ class Customer(models.Model):
     dob = models.DateField(auto_now=False, null=True)
 
     def __str__(self):
-        return self.customerId
+        return self.userId
 
 class Addresses(models.Model):
     addressId = models.IntegerField(primary_key=True, auto_created=True)
@@ -39,6 +39,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.categoryId
+
+    # def get_absolute_url(self):
+    #     return reverse("catalog", kwargs={"cid":self.categoryId})
 
 class Furniture(models.Model):
     furnitureId = models.CharField(primary_key=True, max_length=50)

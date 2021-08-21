@@ -1,15 +1,83 @@
+{% load static %}
+{% static "images/" as baseUrl %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalog</title>
+
+    <!-- Custom StyleSheet -->
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}"/>   
 </head>
 <body>
     {% include 'header.html' %}
-
-    <h1>hello catalog</h1>
     
+    <main class="main">
+        <section class="catalog">
+            <img src="{% static 'images/banner/banner3.jpg' %}" alt="" class="catalog__img">
+
+            <div class="catalog__container">
+                <div class="catalog__data text-center mt-5">
+                    <h1 class="catalog__data-title">Catalog</h1>
+                </div>
+            </div>
+        </section>
+
+        <!-- recommendation part -->
+        <section class="recommendation__area">
+            <div>
+                <!-- category sidebar -->
+                <div class="category__sidebar">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="category__container">
+                                    <h3 class="category__title">Category</h3>
+                                    <ul class="category__menu">
+                                        {% for category in categories %}
+                                        <li class="category__item">
+                                            <a href="?cid={{category.categoryId}}" class="category__link">{{category.categoryName}}</a>
+                                        </li>
+                                        <hr>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="row">
+                                    {% for getdata in furniture %}
+                                    <div class="col-md-4 px-4">
+                                        <div class="text-center">
+                                            <div class="card__img">
+                                                <a class="" href="?fid={{getdata.furnitureId}}">
+                                                    <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="img-fluid">
+                                                </a>
+                                            </div>
+    
+                                            <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
+                                            <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
+                                            <div class="mb-3">
+                                                <button type="button" class="btn card__button text-uppercase mb-5">
+                                                    <i class="uil uil-shopping-cart icon__size"></i>
+                                                    Add To Cart
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>                          
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </section>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
 
