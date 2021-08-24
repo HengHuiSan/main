@@ -71,14 +71,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecommerce', 
+        'NAME': 'furniture_ecommerce', 
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

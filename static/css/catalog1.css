@@ -1,6 +1,5 @@
-@import url(../css/homepage.css);
-@import url(../css/variable.css);
-
+@import url(../css/homepage1.css);
+@import url(../css/variables1.css);
 
 .catalog__img {
     position: absolute;
@@ -8,7 +7,7 @@
     left: 0;
     width: 100%;
     height: 40vh;
-    object-fit: cover;
+    /* object-fit: cover; */
 }
 
 .catalog__container {
@@ -53,3 +52,9 @@
 .category__link:hover{
     color: var(--title-color);
 }
+
+
+.anyClass {
+    height:150px;
+    overflow-y: hidden;
+  }

@@ -1,0 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@500;600;700&display=swap");
+@import url(../css/variables1.css);
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+html,body{
+  display: grid;
+  height: 100%;
+  width: 100%;
+  place-items: center;
+  background: url(/static/images/bg.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.wrapper{
+  position: absolute;
+  top: 12%;
+  right: 10%;
+  overflow: hidden;
+  max-width: 500px;
+  width: 30%;
+  background: #fff;
+  padding: 30px 60px 40px 60px;
+  border-radius: 5px;
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.258);
+}
+
+.wrapper .title{
+  color: var(--title-color);
+  font-size: 35px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.wrapper .form-container{
+  width: 100%;
+  overflow: hidden;
+}
+/* .form-container .form-inner{
+  display: flex;
+  width: 200%;
+} */
+.form-container .form-inner form{
+  width: 100%;
+}
+.form-inner form .login-field,
+.form-inner form .register-field{
+  height: 50px;
+  width: 100%;
+  margin-top: 20px;
+}
+.form-inner form .login-field input{
+    height: 100%;
+    width: 87%;
+    outline: none;
+    padding-left: 15px;
+    border-radius: 0 0.25rem 0.25rem 0;
+    border: 1px solid lightgrey;
+    border-bottom-width: 2px;
+    font-size: 16px;
+}
+.form-inner form .register-field input{
+  height: 100%;
+  width: auto;
+  outline: none;
+  padding-left: 15px;
+  border-radius: 0 0.25rem 0.25rem 0;
+  border: 1px solid lightgrey;
+  border-bottom-width: 2px;
+  font-size: 16px;
+}
+.form-inner form .login-field input:focus,
+.form-inner form .register-field input:focus{
+  border-color: var(--account-input-color);
+  box-shadow: inset 0 0 2px var(--account-input-color-light);
+}
+
+.form-inner form .login-link,
+.form-inner form .register-link{
+  text-align: center;
+  margin-top: 30px;
+}
+.form-inner form .login-link a,
+.form-inner form .register-link a{
+  color: var(--account-input-color-light);
+  text-decoration: none;
+}
+.form-inner form .login-link a:hover,
+.form-inner form .register-link a:hover{
+  text-decoration: underline;
+}
+form .btn-login,
+form .btn-register{
+  height: 50px;
+  width: 100%;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  background: var(--account-input-color) !important;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: 0;
+}
+
+form .btn-login:hover{
+    background: var(--account-input-color-light) !important;
+}
+
+
+form .btn input[type="submit"]{
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  position: relative;
+  background: none;
+  border: none;
+  color: #fff;
+  padding-left: 0;
+  border-radius: 5px;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.input-group-text {
+    background: var(--account-input-color) !important;
+    color: white !important;
+    border: 0 !important;
+    border-radius: 0.25rem 0 0 0.25rem !important;
+}
+.input-group-text i{
+    font-size: 18px;
+}
+
+.form-control:focus{
+    box-shadow:none;
+  }

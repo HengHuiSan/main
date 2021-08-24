@@ -16,6 +16,7 @@
 
     <!-- Google icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
     <!-- REMIXICONS -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
@@ -33,40 +34,58 @@
 
 </head>
 <body>
-        <!-- Navigation -->
+        <!--Navbar-->
         <header class="header" id="header">
             <nav class="nav container">
-                <a href="#" class="nav__logo">FURNISHH</a>
+                <a href="#" class="navbar-brand nav__logo" style="font-family: 'Franklin Gothic Medium'; font-size: x-large">
+                    FURNISHH
+                </a>
 
-                <div class="nav__menu" id="nav-menu">
-                    <ul class="nav__list">
-                        <li class="nav__item">
-                            <a href="{% url 'homepage' %}" class="nav__link active">Home</a>
-                        </li>
-                        <li class="nav__item">
-                            <a href="{% url 'catalog' %}" class="nav__link">Catalog</a>
-                        </li>
-                        <li class="nav__item">
-                            <a href="{% url 'donate' %}" class="nav__link">Donate</a>
-                        </li>
-                        <li class="nav__item">
-                            <a href="{% url 'about' %}" class="nav__link">About</a>
-                        </li>
-                    </ul>
-
-                    <!-- change to cart
-                    <div class="nav__dark">
-                        Theme change button
-                        <span class="change-theme-name">Dark mode</span>
-                        <i class="ri-moon-line change-theme" id="theme-button"></i>
-                    </div> -->
-
-                    <!-- <i class="ri-close-line nav__close" id="nav-close"></i> -->
+                <div class="d-flex justify-content-center">
+                    <div class="nav__menu mt-3" id="nav-menu">
+                        <ul class="nav__list">
+                            <li class="nav__item">
+                                <a href="{% url 'homepage' %}" class="nav__link active">Home</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'catalog' %}" class="nav__link">Catalog</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'donate' %}" class="nav__link">Donate</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'about' %}" class="nav__link">About</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- <div class="nav__toggle" id="nav--toggle"> -->
-                    <!-- <i class="ri-function-line"></i> -->
-                    <!-- <i class="uil uil-bars"></i> -->
+                <div class="d-flex justify-content-end">
+                    <div class="nav__menu mt-3" id="nav-menu">
+                        <ul class="nav__icon__list">
+                            <li class="nav__item">
+                                <a class="nav__icon">
+                                    <i class="material-icons">search</i>
+                                </a>
+                            </li>
+                            <li class="nav__item">
+                                <a class="nav__icon">
+                                    <i class="material-icons">shopping_cart</i>
+                                </a>                            
+                            </li>
+                            <li class="nav__item">
+                                <a class="nav__icon">
+                                    <i class="material-icons">person</i>
+                                </a>                            
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'logout' %}" class="nav__icon">
+                                    <i class="material-icons">logout</i>
+                                </a>                            
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </nav>
         </header>
 

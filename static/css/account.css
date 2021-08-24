@@ -1,0 +1,260 @@
+/*=============== GOOGLE FONTS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@500;600;700&display=swap");
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  display: grid;
+  height: 100%;
+  /* width: 100%; */
+  place-items: center;
+  background: #f2f2f2;
+  /* background: -webkit-linear-gradient(left, #a445b2, #fa4299); */
+}
+
+.wrapper{
+  overflow: hidden;
+  max-width: 390px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+}
+
+.title_text{
+  display: flex;
+  width: 200%;
+}
+
+.title{
+  width: 50%;
+  font-size: 35px;
+  font-weight: 700;
+  text-align: center;
+  /* transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55); */
+  margin-bottom: 1rem;
+}
+
+.form_container {
+  width: 100%;
+}
+
+.inner_form{
+  display: flex;
+  width: 200%;
+}
+
+.inner_form form{
+  width: 50%;
+  transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+}
+
+.inner_form form .field{
+  height: 50px;
+  width: 100%;
+}
+
+.inner_form form .field input{
+  height: 100%;
+  outline: none;
+  padding-left: 15px;
+  border-radius: 0px 5px 5px 0px;
+  border: 1px solid lightgrey;
+  border-bottom-width: 2px;
+  font-size: 17px;
+  transition: all 0.3s ease;
+}
+
+/*
+
+
+
+
+.register_link a{
+  color: #fa4299;
+  text-decoration: none;
+}
+
+.register_link a:hover{
+  text-decoration: underline;
+}
+
+input[type="submit"] {
+  height: 48px;
+  width: 100%;
+  background: #fc83bb !important;
+  color: white !important;
+}
+
+input[type="submit"]:focus {
+  box-shadow: none !important;
+  outline: 0px !important;
+} */
+/* 
+
+
+#form-title{
+    color: #fff;
+}
+
+
+
+.input-group-text {
+    background: #f7ba5b !important;
+    color: white !important;
+    border: 0 !important;
+    border-radius: 0.25rem 0 0 0.25rem !important;
+}
+.input_user,
+.input_pass:focus {
+    box-shadow: none !important;
+    outline: 0px !important;
+} */
+
+
+/* additional css */
+/* .wrapper{
+    overflow: hidden;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 5px;
+    padding: 2rem 3.5rem 2.5rem 3.5rem;
+    margin-top: 5rem;
+    box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+  }
+
+.title_text{
+    display: flex;
+    width: 200%;
+}
+  
+.title{
+  width: 100%;
+  font-size: 35px;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+  margin-bottom: 1rem;
+}
+
+.form-container{
+    width: 100%;
+    overflow: hidden;
+  }
+.form-inner{
+    display: flex;
+    width: 200%;
+  }
+.form-inner form{
+    width: 50%;
+    transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+  }
+  
+.slide-controls{
+    position: relative;
+    display: flex;
+    height: 50px;
+    width: 100%;
+    overflow: hidden;
+    margin: 15px 0 25px 0;
+    justify-content: space-between;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+  }
+
+.slide{
+    height: 100%;
+    width: 100%;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    line-height: 48px;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.6s ease;
+  }
+
+  .slide-controls label.signup{
+    color: #000;
+  }
+
+  .slide-controls .slider-tab{
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    left: 0;
+    z-index: 0;
+    border-radius: 5px;
+    background: -webkit-linear-gradient(left, #a445b2, #fa4299);
+    transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+  }
+  input[type="radio"]{
+    display: none;
+  }
+
+  #signup:checked ~ .slider-tab{
+    left: 50%;
+  }
+  #signup:checked ~ label.signup{
+    color: #fff;
+    cursor: default;
+    user-select: none;
+  }
+  #signup:checked ~ label.login{
+    color: #000;
+  }
+  #login:checked ~ label.signup{
+    color: #000;
+  }
+  #login:checked ~ label.login{
+    cursor: default;
+    user-select: none;
+  }
+  
+  .form-inner form .field{
+    height: 50px;
+    width: 100%;
+  }
+  .form-inner form .field input{
+    height: 100%;
+    outline: none;
+    padding-left: 15px;
+    border-radius: 0px 5px 5px 0px;
+    border: 1px solid lightgrey;
+    border-bottom-width: 2px;
+    font-size: 17px;
+    transition: all 0.3s ease;
+  } */
+  /* .form-inner form .field input:focus{
+    border-color: #fc83bb;
+  }
+
+  .form-inner form .field input::placeholder{
+    color: #999;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus{
+    box-shadow:none;
+  }
+
+
+  .input-group-text i{
+    font-size: 16px;
+}
+
+.login_btn {
+  height: 48px;
+  width: 100%;
+  background: #fc83bb !important;
+  color: white !important;
+}
+.login_btn:focus {
+  box-shadow: none !important;
+  outline: 0px !important;
+} */

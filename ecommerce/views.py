@@ -1,3 +1,4 @@
+from django.core import paginator
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from ecommerce.models import *
@@ -5,24 +6,105 @@ import pandas as pd
 import numpy as np
 # import the class containing the dimensionality reduction method
 from sklearn.decomposition import TruncatedSVD
+from django.core.paginator import Paginator
+
+from django.core.exceptions import ValidationError
+from django.shortcuts import render, redirect 
+
+# from .forms import UserRegistrationForm
+# from django.contrib.auth import authenticate, login, logout
+
+# from django.contrib import messages
+
 
 # Create your views here.
+
+
+# def registerPage(request):
+#     if request.user.is_authenticated:
+#         return redirect('homepage')
+#     else:
+#         if request.method == 'POST':
+#             form = UserRegistrationForm(request.POST)
+#             if form.is_valid():
+#                 try:
+#                     form.save()
+#                     # user = form.cleaned_data.get('username')
+#                     messages.success(request, 'register successful')
+#                 except ValidationError as e:
+#                     print(e)
+#         else:
+#             form = UserRegistrationForm()
+
+#         context = {'form':form}
+
+#         return render(request, 'register.html', context)
+
+# def loginPage(request):
+#     if request.user.is_authenticated:
+#         return redirect('homepage')
+#     else:
+#         if request.method == 'POST':
+#             uname = request.POST.get('txtUname')
+#             passwd = request.POST.get('txtPasswd')
+
+#             user = authenticate(request, email=uname, password=passwd)
+
+#             if user is not None:
+#                 login(request, user)
+
+#                 if 'next' in request.POST:
+#                     return redirect(request.POST.get('next'))
+#                 # return redirect('ecommerce/homepage.html')
+#             else:
+#                 messages.info(request, 'Invalid username or password')
+            
+#         return render(request, 'login.html')
+
+
+# def logoutUser(request):
+# 	logout(request)
+# 	return redirect('login')
+
+
 def goHompage(request):
     result = Furniture.objects.all()
     # result = pd.DataFrame(list(Order.objects.get(userId=1)))
     # return HttpResponse(result.to_html())
-    return render(request,'homepage.html', {'furniture':result})
+
+    # if request.method == 'POST':
+    #     if request.POST.get('btnViewMore'):
+    #         recommendation_number = 20
+    # else:
+    #     recommendation_number = 10
+    
+    context = {"furniture":result}
+    return render(request,'homepage.html', context)
 
 def goCatalog(request): 
-    category = Category.objects.all()
-
-    if request.method == 'GET' and 'cid' in request.GET:
-        cid = request.GET['cid']
-    else:
-        cid = 1
+    cid = request.GET.get('cid', 1)       
+    page_number = request.GET.get('page', 1)
 
     furniture = Furniture.objects.filter(categoryId_id=cid)
-    context = {"furniture":furniture, "categories":category}
+    paginator = Paginator(furniture, 12)
+    page = paginator.get_page(page_number)
+    category = Category.objects.all()
+
+    if page.has_next():
+        next_url = f'?cid='+str(cid)+'&page='+str(page.next_page_number())
+    else:
+        next_url = ''
+
+    if page.has_previous():
+        prev_url = f'?cid='+str(cid)+'&page='+str(page.previous_page_number())
+    else:
+        prev_url = ''
+
+    context = {"furniture":page.object_list, 
+               "categories":category, 
+               "page":page,
+               "next_page_url":next_url,
+               "prev_page_url":prev_url}
 
     return render(request,'catalog.html', context)
 

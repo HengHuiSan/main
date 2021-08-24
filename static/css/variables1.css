@@ -12,6 +12,7 @@
     --first-color-second: hsl(var(--hue-color), 64%, 22%);
     --first-color-alt: hsl(var(--hue-color), 64%, 15%);
     --title-color: hsl(var(--hue-color), 64%, 18%);
+    --title-color-light: hsl(197, 87%, 27%);
     --text-color: hsl(var(--hue-color), 24%, 70%);
     --text-color-light: hsl(var(--hue-color), 8%, 45%);
     --input-color: hsl(var(--hue-color), 24%, 97%);
@@ -19,6 +20,8 @@
     --white-color: #FFF;
     --scroll-bar-color: hsl(var(--hue-color), 12%, 90%);
     --scroll-thumb-color: hsl(var(--hue-color), 12%, 75%);
+    --account-input-color: hsl(212, 48%, 25%);
+    --account-input-color-light: hsl(210, 44%, 32%);
   
     /*========== Font and typography ==========*/
     --body-font: 'Open Sans', sans-serif;

@@ -1,4 +1,4 @@
-@import url(../css/main.css);
+@import url(../css/main1.css);
 
 .header {
     width: 100%;
@@ -17,11 +17,8 @@
     align-items: center;
   }
   
-  .nav__logo, .nav__toggle {
-    color: var(--title-color);
-  }
-  
   .nav__logo {
+    color: var(--title-color);
     font-weight: var(--font-semi-bold);
   }
   
@@ -55,7 +52,13 @@
     flex-direction: row;
     column-gap: 4rem;
   }
-  
+
+  .nav__icon__list{
+    display: flex;
+    flex-direction: row;
+    column-gap: 2rem;
+  }
+
   .nav__link{
     position: relative;
     color: var(--title-color);
@@ -64,11 +67,15 @@
 
   }
 
+  .nav__icon{
+    position: relative;
+    color: var(--title-color);
+  }
+
   .nav__link:hover {
     text-decoration: none;
     color: var(--title-color);
   }
-
   .nav__link:hover::after{
     content: '';
     position: absolute;
