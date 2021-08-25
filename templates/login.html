@@ -35,14 +35,13 @@
              <div class="form-inner">
                 <div class="form-inner">
                     <form action="#" class="login" method="POST">
-                        {% csrf_token %}
-
-                        {% for message in messages %}
-                        <script>
-                            Swal.fire('Login Failed', 'Invalid username or password.', 'error');
-                        </script>    
-                        {% endfor %}	
+                        {% if msg != '' %}
+                            <script>
+                                Swal.fire('Login Failed', 'Invalid username or password.', 'error');
+                            </script>    
+                        {% endif %}	
                         
+                        {% csrf_token %}
                         <div class="input-group mb-4 login-field">
                             <span class="input-group-text"><i class="material-icons">person</i></span>
                             <input type="text" name="txtUname" placeholder="Username" required>

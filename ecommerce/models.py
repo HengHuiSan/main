@@ -18,7 +18,6 @@ class Addresses(models.Model):
     addressId = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField()
     postcode = models.IntegerField()
-    city = models.CharField(max_length=20)
     state = models.CharField(max_length=20)
 
     def __str__(self):
@@ -90,9 +89,8 @@ class Payment(models.Model):
 
 class Order(models.Model):
     orderId = models.CharField(primary_key=True, max_length=50)
-    orderDate = models.DateField(auto_now=True)
-    startDate = models.DateTimeField(auto_now_add=True)
-    shippingAddress = models.ForeignKey(Customer_Addresses, related_name='shiiping_address', on_delete=models.SET_NULL, blank=True, null=True)
+    orderDate = models.DateField(auto_now_add=True)
+    shippingAddress = models.ForeignKey(Customer_Addresses, on_delete=models.CASCADE, blank=True, null=True)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE, blank=True, null=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     isDelivered = models.BooleanField(default=False)

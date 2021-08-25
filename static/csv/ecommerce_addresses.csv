@@ -1,0 +1,46 @@
+id,address,postcode,state,addressId_id
+1,"No. 8, Taman Pengkalan Indah, Jalan Dato' Wan Ahmad, 01000 Kangar, Perlis",01000,Perlis,1
+2,"Tingkat Bawah, Wisma Persekutuan, Jalan Kampung Baru, 05000 Alor Setar, Kedah",05000,Kedah,2
+3,"Tingkat 14, Suite 2 Wisma TNB, Jalan Anson, 10250 Georgetown",10250,Pulau Pinang,3
+4,"2a & 4a, Jalan Greentown 3, Greentown Nova, 30450 Ipoh, Perak",30450,Perak,4
+5,"No. 33-1 & 33-2, Jalan Impian Mahkota 1, Saujana Impian, 43000 Kajang, Selangor",43000,Selangor,5
+6,"Tingkat 4, (D'MARA) Bangunan Seremban Plaza Utara, Beg Berkunci 21, Jalan Tun Dr. Ismail, 70990 Seremban, Negeri Sembilan",70990,Negeri Sembilan,6
+7,"Aras 1, Wisma Persekutuan, Jalan Business City, Hang Tuah Jaya, 75450 Ayer Keroh, Melaka",75450,Melaka,7
+8,"Penjara Kluang, Batu 8, Jalan Kluang-Mersing, 86000 Kluang, Johor",86000,Johor,8
+9,"A17, Tingkat Bawah Dan Satu, Jalan Seri Kuantan 2, Seri Kuantan Square, 25000 Kuantan, Pahang",25000,Pahang,9
+10,"No. 80g, Jalan Petani, 20000 Kuala Terengganu, Terengganu",20000,Terengganu,10
+11,"Jalan Maktab, Penjara Pengkalan Chepa, 16109 Kota Bahru, Kelantan",16109,Kelantan,11
+12,"Peti Surat 11020, 88811 Kota Kinabalu, Sabah",88811,Sabah,12
+13,"Km23, Jalan Puncak Borneo, 93250 Kuching, Sarawak",93250,Sarawak,13
+14,"No. 8, Taman Pengkalan Indah, Jalan Dato' Wan Ahmad, 01000 Kangar, Perlis",09000,Perlis,14
+15,"Tingkat Bawah, Wisma Persekutuan, Jalan Kampung Baru, 05000 Alor Setar, Kedah",13000,Kedah,15
+16,"Tingkat 14, Suite 2 Wisma TNB, Jalan Anson, 10250 Georgetown",01000,Pulau Pinang,16
+17,"2a & 4a, Jalan Greentown 3, Greentown Nova, 30450 Ipoh, Perak",05000,Perak,17
+18,"No. 33-1 & 33-2, Jalan Impian Mahkota 1, Saujana Impian, 43000 Kajang, Selangor",10250,Selangor,18
+19,"Tingkat 4, (D'MARA) Bangunan Seremban Plaza Utara, Beg Berkunci 21, Jalan Tun Dr. Ismail, 70990 Seremban, Negeri Sembilan",30450,Negeri Sembilan,19
+20,"Aras 1, Wisma Persekutuan, Jalan Business City, Hang Tuah Jaya, 75450 Ayer Keroh, Melaka",43000,Melaka,20
+21,"Penjara Kluang, Batu 8, Jalan Kluang-Mersing, 86000 Kluang, Johor",70990,Johor,21
+22,"A17, Tingkat Bawah Dan Satu, Jalan Seri Kuantan 2, Seri Kuantan Square, 25000 Kuantan, Pahang",75450,Pahang,22
+23,"No. 80g, Jalan Petani, 20000 Kuala Terengganu, Terengganu",86000,Terengganu,23
+24,"Jalan Maktab, Penjara Pengkalan Chepa, 16109 Kota Bahru, Kelantan",25000,Kelantan,24
+25,"Peti Surat 11020, 88811 Kota Kinabalu, Sabah",20000,Sabah,25
+26,"Km23, Jalan Puncak Borneo, 93250 Kuching, Sarawak",16109,Sarawak,26
+27,"No. 8, Taman Pengkalan Indah, Jalan Dato' Wan Ahmad, 01000 Kangar, Perlis",88811,Perlis,27
+28,"Tingkat Bawah, Wisma Persekutuan, Jalan Kampung Baru, 05000 Alor Setar, Kedah",93250,Kedah,28
+29,"Tingkat 14, Suite 2 Wisma TNB, Jalan Anson, 10250 Georgetown",09000,Pulau Pinang,29
+30,"2a & 4a, Jalan Greentown 3, Greentown Nova, 30450 Ipoh, Perak",13000,Perak,30
+31,"No. 33-1 & 33-2, Jalan Impian Mahkota 1, Saujana Impian, 43000 Kajang, Selangor",01000,Selangor,31
+32,"Tingkat 4, (D'MARA) Bangunan Seremban Plaza Utara, Beg Berkunci 21, Jalan Tun Dr. Ismail, 70990 Seremban, Negeri Sembilan",05000,Negeri Sembilan,32
+33,"Aras 1, Wisma Persekutuan, Jalan Business City, Hang Tuah Jaya, 75450 Ayer Keroh, Melaka",10250,Melaka,33
+34,"Penjara Kluang, Batu 8, Jalan Kluang-Mersing, 86000 Kluang, Johor",30450,Johor,34
+35,"A17, Tingkat Bawah Dan Satu, Jalan Seri Kuantan 2, Seri Kuantan Square, 25000 Kuantan, Pahang",43000,Pahang,35
+36,"No. 80g, Jalan Petani, 20000 Kuala Terengganu, Terengganu",70990,Terengganu,36
+37,"Jalan Maktab, Penjara Pengkalan Chepa, 16109 Kota Bahru, Kelantan",75450,Kelantan,37
+38,"Peti Surat 11020, 88811 Kota Kinabalu, Sabah",86000,Sabah,38
+39,"Km23, Jalan Puncak Borneo, 93250 Kuching, Sarawak",25000,Sarawak,39
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
