@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import recommendation
 
 urlpatterns = [
     path('register/',views.registerView,name='register'),

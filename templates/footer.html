@@ -5,16 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Telusko</title>
+    <!-- =====BOX ICONS===== -->
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+    <title></title>
 </head>
+<style>
+    @import url(../css/variables.css);
 
-<body bgcolor="cyan">
+    .footer{
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        background-color: var(--title-color);
+    }
 
-    {% block content %}
+    .footer__icon{
+        font-size: 1.5rem;
+        margin-right: var(--mb-1-5);
+        color: var(--first-color-light);
+    }
+    
 
-    {% endblock %}
-
-
+    
+</style>
+<body>
+    <footer class="footer text-center">
+        <p class="footer__title">
+            <div class="footer_social">
+                <a href="#" class="footer__icon"><i class="bx bxl-facebook"></i></a>
+                <a href="#" class="footer__icon"><i class="bx bxl-instagram"></i></a>
+                <a href="#" class="footer__icon"><i class="bx bxl-twitter"></i></a>
+            </div>
+        </p>
+        <p>&#169; 2020 copyright all right reserved</p>
+    </footer>
 </body>
 
 </html>

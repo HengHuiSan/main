@@ -1,29 +1,131 @@
 from django.http.response import HttpResponse
+from django.shortcuts import render
 from ecommerce.models import *
 import pandas as pd
 import numpy as np
 # import the class containing the dimensionality reduction method
 from sklearn.decomposition import TruncatedSVD
 
+""" GET DATAFRAMES """
 
-# ============= PART 1: Recommend Popular Items to New Users ============= # 
+def getMergeDf():
+    furniture_df = getFurnitureDf()
+    user_views_df = getViewDf()
 
+    merge_df = furniture_df.merge(user_views_df, on='furnitureId')
+    merge_df = merge_df.drop(columns=['furnitureGenres', 'id'])
+    
+    return merge_df
 
+def getFurnitureDf():
+    furniture_df = pd.DataFrame(list(Furniture.objects.all().values()))
+    furniture_df = furniture_df.drop(columns=['furnitureImg', 'unitPrice', 'categoryId_id', 'stock'])
 
+    return furniture_df
 
+def getViewDf():
+    user_views_df = pd.DataFrame(list(User_Views.objects.all().values()))
+    user_views_df.rename(columns={'furnitureId_id':'furnitureId', 'userId_id':'userId'}, inplace=True)
 
-# ============= PART 2: Recommend Popular Item to New Users ============= # 
+    return user_views_df
 
 """
- Model-based collaborative filtering system 
+PART 1: Recommend Popular Items to New Users 
+
+"""
+
+"""
+PART 2: Recommend Items to Users Who Has NO Purchased History
+
+"""
+
+
+
+
+
+"""
+ PART 3: Recommend Items to Users Who Has Purchased History
+
+ Model-based collaborative filtering using Matrix Factorization
  based on customer's purchase history and 
  page views by other users who views items similar items
-"""
-def getAllRecommendation():
+
+ Content-based filtering by weighting genres of furniture
+
+"""    
+# Inspired by your browsing history
+def contentBasedFiltering(uid):
+    furniture_df = getFurnitureDf()
+    furniture_df['furnitureGenres'] = furniture_df.furnitureGenres.str.split('|')
+
+    furniture_with_genres = furniture_df.copy(deep=True)
+
+    # Iterating through furniture_df, append 1 if that product's genres contain that genre
+    for index, row in furniture_df.iterrows(): # iterrows(): iterate over DataFrame rows
+        for desc in row['furnitureGenres']:
+            furniture_with_genres.at[index, desc] = 1   
+    
+    # Filling in the NaN values with 0 to show that furniture doesn't have that column's genre
+    furniture_with_genres = furniture_with_genres.fillna(0)
+
+    all_user_profile_df = getViewDf()
+    target_user_profile = all_user_profile_df[all_user_profile_df['userId'] == uid]
+    target_user_profile = target_user_profile.merge(furniture_df, on='furnitureId').drop(columns=['id', 'furnitureGenres'])
+
+    # Create furniture matrix 
+    profile_with_desc = furniture_with_genres[furniture_with_genres.furnitureId.isin(target_user_profile.furnitureId)]
+    profile_with_desc.reset_index(drop=True, inplace=True)
+    profile_with_desc = pd.DataFrame(profile_with_desc.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres']))
+
+
+    view_df = pd.DataFrame(target_user_profile.drop(columns=['userId','furnitureId','furnitureName']))
+    # view_df = pd.DataFrame(target_user_profile.drop(columns=['userId_id', 'furnitureName']))
+
+    print(User.objects.get(id=4).username)
+    print(profile_with_desc.shape)
+    print(view_df.shape)
+
+    # Multiply furniture matrix with view_df to get weighted genres matrix
+    user_profile = profile_with_desc.T.dot(view_df) 
+    # user_profile = pd.DataFrame(user_profile / user_profile.values.sum())
+    print(user_profile.shape)
+
+    furniture_with_genres = furniture_with_genres.set_index(furniture_with_genres.furnitureId)
+    furniture_with_genres = furniture_with_genres.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres'])
+    print(furniture_with_genres.shape)
+    # furniture_with_genres = furniture_with_genres.drop(columns=['furnitureName', 'furnitureGenres'])
+
+    # Multiply furniture matrix (not active user) with weighted genres matrix to generate recommendation 
+    recommend_furniture = furniture_with_genres.dot(user_profile)
+    recommend_furniture = pd.DataFrame(recommend_furniture / recommend_furniture.values.sum())
+
+    print(recommend_furniture.shape)
+    recommend_furniture = recommend_furniture[recommend_furniture['viewCount'] != 0]
+    recommend_furniture.sort_values(by=['viewCount'], ascending=False, inplace=True)
+
+    # List out recommended items
+    recommend_list = list(recommend_furniture.index)
+
+    # # Remove similar items from CF-generated list
+    collaborative_rec_list = collaborativeFiltering(uid)
+    recommend_items = []
+    for j in collaborative_rec_list:
+        for i in recommend_list:
+            if j != i:
+                recommend_items.append(i)
+
+    return recommend_items
+
+
+# Top picks for you
+def collaborativeFiltering(uid):
     furniture_profile_df = getMergeDf()
 
     #Creating a sparse pivot table with items in rows and users in columns
-    items_users_pivot_matrix_df = furniture_profile_df.pivot_table(index='furnitureId', columns='userId_id', values='viewCount').fillna(0)
+    users_items_pivot_matrix_df = furniture_profile_df.pivot_table(index='userId', columns='furnitureId', values='viewCount').fillna(0)
+
+    # Transposing the matrix
+    items_users_pivot_matrix_df = users_items_pivot_matrix_df.T
 
     # Decomposing the Matrix
     SVD = TruncatedSVD(n_components=10) # n_components=10: final number of dimensions
@@ -34,134 +136,56 @@ def getAllRecommendation():
     # Compute correlation coefficients 
     correlation_matrix = np.corrcoef(decomposed_matrix)
 
-    # get all the orders that made by target user from 'Order' table
-    oid_list = list(Order.objects.filter(userId=2).values_list('orderId', flat=True)) # flat=True : mean that the returned result is a single value, not a tuple. 
+    # Get all the orders that made by target user from 'Order' table
+    oid_list = list(Order.objects.filter(userId=uid).values_list('orderId', flat=True)) # flat=True : mean that the returned result is a single value, not a tuple. 
 
-    # get all items purchased from the order list of target user
+    # Get all items from the order list of target user
     all_items_purchased_list = list(Order_Products.objects.values_list('orderId', 'furnitureId'))
 
+    # List out all items from each order
     items_purchased = []
-
     for oid in oid_list:
         for i in range(len(all_items_purchased_list)):
             if oid == all_items_purchased_list[i][0]:
                 items_purchased.append(all_items_purchased_list[i][1])
 
+    # Isolating items purchased by the active user from Correlation Matrix
     for i in items_purchased:
         for j in range(len(items_users_pivot_matrix_df)):
             if(items_users_pivot_matrix_df.index[j] == i):
                 # print(items_users_pivot_matrix_df.index[j])
                 fid_list = list(items_users_pivot_matrix_df.index) # change everything into list form
+                
                 # find the index(location) of the target item
                 item_purchased = fid_list.index(i)
+                
                 # get correlation coefficients value of the item
                 correlation = correlation_matrix[item_purchased]
-                # r = 0.9 suggests a strong, positive association between two variables, 
-                # whereas a correlation of r = -0.2 suggest a weak, negative association.
                 
-                Recommend_list = list(items_users_pivot_matrix_df.index[correlation > 0.90])
-                # Removes the item already bought by the customer
-                Recommend_list.remove(i) 
+                # list out items that the pearson correlation value > 0.9 
+                # 0.9 suggests a strong, positive association between two variables 
+                recommend_list = list(items_users_pivot_matrix_df.index[correlation > 0.90])
+                
+                # remove the items already bought by the active user
+                recommend_list.remove(i) 
 
-                # Recommend_list.sort(reverse=True) for top pick
+                # sort items with the highest pearson correlation value
+                recommend_list.sort(reverse=True)
 
-                # [:12]
-                Recommend_list = Recommend_list
+                # get the first 12 items
+                recommend_list = recommend_list[:12]
    
-    for i in Recommend_list:
-        print(i)
+    return recommend_list
 
-    # objects = dict([(obj.id, obj) for obj in Recommend_list])
-    # sorted_objects = [objects[id] for id in id_list]
 
-    # objects = Furniture.objects.filter(furnitureId=Recommend_list)
+# Trending now
+def popularityBasedFiltering():
+    user_profile_df = getViewDf()
 
-    return Recommend_list
-    # return HttpResponse(item_purchased)
+    popular_items = user_profile_df.groupby('furnitureId')['viewCount'].count()
+    popular_items = pd.DataFrame(popular_items)
+    most_popular_items = popular_items.sort_values(by=['viewCount'], ascending=False)
     
-     
-def getMergeDf():
-    furniture_df = pd.DataFrame(list(Furniture.objects.all().values()))
-    user_views_df = pd.DataFrame(list(User_Views.objects.all().values()))
+    recommend_list = list(most_popular_items.index)
 
-    user_views_df.rename(columns={'furnitureId_id':'furnitureId'}, inplace=True)
-    merge_df = furniture_df.merge(user_views_df, on='furnitureId')
-    merge_df = merge_df.drop(columns=['furnitureImg', 'unitPrice', 'categoryId_id', 'furnitureDesc', 'stock', 'id'])
-    
-    return merge_df
-
-# Content-based Recommendation System
-def contentBasedRec():
-    collaborative_rec_list = getAllRecommendation()
-
-    furniture_df = pd.DataFrame(list(Furniture.objects.all().values()))
-    furniture_df = furniture_df.drop(columns=['furnitureImg', 'unitPrice', 'categoryId_id', 'stock'])
-    furniture_df['furnitureDesc'] = furniture_df.furnitureDesc.str.split('|')
-
-    furniture_with_desc = furniture_df.copy(deep=True)
-
-    # Let's iterate through furniture_df, then append the description as columns of 1s or 0s.
-    # 1 if that column contains product in the description at the present index and 0 if not.
-    for index, row in furniture_df.iterrows(): # iterrows(): iterate over DataFrame rows
-        for desc in row['furnitureDesc']:
-            furniture_with_desc.at[index, desc] = 1   
-    
-    # Filling in the NaN values with 0 to show that a movie doesn't have that column's genre
-    furniture_with_desc = furniture_with_desc.fillna(0)
-    user_profile_df = pd.DataFrame(list(User_Views.objects.all().values()))
-    user_profile_df.rename(columns={'furnitureId_id':'furnitureId'}, inplace=True)
-
-    target_user_profile = user_profile_df[user_profile_df['userId_id'] == 2]
-    target_user_profile = target_user_profile.merge(furniture_df, on='furnitureId').drop(columns=['id', 'furnitureDesc'])
-
-    # filter the selection by outputing movies that exist in both lawrence_movie_ratings and movies_with_genres
-    profile_with_desc = furniture_with_desc[furniture_with_desc.furnitureId.isin(target_user_profile.furnitureId)]
-    profile_with_desc.reset_index(drop=True, inplace=True)
-    profile_with_desc = profile_with_desc.drop(columns=['furnitureId', 'furnitureName', 'furnitureDesc'])
-    
-    # print('Shape of user1_profile is:',target_user_profile.shape)
-    # print('Shape of user1_desc_df is:',profile_with_desc.shape)
-    furniture_with_desc = furniture_with_desc.set_index(furniture_with_desc.furnitureId)
-    furniture_with_desc = furniture_with_desc.drop(columns=['furnitureId', 'furnitureName', 'furnitureDesc'])
-
-    view_df = target_user_profile.drop(columns=['userId_id','furnitureId','furnitureName'])
-    user_profile = profile_with_desc.T.dot(view_df) 
-    user_profile = user_profile / user_profile.values.sum()
-    user_profile = pd.DataFrame(user_profile)
-    # print(user_profile.values.sum())
-
-    # recommend_furniture = furniture_with_desc.set_index('furnitureId')
-    # recommend_furniture = (furniture_with_desc.drop(columns=['furnitureId','furnitureName', 'furnitureDesc']).T.dot(user_profile)) / user_profile.sum()
-    # furniture_with_desc = furniture_with_desc.T
-    # recommend_furniture = recommend_furniture / recommend_furniture.values.sum()
-    recommend_furniture = furniture_with_desc.dot(user_profile)
-    recommend_furniture = recommend_furniture / recommend_furniture.values.sum()
-
-    recommend_furniture = pd.DataFrame(recommend_furniture)
-    recommend_furniture = recommend_furniture[recommend_furniture['viewCount'] != 0]
-    recommend_furniture.sort_values(by=['viewCount'], ascending=False, inplace=True)
-
-    recommend_list = list(recommend_furniture.index)
-    # recommend_list.remove('0')
-
-    # recpd = pd.DataFrame(recommend_list)
-
-    # recommend_list.sort(key=lambda x: x.get('viewCount'),  reverse=True)
-
-    # remove similar items in both lists
-    recommend_items = []
-    for j in collaborative_rec_list:
-        for i in recommend_list:
-            if j != i:
-                recommend_items.append(i)
-
-
-    # print(recommend_furniture.info())
-
-    # print(furniture_with_desc.shape)
-    # print(user_profile.shape)
-    # print(profile_with_desc.shape)
-    # print(view_df.shape)
-
-    return recommend_items
-    # return HttpResponse(recommend_furniture.to_html())
+    return recommend_list

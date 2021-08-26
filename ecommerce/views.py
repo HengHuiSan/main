@@ -8,10 +8,11 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect 
 from .forms import UserRegistrationForm
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
+from django.contrib import messages, sessions
 from django.contrib.auth.decorators import login_required
 
-from .recommendation import getAllRecommendation, contentBasedRec
+
+from .recommendation import collaborativeFiltering, contentBasedFiltering, popularityBasedFiltering
 
 
 # ======= Views for Account Authentication ======= #
@@ -45,6 +46,8 @@ def loginView(request):
 
             if user is not None:
                 login(request, user)
+                active_user = User.objects.get(username=request.user.username)
+                request.session['userId']= active_user.id
                 return redirect('homepage')
             else:
                 msg = messages.error(request, 'Invalid username or password')
@@ -55,6 +58,11 @@ def loginView(request):
 
 
 def logoutUser(request):
+    # try:
+    #     del request.session['userId']
+    # except KeyError:
+    #     pass
+
 	logout(request)
 	return redirect('login')
 
@@ -62,24 +70,29 @@ def logoutUser(request):
 
 @login_required(login_url='login')
 def goHompage(request):
-    # result = Furniture.objects.all()
-    # result = pd.DataFrame(list(Order.objects.get(userId=1)))
-    # return HttpResponse(result.to_html())
-
-    # if request.method == 'POST':
-    #     if request.POST.get('btnViewMore'):
-    #         recommendation_number = 20
-    # else:
-    #     recommendation_number = 10
-
-
-    # fid_list = getAllRecommendation()
-    fid_list = contentBasedRec()
-
-    context = {"furniture":Furniture.objects.filter(pk__in=fid_list)}
+    if 'userId' in request.session:
+        furniture_id_list = generateRecommendation(request)
+        
+    context = {"furniture":Furniture.objects.filter(pk__in=furniture_id_list)}
 
     return render(request,'homepage.html', context)
+
+def generateRecommendation(request):
+    if request.method == 'POST':
+        if(request.POST.get('btnInspiredBy')):
+            fid_list = contentBasedFiltering(request.session['userId'])
+        elif(request.POST.get('btnTopPicks')):
+            fid_list = collaborativeFiltering(request.session['userId'])
+        elif(request.POST.get('btnTrending')):
+            fid_list = popularityBasedFiltering()
+    else:
+        fid_list = contentBasedFiltering(request.session['userId'])
     
+    print(User.objects.get(id=request.session['userId']).username)
+    
+    return fid_list
+
+
 
 # ======= Views for Catalog ======= #
 
@@ -121,14 +134,6 @@ def goProfile(request):
 
 # ====================================================================================== # 
 
-def generate_recommendation(request):
-    if request.method == 'POST':
-        if(request.POST.get('btnTopPicks')):
-            user = 1
-        elif(request.POST.get('btnPopular')):
-            user = 2
-        elif(request.POST.get('btnAll')):
-            getAllRecommendation()
 
 
 
@@ -136,15 +141,15 @@ def generate_recommendation(request):
 
 def testing(request):
     # df = contentBasedRec()
-    category_list = []
-    furniture = Furniture.objects.all()
-    category = Category.objects.all()
+    category_list = popularityBasedFiltering()
+    # furniture = Furniture.objects.all()
+    # category = Category.objects.all()
 
-    for i in category:
-        category_list.append(i.categoryName)
+    # for i in category:
+    #     category_list.append(i.categoryName)
 
-    context = {"getData":furniture, "categories":category_list}
-    return HttpResponse("sda")
+    # context = {"getData":furniture, "categories":category_list}
+    return HttpResponse(category_list)
 
 
 

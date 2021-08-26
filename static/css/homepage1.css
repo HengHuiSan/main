@@ -1,4 +1,4 @@
-@import url(../css/variables1.css);
+@import url(../css/main1.css);
 
 .home__img {
     position: absolute;
@@ -11,22 +11,17 @@
 
 .home__container {
     position: relative;
-    height: 95vh;
+    height: 80vh;
     align-content: center;
-    row-gap: 3rem;
+    padding-top: 10rem;
+    /* row-gap: 2rem; */
 }
 
 .home__data-subtitle, 
 .home__data-title, .catalog__data-title
 .home__social-link, 
 .home__info {
-    color: var(--white-color);
-}
-
-.home__data-subtitle {
-    display: block;
-    font-weight: var(--font-semi-bold);
-    margin-bottom: var(--mb-0-75);
+    color: var(--white-color)
 }
 
 .home__data-title {
@@ -81,6 +76,9 @@
 }
 
 /*=============== RECOMMEDANTION AREA ===============*/
+.recommendation__container{
+    margin-top: 6rem;
+}
 .rec__btn{
     position: relative;
     color: var(--text-color-light);
@@ -102,6 +100,8 @@
     left: 0;
 }
 
+
+
 .card__fName{
     font-size: var(--h3-font-size);
     font-family: var(--body-font);
@@ -112,15 +112,49 @@
     font-family: var(--body-font);
 }
 
-.card__img a img{
-    border-radius: 1rem;
-    transition: 1s;
+.card{
+    width: inherit;
+    border: none !important;
+    border-radius: 1rem !important;
     cursor: pointer;
-    max-width: 90%;
-    margin-bottom: var(--mb-1-5);
+    transition: 1s;
+    margin: var(--mb-1-5);
 }
 
-.card__img a img:hover{
+.card:hover{
     box-shadow: 0 4px 25px rgba(12,36,49,.15);
     transform: scale(1.1);
+}
+.card img{
+    max-width: 80%;
+}
+
+/* info part */
+.info__container{
+    background: var(--white-color);
+    margin-top: 5rem;
+}
+
+.img-fluid{
+    max-width: 50% !important;
+    max-height: auto;
+    /* remove extra space below image */
+}
+
+.donation__container{
+    background: var(--title-color);
+    border-radius: 2rem;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+}
+
+.donation__title{
+    color: var(--white-color);
+}
+
+.btn-info{
+    border: 0 !important;
+    /* background-color: var(--body-color) !important; */
+    color: var(--title-color) !important;
+    font-weight: bolder !important;
 }
