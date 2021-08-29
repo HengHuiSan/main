@@ -13,8 +13,7 @@
 <body>
     {% include 'header.html' %}
     
-    <main class="main">
-        <section class="catalog">
+        <div class="catalog pt-4">
             <img src="{% static 'images/banner/banner3.jpg' %}" alt="" class="catalog__img">
 
             <div class="catalog__container">
@@ -22,10 +21,7 @@
                     <h1 class="catalog__data-title">Catalog</h1>
                 </div>
             </div>
-        </section>
 
-        <!-- recommendation part -->
-        <section class="recommendation__area">
             <div class="container">
                 <div class="row">
                     <!-- category sidebar -->
@@ -46,23 +42,22 @@
                     <div class="col-lg-8">
                         <div class="row">
                             {% for getdata in furniture %}
-                            <div class="col-md-4 px-4">
-                                <div class="text-center">
-                                    <div class="card__img">
-                                        <a class="" href="?fid={{getdata.furnitureId}}">
-                                            <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="img-fluid">
-                                        </a>
+                            <div class="col-md-4 pr-4">
+                                <a class="" href="{{ getdata.update_view_count_url }}">
+                                    <div class="card text-center mb-5">
+                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3">
+    
+                                        <div class="card-body">
+                                            <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
+                                            <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
+    
+                                            <a href="{% url 'ecommerce:catalog' %}" class="card__button text-uppercase">
+                                                <i class="uil uil-shopping-cart icon__size"></i>
+                                                Add To Cart
+                                            </a>
+                                        </div>
                                     </div>
-
-                                    <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
-                                    <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
-                                    <div class="mb-3">
-                                        <button type="button" class="btn card__button text-uppercase mb-5">
-                                            <i class="uil uil-shopping-cart icon__size"></i>
-                                            Add To Cart
-                                        </button>
-                                    </div>
-                                </div>
+                                </a>
                             </div>
                             {% endfor %}
                         </div>
@@ -95,8 +90,10 @@
                     </div>                          
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+
+    {% include 'footer.html' %}
+
 </body>
 </html>
 

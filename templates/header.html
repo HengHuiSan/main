@@ -5,20 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon -->
-    <!-- <link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon"> -->
-
-    <!-- Box icons -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" /> -->
-
-    <!-- Unicons -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
 
     <!-- Google Icons StyleSheet -->
     <link rel="stylesheet" href=" https://fonts.googleapis.com/icon?family=Material+Icons">
-    
-    <!-- REMIXICONS -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <!-- SWIPER CSS -->
     <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
@@ -28,6 +17,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- SweetAlert -->
+    <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
 
     <!-- Custom StyleSheet -->
     <link rel="stylesheet" href="{% static 'css/header.css' %}"/>
@@ -45,16 +38,16 @@
                     <div class="nav__menu mt-3" id="nav-menu">
                         <ul class="nav__list">
                             <li class="nav__item">
-                                <a href="{% url 'homepage' %}" class="nav__link active">Home</a>
+                                <a href="{% url 'ecommerce:homepage' %}" class="nav__link active">Home</a>
                             </li>
                             <li class="nav__item">
-                                <a href="{% url 'catalog' %}" class="nav__link">Catalog</a>
+                                <a href="{% url 'ecommerce:catalog' %}" class="nav__link">Catalog</a>
                             </li>
                             <li class="nav__item">
-                                <a href="{% url 'donate' %}" class="nav__link">Donate</a>
+                                <a href="{% url 'ecommerce:donate' %}" class="nav__link">Donate</a>
                             </li>
                             <li class="nav__item">
-                                <a href="{% url 'about' %}" class="nav__link">About</a>
+                                <a href="{% url 'ecommerce:about' %}" class="nav__link">About</a>
                             </li>
                         </ul>
                     </div>
@@ -69,17 +62,17 @@
                                 </a>
                             </li>
                             <li class="nav__item">
-                                <a class="nav__icon">
+                                <a href="{% url 'ecommerce:cart' %}" class="nav__icon">
                                     <i class="material-icons">shopping_cart</i>
                                 </a>                            
                             </li>
                             <li class="nav__item">
-                                <a href="{% url 'profile' %}" class="nav__icon">
+                                <a href="{% url 'ecommerce:profile' %}" class="nav__icon">
                                     <i class="material-icons">person</i>
                                 </a>                            
                             </li>
                             <li class="nav__item">
-                                <a href="{% url 'logout' %}" class="nav__icon">
+                                <a href="{% url 'ecommerce:logout' %}" class="nav__icon">
                                     <i class="material-icons">logout</i>
                                 </a>                            
                             </li>

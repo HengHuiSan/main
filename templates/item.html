@@ -1,0 +1,38 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boostrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom StyleSheet -->
+    <link rel="stylesheet" href="{% static 'css/homepage1.css' %}"/>
+</head>
+<body>
+    
+</body>
+</html>
+<!-- <h1>{{ targetItem.furnitureName }}</h1>
+<h1>{{ targetItem.price }}</h1> -->
+<h1>Item</h1>
+<img src="{{baseUrl}}/{{object.furnitureImg}}" alt=""><br>
+<span>Name : {{ object.furnitureName }}</span><br>
+<span>Price : ${{ object.unitPrice }}</span><br>
+<span>Description: Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores incidunt nisi adipisci possimus voluptatum itaque tempore cupiditate obcaecati. Enim, cum!</span><br>
+
+<a href="{% url 'ecommerce:cart' %}" class="card__button text-uppercase">
+    <i class="uil uil-shopping-cart icon__size"></i>
+    Add To Cart
+</a>
+
+
+{% endblock content %}

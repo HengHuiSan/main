@@ -48,19 +48,27 @@ class Furniture(models.Model):
     unitPrice = models.DecimalField(max_digits=5, decimal_places=2)
     stock = models.IntegerField(default=0)
     categoryId = models.ForeignKey(Category, on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=100)
+    
 
     def __str__(self):
-        return self.furnitureId
+        template = '{0.furnitureId} {0.furnitureName}'
+        return template.format(self)
+    
+    def get_absolute_url(self):
+        return reverse("ecommerce:product", kwargs={
+            'slug': self.slug
+        })
+    
+    def update_view_count_url(self):
+        return reverse("ecommerce:view", kwargs={
+            'slug': self.slug
+        })
 
-    # def get_add_to_cart_url(self):
-    #     return reverse("core:add-to-cart", kwargs={
-    #         'slug': self.slug
-    #     })
-
-    # def get_remove_from_cart_url(self):
-    #     return reverse("core:remove-from-cart", kwargs={
-    #         'slug': self.slug
-    #     })
+    def add_to_cart_url(self):
+        return reverse("ecommerce:add-to-cart", kwargs={
+            'slug': self.slug
+        })
 
 class User_Views(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -68,16 +76,35 @@ class User_Views(models.Model):
     viewCount = models.IntegerField()
     
     def __str__(self):
-        return self.userId, " and ", self.furnitureId
-
+        template = '{0.userId} {0.furnitureId} {0.viewCount}'
+        return template.format(self)
+    
 class Cart_Products(models.Model):
     cartId = models.IntegerField(primary_key=True, auto_created=True)
     furnitureId = models.ForeignKey(Furniture, on_delete=models.CASCADE)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
-    dateCreated = models.DateField(auto_now=True)
+    quantity = models.IntegerField(default=0)
+    dateCreated = models.DateTimeField(auto_now=True)
+    slug = models.SlugField(max_length=50)
 
     def __str__(self):
-        return self.cartId
+        template = '{0.furnitureId} {0.userId}  {0.quantity}'
+        return template.format(self)
+    
+    def remove_from_cart_url(self):
+        return reverse("ecommerce:remove-from-cart", kwargs={
+            'slug': self.slug
+        })
+
+    @property
+    def get_item_total_price(self):
+        return self.quantity * self.furnitureId.unitPrice
+
+    @property
+    def get_cart_total(self):
+        return self.objects.all().count()
+        # return self.objects.all().aggregate(sum('quantity'))
+        # return sum([item.get_item_total_price for item in self.objects.all()])
 
 class Payment(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)

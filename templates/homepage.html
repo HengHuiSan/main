@@ -38,7 +38,7 @@
                     </div>
     
                     
-                    <form action="{% url 'homepage' %}" method="POST">
+                    <form action="{% url 'ecommerce:homepage' %}" method="POST">
                         <div class="buttons__group mb-5">
                             {% csrf_token %}
                             <input type="submit" class="rec__btn active__input" value="Inspired by your browsing history" name="btnInspiredBy">
@@ -51,18 +51,24 @@
                         <div class="container row">
                             {% for getdata in furniture|slice:"12" %}
                             <div class="col-md-3">
-                                <a class="" href="{% url 'profile' %}">
-                                    <div class="card text-center mb-5">
-                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3">
+                                <a href="{{ getdata.update_view_count_url }}">
+                                    <div class="card mb-5 text-center">
+                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="mt-3">
     
                                         <div class="card-body">
                                             <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
                                             <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
     
-                                            <a href="{% url 'catalog' %}" class="card__button text-uppercase">
+                                            <a href="{{ getdata.add_to_cart_url }}" class="card__button text-uppercase">
                                                 <i class="uil uil-shopping-cart icon__size"></i>
                                                 Add To Cart
                                             </a>
+                                            <!-- <div>
+                                                <button data-product="{{getData.furnitureId}}" data-action="add" class="card__button text-uppercase add-btn update-cart">
+                                                    <i class="uil uil-shopping-cart icon__size"></i>
+                                                    Cart
+                                                </button>  
+                                            </div> -->
                                         </div>
                                     </div>
                                 </a>
@@ -120,7 +126,17 @@
         </section> 
 
     {% include 'footer.html' %}
-
-
+    
+    {% if messages %}
+        {% for msg in messages %}
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '{{ msg }}',
+                footer: '<a href="{% url "ecommerce:cart" %}">Check my cart now.</a>'
+            })
+        </script>    
+        {% endfor %}	
+    {% endif %}
 </body>
 </html>

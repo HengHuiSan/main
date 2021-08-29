@@ -54,67 +54,67 @@ PART 2: Recommend Items to Users Who Has NO Purchased History
 
 """    
 # Inspired by your browsing history
-def contentBasedFiltering(uid):
-    furniture_df = getFurnitureDf()
-    furniture_df['furnitureGenres'] = furniture_df.furnitureGenres.str.split('|')
+# # def contentBasedFiltering(uid):
+#     furniture_df = getFurnitureDf()
+#     furniture_df['furnitureGenres'] = furniture_df.furnitureGenres.str.split('|')
 
-    furniture_with_genres = furniture_df.copy(deep=True)
+#     furniture_with_genres = furniture_df.copy(deep=True)
 
-    # Iterating through furniture_df, append 1 if that product's genres contain that genre
-    for index, row in furniture_df.iterrows(): # iterrows(): iterate over DataFrame rows
-        for desc in row['furnitureGenres']:
-            furniture_with_genres.at[index, desc] = 1   
+#     # Iterating through furniture_df, append 1 if that product's genres contain that genre
+#     for index, row in furniture_df.iterrows(): # iterrows(): iterate over DataFrame rows
+#         for desc in row['furnitureGenres']:
+#             furniture_with_genres.at[index, desc] = 1   
     
-    # Filling in the NaN values with 0 to show that furniture doesn't have that column's genre
-    furniture_with_genres = furniture_with_genres.fillna(0)
+#     # Filling in the NaN values with 0 to show that furniture doesn't have that column's genre
+#     furniture_with_genres = furniture_with_genres.fillna(0)
 
-    all_user_profile_df = getViewDf()
-    target_user_profile = all_user_profile_df[all_user_profile_df['userId'] == uid]
-    target_user_profile = target_user_profile.merge(furniture_df, on='furnitureId').drop(columns=['id', 'furnitureGenres'])
+#     all_user_profile_df = getViewDf()
+#     target_user_profile = all_user_profile_df[all_user_profile_df['userId'] == uid]
+#     target_user_profile = target_user_profile.merge(furniture_df, on='furnitureId').drop(columns=['id', 'furnitureGenres'])
 
-    # Create furniture matrix 
-    profile_with_desc = furniture_with_genres[furniture_with_genres.furnitureId.isin(target_user_profile.furnitureId)]
-    profile_with_desc.reset_index(drop=True, inplace=True)
-    profile_with_desc = pd.DataFrame(profile_with_desc.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres']))
+#     # Create furniture matrix 
+#     profile_with_desc = furniture_with_genres[furniture_with_genres.furnitureId.isin(target_user_profile.furnitureId)]
+#     profile_with_desc.reset_index(drop=True, inplace=True)
+#     profile_with_desc = pd.DataFrame(profile_with_desc.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres']))
 
 
-    view_df = pd.DataFrame(target_user_profile.drop(columns=['userId','furnitureId','furnitureName']))
-    # view_df = pd.DataFrame(target_user_profile.drop(columns=['userId_id', 'furnitureName']))
+#     view_df = pd.DataFrame(target_user_profile.drop(columns=['userId','furnitureId','furnitureName']))
+#     # view_df = pd.DataFrame(target_user_profile.drop(columns=['userId_id', 'furnitureName']))
 
-    print(User.objects.get(id=4).username)
-    print(profile_with_desc.shape)
-    print(view_df.shape)
+#     print(User.objects.get(id=4).username)
+#     print(profile_with_desc.shape)
+#     print(view_df.shape)
 
-    # Multiply furniture matrix with view_df to get weighted genres matrix
-    user_profile = profile_with_desc.T.dot(view_df) 
-    # user_profile = pd.DataFrame(user_profile / user_profile.values.sum())
-    print(user_profile.shape)
+#     # Multiply furniture matrix with view_df to get weighted genres matrix
+#     user_profile = profile_with_desc.T.dot(view_df) 
+#     # user_profile = pd.DataFrame(user_profile / user_profile.values.sum())
+#     print(user_profile.shape)
 
-    furniture_with_genres = furniture_with_genres.set_index(furniture_with_genres.furnitureId)
-    furniture_with_genres = furniture_with_genres.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres'])
-    print(furniture_with_genres.shape)
-    # furniture_with_genres = furniture_with_genres.drop(columns=['furnitureName', 'furnitureGenres'])
+#     furniture_with_genres = furniture_with_genres.set_index(furniture_with_genres.furnitureId)
+#     furniture_with_genres = furniture_with_genres.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres'])
+#     print(furniture_with_genres.shape)
+#     # furniture_with_genres = furniture_with_genres.drop(columns=['furnitureName', 'furnitureGenres'])
 
-    # Multiply furniture matrix (not active user) with weighted genres matrix to generate recommendation 
-    recommend_furniture = furniture_with_genres.dot(user_profile)
-    recommend_furniture = pd.DataFrame(recommend_furniture / recommend_furniture.values.sum())
+#     # Multiply furniture matrix (not active user) with weighted genres matrix to generate recommendation 
+#     recommend_furniture = furniture_with_genres.dot(user_profile)
+#     recommend_furniture = pd.DataFrame(recommend_furniture / recommend_furniture.values.sum())
 
-    print(recommend_furniture.shape)
-    recommend_furniture = recommend_furniture[recommend_furniture['viewCount'] != 0]
-    recommend_furniture.sort_values(by=['viewCount'], ascending=False, inplace=True)
+#     print(recommend_furniture.shape)
+#     recommend_furniture = recommend_furniture[recommend_furniture['viewCount'] != 0]
+#     recommend_furniture.sort_values(by=['viewCount'], ascending=False, inplace=True)
 
-    # List out recommended items
-    recommend_list = list(recommend_furniture.index)
+#     # List out recommended items
+#     recommend_list = list(recommend_furniture.index)
 
-    # # Remove similar items from CF-generated list
-    collaborative_rec_list = collaborativeFiltering(uid)
-    recommend_items = []
-    for j in collaborative_rec_list:
-        for i in recommend_list:
-            if j != i:
-                recommend_items.append(i)
+#     # # Remove similar items from CF-generated list
+#     collaborative_rec_list = collaborativeFiltering(uid)
+#     recommend_items = []
+#     for j in collaborative_rec_list:
+#         for i in recommend_list:
+#             if j != i:
+#                 recommend_items.append(i)
 
-    return recommend_items
+#     return recommend_items
 
 
 # Top picks for you

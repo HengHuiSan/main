@@ -1,0 +1,172 @@
+
+{% load static %}
+{% static "images/" as baseUrl %}
+
+{% include 'header.html' %}
+
+{% block content %}
+<style>
+    .form-control:focus, .btn:focus {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+    .btn-primary{
+        background-color: var(--title-color);
+        border: 0;
+        width: 100%;
+        height: 40px;
+        border-radius: 2rem;
+    }
+</style>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card shadow border-0 mb-3">
+                    <div class="card-body">
+                        <h3 class="pl-3 pt-3"><b>Shopping Cart</b></h3>
+                        <!-- Total products in the cart -->
+                        <div class="pl-3">
+                            <span style="color: gray;">You have {{ cart|length }} items in the cart.</span>
+                        </div>
+                        <hr><br>
+                        {% csrf_token %}
+                        {% for item in cart %}
+                        <div class="row">
+                            <!-- Item Image -->
+                            <div class="col-md-4">
+                                <img src="{{baseUrl}}/{{item.furnitureId.furnitureImg}}" alt="" style="width: 180px; height: 180px;">
+                            </div>
+                            <!-- Item Information -->
+                            <div class="col-md-8 mt-4">
+                                <div class="mb-2 mb-md-0">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="col-md-6">
+                                            <h3>{{ item.furnitureId.furnitureName }}</h3>
+                                            <table>
+                                                <tr>
+                                                    <td><span>Quantity:&nbsp;</span></td>
+                                                    <td>
+                                                        <form action="" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="number" value="{{ item.quantity }}" 
+                                                            id="{{ item.furnitureId.furnitureId }}" class="form-control"
+                                                            style="border: 0; width: 4rem;" onclick="calcAmount(this)"
+                                                            min="1" max="{{ item.furnitureId.stock }}">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <!-- Total Price -->
+                                        <div class="col-md-7">
+                                            <h2 style="color:orangered">$<span id="result+{{ item.furnitureId.furnitureId }}">{{ item.get_item_total_price }}</span></h2>
+                                            <!-- <h2><span style="color:orangered">$&nbsp;{% widthratio item.furnitureId.unitPrice 1 item.quantity %}</h2> -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="">
+                                    <!-- <div class="row d-flex justify-content-between">
+                                        <div class="col-md-4">
+                                            <a href="" class="btn mt-3" style="border: 0; background-color: transparent;">
+                                                <i class="material-icons align-middle" style="font-size:25px;">edit</i>
+                                                Update
+                                            </a>
+                                        </div> -->
+                                        <!-- <div class="col-md-6"> -->
+                                            <a href="{{ item.remove_from_cart_url }}" class="btn mt-3">
+                                                <i class="material-icons align-middle" style="font-size:25px;">delete</i>
+                                                Remove
+                                            </a>
+                                        <!-- </div> -->
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Amount -->
+            <div class="col-lg-5">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <div class="pl-3 mt-2">
+                            <h3><b>Total Amount</b></h3>
+                            <hr />
+                            <!-- Amount -->
+
+                            <h1 class="mb-5" style="color:orangered">$ <span id="amount">{{ amount|floatformat:2 }}</span></h1>
+                            <div class="d-flex justify-content-center mb-3">
+                                <input type="submit" value="Checkout" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block javascript %}
+    <script>
+
+        var fid = []
+        var fprice = []
+        "{% for item in cart %}"
+            fid.push( "{{ item.furnitureId.furnitureId }}" )
+            fprice.push( "{{ item.furnitureId.unitPrice }}" )
+        "{% endfor %}"
+
+
+        function calcAmount(elem) 
+        {
+            var id = elem.id;
+            var qty = document.getElementById(id).value;
+            var token = '{{csrf_token}}';
+
+            for (var i=0; i<fprice.length; i++) {
+                if(fid[i] == id){
+                    total = qty * fprice[i]
+                    //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
+                    if (!isNaN(total))
+                        document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
+
+                    $.ajax({
+                        url: '{% url "ecommerce:update-cart" %}',
+                        type: 'POST',
+                        headers:{
+                            "X-CSRFToken": token
+                        },
+                        data: {
+                            'furnitureId':fid[i] ,
+                            'quantity': qty,
+                        },
+                        success: function (response) {
+                            console.log(response, typeof(response))
+                        }
+                    })
+                    location.reload();
+
+                }
+            }
+        }
+    </script>
+
+    {% if messages %}
+        {% for msg in messages %}
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '{{ msg }}',
+            })
+        </script>    
+        {% endfor %}	
+    {% endif %}
+    {% endblock javascript %}
+
+
+{% include 'footer.html' %}
+{% endblock content %}

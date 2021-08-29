@@ -1,18 +1,20 @@
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from ecommerce.models import *
 from django.core.paginator import Paginator
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from django.shortcuts import render, redirect 
 from .forms import UserRegistrationForm
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages, sessions
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.generic import DetailView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-from .recommendation import collaborativeFiltering, contentBasedFiltering, popularityBasedFiltering
+from .recommendation import collaborativeFiltering, popularityBasedFiltering
 
 
 # ======= Views for Account Authentication ======= #
@@ -46,9 +48,9 @@ def loginView(request):
 
             if user is not None:
                 login(request, user)
-                active_user = User.objects.get(username=request.user.username)
-                request.session['userId']= active_user.id
-                return redirect('homepage')
+                # active_user = User.objects.get(username=request.user.username)
+                # request.session['userId']= active_user.id
+                return redirect('ecommerce:homepage')
             else:
                 msg = messages.error(request, 'Invalid username or password')
 
@@ -64,14 +66,14 @@ def logoutUser(request):
     #     pass
 
 	logout(request)
-	return redirect('login')
+	return redirect('ecommerce:login')
 
 # ======= Views for Homepage ======= #
 
 @login_required(login_url='login')
 def goHompage(request):
-    if 'userId' in request.session:
-        furniture_id_list = generateRecommendation(request)
+    # if 'userId' in request.session:
+    furniture_id_list = generateRecommendation(request)
         
     context = {"furniture":Furniture.objects.filter(pk__in=furniture_id_list)}
 
@@ -79,16 +81,18 @@ def goHompage(request):
 
 def generateRecommendation(request):
     if request.method == 'POST':
-        if(request.POST.get('btnInspiredBy')):
-            fid_list = contentBasedFiltering(request.session['userId'])
-        elif(request.POST.get('btnTopPicks')):
-            fid_list = collaborativeFiltering(request.session['userId'])
+        # if(request.POST.get('btnInspiredBy')):
+        #     fid_list = contentBasedFiltering(request.session['userId'])
+        if(request.POST.get('btnTopPicks')):
+            fid_list = collaborativeFiltering(request.user)
         elif(request.POST.get('btnTrending')):
             fid_list = popularityBasedFiltering()
     else:
-        fid_list = contentBasedFiltering(request.session['userId'])
+        fid_list = collaborativeFiltering(request.user)
     
-    print(User.objects.get(id=request.session['userId']).username)
+    # print(User.objects.get(id=request.session['userId']).username)
+    # print(request.user)
+
     
     return fid_list
 
@@ -129,13 +133,89 @@ def goDonate(request):
 def goAbout(request):
     return render(request,'about.html')
 
+def goCart(request):
+    return render(request, 'cart.html')
+
 def goProfile(request):
     return render(request, 'profile.html')
 
+def goProduct(request):
+    return render(request, 'item.html')
+
+class ItemDetailView(DetailView):
+    model = Furniture
+    template_name = "item.html"
+
+class CartDetailView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            cart = Cart_Products.objects.filter(userId=self.request.user)
+            amount = sum(item.quantity*item.furnitureId.unitPrice for item in cart)
+            context = {
+                'cart': cart, 
+                'amount':amount
+                }
+            return render(self.request, 'cart.html', context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "Your cart is empty")
+            return redirect('ecommerce:cart')
+
+
+def updateViewToItem(request, slug):
+    item = get_object_or_404(Furniture, slug=slug)
+
+    # item that has been viewed before
+    viewed_item = User_Views.objects.filter(userId=request.user, furnitureId=item)
+
+    if viewed_item.exists():
+        get_viewed_item = User_Views.objects.get(userId=request.user, furnitureId=item)
+        get_viewed_item.viewCount += 1       
+        get_viewed_item.save()
+        # print(get_viewed_item)
+    else:
+        User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
+        # print(view)
+
+    return redirect('ecommerce:product', slug=slug)
+
+    
 # ====================================================================================== # 
 
 
+def addToCart(request, slug):
+    item = get_object_or_404(Furniture, slug=slug)
+    item_in_cart = Cart_Products.objects.filter(userId=request.user, furnitureId=item)
+    
+    if item_in_cart.exists():
+        item_in_cart = Cart_Products.objects.get(userId=request.user, furnitureId=item)
+        item_in_cart.quantity += 1
+        item_in_cart.save()
+        messages.info(request, "This item quantity was updated.")
+    else:
+        Cart_Products.objects.create(userId=request.user, furnitureId=item, quantity=1,slug=item.furnitureId)
+        messages.info(request, "This item was added to your cart.")
+    
+    return redirect('ecommerce:homepage')
 
+def removeFromCart(request, slug):
+    item = get_object_or_404(Cart_Products, slug=slug)
+    cart_item = Cart_Products.objects.filter(userId=request.user, furnitureId=item.furnitureId)
+    cart_item.delete()
+    messages.info(request, "This item was removed from your cart.")
+
+    return redirect('ecommerce:cart')
+
+
+def updateCart(request):
+    print()
+    if request.method == 'POST':
+        cart_item = Cart_Products.objects.get(furnitureId=request.POST['furnitureId'])
+        print(cart_item)
+        cart_item.quantity =  request.POST['quantity']
+        cart_item.save()
+        # messages.info(request, "qty updated")
+
+    return redirect('ecommerce:cart')
 
 
 
