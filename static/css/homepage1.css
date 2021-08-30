@@ -1,4 +1,4 @@
-@import url(../css/main1.css);
+@import url(../css/main.css);
 
 .home__img {
     position: absolute;
@@ -53,40 +53,20 @@
     margin-left: 3.5rem;
 }
 
-.card__button{
-    display: inline-block;
-    background-color: var(--first-color);
-    color: var(--white-color);
-    font-size: var(--small-font-size);
-    font-weight: var(--font-semi-bold);
-    padding: 0.5rem 2rem;
-    transition: .3s;
-    border-radius: 1.5rem;
-    border: none;
-}
 
-.card__button i{
-    font-size: var(--h3-font-size);
-    font-weight: var(--font-semi-bold);
-    margin-right: var(--mb-0-25);
-}
-
-.card__button:hover{
-    color: var(--text-color-light);
-}
 
 /*=============== RECOMMEDANTION AREA ===============*/
 .recommendation__container{
     margin-top: 6rem;
 }
-.rec__btn{
+/* .rec__btn{
     position: relative;
     color: var(--text-color-light);
     font-weight: var(--font-semi-bold);
     text-transform: uppercase;
-  }
+  } */
 
-.active__input, .rec__btn:hover{
+/* .active__input, .rec__btn:hover{
     color: var(--title-color);
 }
 
@@ -98,9 +78,24 @@
     height: 2.5px;
     bottom: -.75rem;
     left: 0;
+} */
+
+.card{
+    border: none !important;
+    border-radius: 1rem !important;
+    cursor: pointer;
+    transition: 1s;
+    margin: var(--mb-1-25) var(--mb-0-25) var(--mb-1-25) var(--mb-0-25);
 }
 
+.card__button:hover{
+    color: var(--text-color-light);
+}
 
+.card:hover{
+    box-shadow: 0 4px 25px rgba(12,36,49,.15);
+    transform: scale(1.1);
+}
 
 .card__fName{
     font-size: var(--h3-font-size);
@@ -112,24 +107,59 @@
     font-family: var(--body-font);
 }
 
-.card{
-    width: inherit;
-    border: none !important;
-    border-radius: 1rem !important;
-    cursor: pointer;
-    transition: 1s;
-    margin: var(--mb-1-5);
+.card__button{
+    display: inline-block;
+    background-color: var(--first-color);
+    color: var(--white-color);
+    font-size: var(--smaller-font-size);
+    font-weight: var(--font-semi-bold);
+    padding: 0.4rem 1.5rem;
+    transition: .3s;
+    border-radius: 1.5rem;
+    border: none;
 }
 
-.card:hover{
-    box-shadow: 0 4px 25px rgba(12,36,49,.15);
-    transform: scale(1.1);
-}
-.card img{
-    max-width: 80%;
+.card__button i{
+    font-size: var(--h3-font-size);
+    font-weight: var(--font-semi-bold);
+    margin-right: var(--mb-0-25);
 }
 
-/* info part */
+.owl-theme .owl-dots .owl-dot {
+    outline: none;
+    text-decoration: none !important;
+
+}
+.owl-theme .owl-dots{
+    outline: none !important;
+    text-decoration: none !important;
+}
+
+.owl-theme .owl-nav .owl-prev,
+.owl-theme .owl-nav .owl-next{
+    outline: none;
+}
+
+.owl-theme .owl-nav .owl-prev {
+    font-size: 40px !important;
+    position: absolute;
+    top: 40%;
+    left: -40px;
+    display: block !important;
+    border:0px solid black;
+}
+
+.owl-theme .owl-nav .owl-next {
+    position: absolute;
+    font-size: 40px !important;
+    top: 40%;
+    right: -40px;
+    display: block !important;
+    border:0px solid black;
+}
+
+
+/*=============== COMPANY INFO ===============*/
 .info__container{
     background: var(--white-color);
     margin-top: 5rem;

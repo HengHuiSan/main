@@ -53,10 +53,10 @@
   
 .section__title {
     font-size: var(--h2-font-size);
-    color: var(--title-color);
+    color: var(--body-color);
     text-align: center;
     text-transform: capitalize;
-    margin-bottom: var(--mb-2);
+    margin-bottom: var(--mb-1-25);
 }
 
 /* .grid {

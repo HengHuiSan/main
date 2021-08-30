@@ -1,12 +1,67 @@
 from django.http.response import HttpResponse
-from django.shortcuts import render
 from ecommerce.models import *
 import pandas as pd
 import numpy as np
-# import the class containing the dimensionality reduction method
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import TruncatedSVD
+from collections import Counter
 
-""" GET DATAFRAMES """
+
+"""
+PART 1: Recommend Popular Items to New Users 
+
+a) Trending Now : 
+   Popularity-based filtering based on view count of the items
+   to generate the most-viewed item recommendations
+
+"""
+def recommendToNewUser():
+    popularity_recommend_list = popularityBasedFiltering()
+
+    return popularity_recommend_list
+
+
+"""
+PART 2: Recommend Items to Users Who Has NO Purchased History
+
+ a) Inspired by your browsing history :
+    Model-based collaborative filtering using Matrix Factorization
+    based on active user's page views and  page views by 
+    other users who views items similar items
+
+ b) Trending Now
+
+"""
+def recommendToNormalUser(uid, role):
+    cf_recommend_list = collaborativeFiltering(uid, role)
+    popularity_recommend_list = popularityBasedFiltering()
+    return cf_recommend_list, popularity_recommend_list
+
+
+"""
+ PART 3: Recommend Items to Users Who Has Purchased History
+
+ a) Because you bought ... :
+    Content-based filtering based on customer's purchase history 
+    and item features to generate item-item recommendations
+
+ b) Inspired by your browsing history :
+    Model-based collaborative filtering using Matrix Factorization
+    based on customer's purchase history and page views by
+    other users who views items similar items
+
+ c) Trending Now
+
+"""   
+def recommendToCustomer(uid, role):
+    cb_recommend_list, furniture_name = contentBasedFiltering(uid)
+    cf_recommend_list = collaborativeFiltering(uid, role)
+    popularity_recommend_list = popularityBasedFiltering()
+
+    return cb_recommend_list, furniture_name, cf_recommend_list, popularity_recommend_list
+
+
+""" Get Dataframes """
 
 def getMergeDf():
     furniture_df = getFurnitureDf()
@@ -28,97 +83,67 @@ def getViewDf():
     user_views_df.rename(columns={'furnitureId_id':'furnitureId', 'userId_id':'userId'}, inplace=True)
 
     return user_views_df
-
-"""
-PART 1: Recommend Popular Items to New Users 
-
-"""
-
-"""
-PART 2: Recommend Items to Users Who Has NO Purchased History
-
-"""
-
-
-
-
-
-"""
- PART 3: Recommend Items to Users Who Has Purchased History
-
- Model-based collaborative filtering using Matrix Factorization
- based on customer's purchase history and 
- page views by other users who views items similar items
-
- Content-based filtering by weighting genres of furniture
-
-"""    
-# Inspired by your browsing history
-# # def contentBasedFiltering(uid):
-#     furniture_df = getFurnitureDf()
-#     furniture_df['furnitureGenres'] = furniture_df.furnitureGenres.str.split('|')
-
-#     furniture_with_genres = furniture_df.copy(deep=True)
-
-#     # Iterating through furniture_df, append 1 if that product's genres contain that genre
-#     for index, row in furniture_df.iterrows(): # iterrows(): iterate over DataFrame rows
-#         for desc in row['furnitureGenres']:
-#             furniture_with_genres.at[index, desc] = 1   
     
-#     # Filling in the NaN values with 0 to show that furniture doesn't have that column's genre
-#     furniture_with_genres = furniture_with_genres.fillna(0)
 
-#     all_user_profile_df = getViewDf()
-#     target_user_profile = all_user_profile_df[all_user_profile_df['userId'] == uid]
-#     target_user_profile = target_user_profile.merge(furniture_df, on='furnitureId').drop(columns=['id', 'furnitureGenres'])
+""" Content-based Filtering Recommendation """  
 
-#     # Create furniture matrix 
-#     profile_with_desc = furniture_with_genres[furniture_with_genres.furnitureId.isin(target_user_profile.furnitureId)]
-#     profile_with_desc.reset_index(drop=True, inplace=True)
-#     profile_with_desc = pd.DataFrame(profile_with_desc.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres']))
+def contentBasedFiltering(uid):
+    furniture_df = getFurnitureDf()
+    furniture_df['furnitureGenres'] = furniture_df.furnitureGenres.str.split('|')
 
+    # Use Counter to create a dictionary containing frequency counts of each genre
+    genres_counts = Counter(g for genres in furniture_df['furnitureGenres'] for g in genres)
+    
+    # Iterating through furniture_df, append 1 if that furniture's genres contain that genre, while "0" does not
+    genres = list(genres_counts.keys())
+    for g in genres:
+        furniture_df[g] = furniture_df['furnitureGenres'].transform(lambda x: int(g in x))
 
-#     view_df = pd.DataFrame(target_user_profile.drop(columns=['userId','furnitureId','furnitureName']))
-#     # view_df = pd.DataFrame(target_user_profile.drop(columns=['userId_id', 'furnitureName']))
+    furniture_matrix = furniture_df[genres].copy(deep=True)
 
-#     print(User.objects.get(id=4).username)
-#     print(profile_with_desc.shape)
-#     print(view_df.shape)
+    # Build item-item recommendation using cosine similarity
+    cosine_sim = cosine_similarity(furniture_matrix, furniture_matrix)
+    # print(f"Dimensions of our movie features cosine similarity matrix: {cosine_sim.shape}")
 
-#     # Multiply furniture matrix with view_df to get weighted genres matrix
-#     user_profile = profile_with_desc.T.dot(view_df) 
-#     # user_profile = pd.DataFrame(user_profile / user_profile.values.sum())
-#     print(user_profile.shape)
+    items_purchased = getSpecificOrderItems(uid)
 
-#     furniture_with_genres = furniture_with_genres.set_index(furniture_with_genres.furnitureId)
-#     furniture_with_genres = furniture_with_genres.drop(columns=['furnitureId', 'furnitureName', 'furnitureGenres'])
-#     print(furniture_with_genres.shape)
-#     # furniture_with_genres = furniture_with_genres.drop(columns=['furnitureName', 'furnitureGenres'])
+    # create index mapper which maps furniture ID to the index that it represents in the matrix
+    furniture_idx = dict(zip(furniture_df['furnitureId'], list(furniture_df.index)))
 
-#     # Multiply furniture matrix (not active user) with weighted genres matrix to generate recommendation 
-#     recommend_furniture = furniture_with_genres.dot(user_profile)
-#     recommend_furniture = pd.DataFrame(recommend_furniture / recommend_furniture.values.sum())
+    furniture_name = []
+    recommend_list = []
 
-#     print(recommend_furniture.shape)
-#     recommend_furniture = recommend_furniture[recommend_furniture['viewCount'] != 0]
-#     recommend_furniture.sort_values(by=['viewCount'], ascending=False, inplace=True)
+    for i in items_purchased:
+        fid = furniture_idx[i.furnitureId.furnitureId]
+        
+        # Get top 12 most similar items to target item.
+        sim_scores = list(enumerate(cosine_sim[fid]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[:12]
+        similar_furniture = [i[0] for i in sim_scores]
 
-#     # List out recommended items
-#     recommend_list = list(recommend_furniture.index)
+        recommend_list.append(list(furniture_df['furnitureId'].iloc[similar_furniture]))
+        furniture_name.append(i.furnitureId.furnitureName)
+    
+    # print(recommend_list)
 
-#     # # Remove similar items from CF-generated list
-#     collaborative_rec_list = collaborativeFiltering(uid)
-#     recommend_items = []
-#     for j in collaborative_rec_list:
-#         for i in recommend_list:
-#             if j != i:
-#                 recommend_items.append(i)
-
-#     return recommend_items
+    return recommend_list, furniture_name
 
 
-# Top picks for you
-def collaborativeFiltering(uid):
+def getSpecificOrderItems(uid):
+    # Get all the orders that made by target user from 'Order' table
+    oid_list = Order.objects.filter(userId=uid) 
+    latest_order = oid_list.latest('orderDate') 
+
+    # Get all items from the target order
+    items_purchased = Order_Products.objects.filter(orderId=latest_order).all()
+
+    return items_purchased
+
+
+""" Collaborative Filtering Recommendation """  
+
+def collaborativeFiltering(uid,role):   
     furniture_profile_df = getMergeDf()
 
     #Creating a sparse pivot table with items in rows and users in columns
@@ -136,31 +161,20 @@ def collaborativeFiltering(uid):
     # Compute correlation coefficients 
     correlation_matrix = np.corrcoef(decomposed_matrix)
 
-    # Get all the orders that made by target user from 'Order' table
-    oid_list = list(Order.objects.filter(userId=uid).values_list('orderId', flat=True)) # flat=True : mean that the returned result is a single value, not a tuple. 
-
-    # Get all items from the order list of target user
-    all_items_purchased_list = list(Order_Products.objects.values_list('orderId', 'furnitureId'))
-
-    # List out all items from each order
-    items_purchased = []
-    for oid in oid_list:
-        for i in range(len(all_items_purchased_list)):
-            if oid == all_items_purchased_list[i][0]:
-                items_purchased.append(all_items_purchased_list[i][1])
+    item_list = getAllOrderItems(uid) if role == "customer" else getAllViewedItems(uid)
 
     # Isolating items purchased by the active user from Correlation Matrix
-    for i in items_purchased:
+    for i in item_list:
         for j in range(len(items_users_pivot_matrix_df)):
             if(items_users_pivot_matrix_df.index[j] == i):
                 # print(items_users_pivot_matrix_df.index[j])
                 fid_list = list(items_users_pivot_matrix_df.index) # change everything into list form
                 
                 # find the index(location) of the target item
-                item_purchased = fid_list.index(i)
+                item = fid_list.index(i)
                 
                 # get correlation coefficients value of the item
-                correlation = correlation_matrix[item_purchased]
+                correlation = correlation_matrix[item]
                 
                 # list out items that the pearson correlation value > 0.9 
                 # 0.9 suggests a strong, positive association between two variables 
@@ -174,11 +188,37 @@ def collaborativeFiltering(uid):
 
                 # get the first 12 items
                 recommend_list = recommend_list[:12]
-   
+       
     return recommend_list
 
+# def testing(request):
+#     return collaborativeFiltering(40,"customer")
 
-# Trending now
+
+def getAllOrderItems(uid):
+    # Get all the orders that made by target user from 'Order' table
+    oid_list = list(Order.objects.filter(userId=uid).values_list('orderId', flat=True)) # flat=True : mean that the returned result is a single value, not a tuple. 
+
+    # Get all items from the order list of target user
+    all_items_purchased_list = list(Order_Products.objects.values_list('orderId', 'furnitureId'))
+
+    # List out all items from each order
+    items_purchased = []
+    for oid in oid_list:
+        for i in range(len(all_items_purchased_list)):
+            if oid == all_items_purchased_list[i][0]:
+                items_purchased.append(all_items_purchased_list[i][1])
+    
+    return items_purchased
+
+def getAllViewedItems(uid):
+    item_viewed = list(User_Views.objects.filter(userId=uid).values_list('furnitureId', flat=True))
+
+    return item_viewed
+
+
+""" Popularity-based Filtering Recommendation """  
+
 def popularityBasedFiltering():
     user_profile_df = getViewDf()
 
@@ -187,5 +227,7 @@ def popularityBasedFiltering():
     most_popular_items = popular_items.sort_values(by=['viewCount'], ascending=False)
     
     recommend_list = list(most_popular_items.index)
+    recommend_list = recommend_list[:12]
+    
 
     return recommend_list

@@ -66,9 +66,16 @@
 
                 <!-- Register Success Message -->
                 {% if msg != '' %}
-                    <script>
-                        Swal.fire('Register Successfully', '', 'success');
-                    </script>   
+                    {% if messages %}
+                        {% for message in messages %}
+                        <script>
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ message }}',
+                            })
+                        </script>    
+                        {% endfor %}	
+                    {% endif %}  
                 {% endif %}
 
                 <!-- Register Fail Message -->

@@ -36,9 +36,16 @@
                 <div class="form-inner">
                     <form action="#" class="login" method="POST">
                         {% if msg != '' %}
-                            <script>
-                                Swal.fire('Login Failed', 'Invalid username or password.', 'error');
-                            </script>    
+                            {% if messages %}
+                                {% for message in messages %}
+                                <script>
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: '{{ message }}',
+                                    })
+                                </script>    
+                                {% endfor %}	
+                            {% endif %} 
                         {% endif %}	
                         
                         {% csrf_token %}

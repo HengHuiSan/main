@@ -14,7 +14,7 @@ from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-from .recommendation import collaborativeFiltering, popularityBasedFiltering
+from .recommendation import recommendToCustomer, recommendToNormalUser, recommendToNewUser
 
 
 # ======= Views for Account Authentication ======= #
@@ -26,7 +26,7 @@ def registerView(request):
         if form.is_valid():
             try:
                 form.save()
-                msg = messages.success(request, 'register successful')
+                msg = messages.success(request, 'Register Successfully!')
             except ValidationError as e:
                 print(e)
     else:
@@ -52,7 +52,7 @@ def loginView(request):
                 # request.session['userId']= active_user.id
                 return redirect('ecommerce:homepage')
             else:
-                msg = messages.error(request, 'Invalid username or password')
+                msg = messages.error(request, 'Invalid username or password!')
 
     context = {'msg':msg}
 
@@ -70,32 +70,33 @@ def logoutUser(request):
 
 # ======= Views for Homepage ======= #
 
-@login_required(login_url='login')
+@login_required(login_url='ecommerce:login')
 def goHompage(request):
-    # if 'userId' in request.session:
-    furniture_id_list = generateRecommendation(request)
-        
-    context = {"furniture":Furniture.objects.filter(pk__in=furniture_id_list)}
+    if Order.objects.filter(userId=request.user).exists():
+        cb_recommend_list, furniture_name, cf_recommend_list, popularity_recommend_list = recommendToCustomer(request.user, "customer")
+
+        cb_recommend_query = []
+        for i in cb_recommend_list:
+            cb_recommend_query.append(Furniture.objects.filter(pk__in=i))
+
+        context = {
+            'zipped_data': zip(furniture_name, cb_recommend_query),
+            'cf_recommend_list':Furniture.objects.filter(pk__in=cf_recommend_list), 
+            'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
+        }
+    elif User_Views.objects.filter(userId=request.user):
+        cf_recommend_list, popularity_recommend_list = recommendToNormalUser(request.user,'normal user')
+        context = {
+            'cf_recommend_list':Furniture.objects.filter(pk__in=cf_recommend_list), 
+            'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
+        }        
+    else:
+        popularity_recommend_list = recommendToNewUser()
+        context = {
+            'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
+        }
 
     return render(request,'homepage.html', context)
-
-def generateRecommendation(request):
-    if request.method == 'POST':
-        # if(request.POST.get('btnInspiredBy')):
-        #     fid_list = contentBasedFiltering(request.session['userId'])
-        if(request.POST.get('btnTopPicks')):
-            fid_list = collaborativeFiltering(request.user)
-        elif(request.POST.get('btnTrending')):
-            fid_list = popularityBasedFiltering()
-    else:
-        fid_list = collaborativeFiltering(request.user)
-    
-    # print(User.objects.get(id=request.session['userId']).username)
-    # print(request.user)
-
-    
-    return fid_list
-
 
 
 # ======= Views for Catalog ======= #
@@ -219,17 +220,17 @@ def updateCart(request):
 
 
 
-def testing(request):
-    # df = contentBasedRec()
-    category_list = popularityBasedFiltering()
-    # furniture = Furniture.objects.all()
-    # category = Category.objects.all()
+# def testing(request):
+#     # df = contentBasedRec()
+#     # category_list = popularityBasedFiltering()
+#     # furniture = Furniture.objects.all()
+#     # category = Category.objects.all()
 
-    # for i in category:
-    #     category_list.append(i.categoryName)
+#     # for i in category:
+#     #     category_list.append(i.categoryName)
 
-    # context = {"getData":furniture, "categories":category_list}
-    return HttpResponse(category_list)
+#     # context = {"getData":furniture, "categories":category_list}
+#     return HttpResponse(category_list)
 
 
 
