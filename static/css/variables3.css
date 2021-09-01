@@ -22,6 +22,7 @@
     --scroll-thumb-color: hsl(var(--hue-color), 12%, 75%);
     --account-input-color: hsl(212, 48%, 25%);
     --account-input-color-light: hsl(210, 44%, 32%);
+    
   
     /*========== Font and typography ==========*/
     --body-font: 'Open Sans', sans-serif;

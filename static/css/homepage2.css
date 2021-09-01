@@ -1,4 +1,4 @@
-@import url(../css/main.css);
+@import url(../css/main2.css);
 
 .home__img {
     position: absolute;
@@ -127,13 +127,14 @@
 
 .owl-theme .owl-dots .owl-dot {
     outline: none;
-    text-decoration: none !important;
+    color: var(--title-color) !important;
 
 }
-.owl-theme .owl-dots{
+
+/* .owl-theme .owl-dots{
     outline: none !important;
     text-decoration: none !important;
-}
+} */
 
 .owl-theme .owl-nav .owl-prev,
 .owl-theme .owl-nav .owl-next{
@@ -161,7 +162,7 @@
 
 /*=============== COMPANY INFO ===============*/
 .info__container{
-    background: var(--white-color);
+    background: var(--title-color);
     margin-top: 5rem;
 }
 
@@ -185,6 +186,7 @@
 .btn-info{
     border: 0 !important;
     /* background-color: var(--body-color) !important; */
+    /* color: var(--title-color) !important; */
     color: var(--title-color) !important;
     font-weight: bolder !important;
 }

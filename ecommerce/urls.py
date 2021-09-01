@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from . import recommendation
-from .views import ItemDetailView, CartDetailView
+from .views import ItemDetailView, CartDetailView, OrderSummaryView
 
 app_name = 'ecommerce'
 
@@ -19,7 +19,6 @@ urlpatterns = [
     path('product/<slug>/', ItemDetailView.as_view(), name='product'),
     path('add-to-cart/<slug>/',views.addToCart, name='add-to-cart'),
     path('remove-from-cart/<slug>/',views.removeFromCart, name='remove-from-cart'),
-    path('update-cart', views.updateCart, name='update-cart')
-
-
+    path('update-cart/', views.updateCart, name='update-cart'),
+    path('checkout/', OrderSummaryView.as_view(), name='checkout')
 ]

@@ -10,7 +10,7 @@ from collections import Counter
 """
 PART 1: Recommend Popular Items to New Users 
 
-a) Trending Now : 
+a) Hot Products : 
    Popularity-based filtering based on view count of the items
    to generate the most-viewed item recommendations
 
@@ -29,7 +29,7 @@ PART 2: Recommend Items to Users Who Has NO Purchased History
     based on active user's page views and  page views by 
     other users who views items similar items
 
- b) Trending Now
+ b) Hot Products
 
 """
 def recommendToNormalUser(uid, role):
@@ -50,7 +50,7 @@ def recommendToNormalUser(uid, role):
     based on customer's purchase history and page views by
     other users who views items similar items
 
- c) Trending Now
+ c) Hot Products
 
 """   
 def recommendToCustomer(uid, role):
@@ -74,7 +74,7 @@ def getMergeDf():
 
 def getFurnitureDf():
     furniture_df = pd.DataFrame(list(Furniture.objects.all().values()))
-    furniture_df = furniture_df.drop(columns=['furnitureImg', 'unitPrice', 'categoryId_id', 'stock'])
+    furniture_df = furniture_df.drop(columns=['furnitureImg', 'unitPrice', 'categoryId_id', 'stock', 'slug'])
 
     return furniture_df
 
@@ -99,10 +99,10 @@ def contentBasedFiltering(uid):
     for g in genres:
         furniture_df[g] = furniture_df['furnitureGenres'].transform(lambda x: int(g in x))
 
-    furniture_matrix = furniture_df[genres].copy(deep=True)
+    # furniture_matrix = furniture_df[genres].copy(deep=True)
 
     # Build item-item recommendation using cosine similarity
-    cosine_sim = cosine_similarity(furniture_matrix, furniture_matrix)
+    cosine_sim = cosine_similarity(furniture_df[genres], furniture_df[genres])
     # print(f"Dimensions of our movie features cosine similarity matrix: {cosine_sim.shape}")
 
     items_purchased = getSpecificOrderItems(uid)
@@ -116,18 +116,44 @@ def contentBasedFiltering(uid):
     for i in items_purchased:
         fid = furniture_idx[i.furnitureId.furnitureId]
         
-        # Get top 12 most similar items to target item.
+        # Add counter to the list e.g. [(0, 'a'), (1, 'b'), (2, 'c')]
         sim_scores = list(enumerate(cosine_sim[fid]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[:12]
+        # Get top 100 most similar items to target item.
+        sim_scores = sim_scores[:100]
+        # Get the row index
         similar_furniture = [i[0] for i in sim_scores]
 
-        recommend_list.append(list(furniture_df['furnitureId'].iloc[similar_furniture]))
+        # remove items that viewed before in the list
+        items = list(furniture_df['furnitureId'].iloc[similar_furniture])
+        recommend_furniture = removeViewedItem(uid,items)
+
+        # recommend_list.append(list(furniture_df['furnitureId'].iloc[similar_furniture]))
+        recommend_list.append(recommend_furniture[:12])
         furniture_name.append(i.furnitureId.furnitureName)
     
     # print(recommend_list)
 
     return recommend_list, furniture_name
+
+def removeViewedItem(uid,similar_items):
+    item_viewed = getAllViewedItems(uid)
+
+    # print("viewed Item")
+    # print(len(item_viewed))
+
+    # print("similar_items ")
+    # print(len(similar_items))
+
+    for i in item_viewed:
+        for j in similar_items:
+            if i == j:
+                similar_items.remove(j)
+
+    # print("similar_items ")
+    # print(len(similar_items))
+    
+    return similar_items
 
 
 def getSpecificOrderItems(uid):
@@ -191,9 +217,6 @@ def collaborativeFiltering(uid,role):
        
     return recommend_list
 
-# def testing(request):
-#     return collaborativeFiltering(40,"customer")
-
 
 def getAllOrderItems(uid):
     # Get all the orders that made by target user from 'Order' table
@@ -222,12 +245,10 @@ def getAllViewedItems(uid):
 def popularityBasedFiltering():
     user_profile_df = getViewDf()
 
-    popular_items = user_profile_df.groupby('furnitureId')['viewCount'].count()
-    popular_items = pd.DataFrame(popular_items)
+    popular_items = pd.DataFrame(user_profile_df.groupby('furnitureId')['viewCount'].count())
     most_popular_items = popular_items.sort_values(by=['viewCount'], ascending=False)
     
     recommend_list = list(most_popular_items.index)
     recommend_list = recommend_list[:12]
-    
 
     return recommend_list

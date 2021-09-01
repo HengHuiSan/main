@@ -1,24 +1,35 @@
-
 {% load static %}
 {% static "images/" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog</title>
 
-{% include 'header.html' %}
+    <style>
+        .form-control:focus, .btn:focus {
+            outline: none !important;
+            box-shadow: none !important;
+          }
+    
+        .btn-primary{
+            /* background-color:hsl(190, 64%, 18%); */
+            background-color: var(--title-color) !important;
+            border: 0  !important;
+            width: 100%;
+            height: 40px;
+            border-radius: 2rem !important;
+        }
 
-{% block content %}
-<style>
-    .form-control:focus, .btn:focus {
-        outline: none !important;
-        box-shadow: none !important;
-      }
-
-    .btn-primary{
-        background-color: var(--title-color);
-        border: 0;
-        width: 100%;
-        height: 40px;
-        border-radius: 2rem;
-    }
-</style>
+        .btn-primary:hover{
+            background-color: #0075F6 !important;
+        }
+    </style>
+</head>
+<body>
+    {% include 'header.html' %}
+    
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-7">
@@ -99,10 +110,9 @@
                             <h3><b>Total Amount</b></h3>
                             <hr />
                             <!-- Amount -->
-
                             <h1 class="mb-5" style="color:orangered">$ <span id="amount">{{ amount|floatformat:2 }}</span></h1>
                             <div class="d-flex justify-content-center mb-3">
-                                <input type="submit" value="Checkout" class="btn btn-primary">
+                                <a href="{% url 'ecommerce:checkout' %}" class="btn btn-primary">Checkout</a>
                             </div>
                         </div>
                     </div>
@@ -110,63 +120,63 @@
             </div>
         </div>
     </div>
-    {% block javascript %}
-    <script>
 
-        var fid = []
-        var fprice = []
-        "{% for item in cart %}"
-            fid.push( "{{ item.furnitureId.furnitureId }}" )
-            fprice.push( "{{ item.furnitureId.unitPrice }}" )
-        "{% endfor %}"
+        {% include 'footer.html' %}
+    
+        <script>
 
-
-        function calcAmount(elem) 
-        {
-            var id = elem.id;
-            var qty = document.getElementById(id).value;
-            var token = '{{csrf_token}}';
-
-            for (var i=0; i<fprice.length; i++) {
-                if(fid[i] == id){
-                    total = qty * fprice[i]
-                    //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
-                    if (!isNaN(total))
-                        document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
-
-                    $.ajax({
-                        url: '{% url "ecommerce:update-cart" %}',
-                        type: 'POST',
-                        headers:{
-                            "X-CSRFToken": token
-                        },
-                        data: {
-                            'furnitureId':fid[i] ,
-                            'quantity': qty,
-                        },
-                        success: function (response) {
-                            console.log(response, typeof(response))
-                        }
-                    })
-                    location.reload();
-
+            var fid = []
+            var fprice = []
+            "{% for item in cart %}"
+                fid.push( "{{ item.furnitureId.furnitureId }}" )
+                fprice.push( "{{ item.furnitureId.unitPrice }}" )
+            "{% endfor %}"
+    
+    
+            function calcAmount(elem) 
+            {
+                var id = elem.id;
+                var qty = document.getElementById(id).value;
+                var token = '{{csrf_token}}';
+    
+                for (var i=0; i<fprice.length; i++) {
+                    if(fid[i] == id){
+                        total = qty * fprice[i]
+                        //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
+                        if (!isNaN(total))
+                            document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
+    
+                        $.ajax({
+                            url: '{% url "ecommerce:update-cart" %}',
+                            type: 'POST',
+                            headers:{
+                                "X-CSRFToken": token
+                            },
+                            data: {
+                                'furnitureId':fid[i] ,
+                                'quantity': qty,
+                            },
+                            success: function (response) {
+                                console.log(response, typeof(response))
+                            }
+                        })
+                        location.reload();
+    
+                    }
                 }
             }
-        }
-    </script>
+        </script>
+    
+        {% if messages %}
+            {% for msg in messages %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ msg }}',
+                })
+            </script>    
+            {% endfor %}	
+        {% endif %}
+</body>
+</html>
 
-    {% if messages %}
-        {% for msg in messages %}
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: '{{ msg }}',
-            })
-        </script>    
-        {% endfor %}	
-    {% endif %}
-    {% endblock javascript %}
-
-
-{% include 'footer.html' %}
-{% endblock content %}

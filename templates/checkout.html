@@ -1,0 +1,176 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog</title>
+
+    <style>
+        .form-control:focus, .btn:focus {
+            outline: none !important;
+            box-shadow: none !important;
+          }
+    
+        .btn-primary{
+            background-color: var(--title-color) !important;
+            border: 0  !important;
+            width: 100%;
+            height: 40px;
+            border-radius: 2rem !important;
+        }
+
+        .btn-primary:hover{
+            background-color: #0075F6 !important;
+        }
+
+    </style>
+</head>
+<body >
+    {% include 'header.html' %}
+    
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card shadow border-0 mb-3">
+                    <div class="card-body">
+                        <h2 class="pl-3 pt-3"><b>Billing Details</b></h2>
+                        <hr>
+                        <form action="" method="POST">
+                        {% csrf_token %}
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                    <label for="firstName">&nbsp;First name</label>
+                                    <input type="text" class="form-control" id="firstName" value="{{ customer.first_name }}" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                    <label for="lastName">&nbsp;Last name</label>
+                                    <input type="text" class="form-control" id="lastName" value="{{ customer.last_name }}" required />
+                                    <!-- <div class="invalid-feedback">
+                                        Valid last name is required.
+                                    </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!--  -->
+                            <!-- <div class="input-group mb-4 register-field">
+                                <span class="input-group-text"><i class="material-icons">person</i></span>
+                                {{form.amount}}
+                            </div> -->
+                            <!--  -->
+                            <div class="form-group">
+                                <label for="txtEmail">&nbsp;&nbsp;Email Address</label>
+                                <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="{{ customer.email }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="txtPhoneNo">&nbsp; Phone Number</label>
+                                <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ profile.phoneNo }}" required>
+                            </div>
+                            <br>
+                            <h5 style="color: var(--title-color);">&nbsp;Billing Addres</h5>
+                            <hr>
+                            <div class="form-group">
+                                <label for="txtAddress1">&nbsp;&nbsp;Line 1</label>
+                                <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{% if profile %} {{ profile.address1 }} {% endif %}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="txtAddress2">&nbsp;&nbsp;Line 2</label>
+                                <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{% if profile %} {{ profile.address2 }} {% endif %}" required>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-5 mb-3">
+                                <label for="txtTown">&nbsp;Town/City</label>
+                                <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if profile %} {{ profile.town }} {% endif %}" required />
+                                <!-- <div class="invalid-feedback">
+                                    Town or city is required.
+                                </div> -->
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="txtPostcode">&nbsp;Postcode</label>
+                                    <input type="text" class="form-control" id="txtPostcode" name="txtPostcode" value="{% if profile %} {{ profile.postcode }} {% endif %}" required />
+                                    <!-- <div class="invalid-feedback">
+                                    Postcode is required.
+                                    </div> -->
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                <label for="state">&nbsp;State</label>
+                                <select class="form-control" id="state" name="ddlState" required>
+                                    {% for state in states %}
+                                    <option value="{{ state }}"
+                                        {% ifequal state profile.state %} selected {% endifequal %}>
+                                        {{ state }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please provide a valid state.
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-5">
+                <div class="card shadow border-0">
+                    <div class="card-body p-5">
+                            <h3 style="color: var(--title-color); font-weight: 700;">Order Summary</h3>
+                            <hr>    
+                            {% for item in object %}
+                            <div class="row" style="color: var(--first-color);">
+                                <div class="col">
+                                    <h5><b>{{ item.furnitureId.furnitureName }}</b></h5>
+                                    <span>Quantity: {{ item.quantity }}</span>
+                                </div>
+                                <div class="col">
+                                    <div style="text-align: end;"> 
+                                        <h5><b>${{ item.get_item_total_price }}</b></h5>  
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            {% endfor %}
+                            
+                            <div class="row">
+                                <div class="col" style="color: var(--first-color);">
+                                    <h3>Total: </h3>
+                                </div>
+                                <div class="col"  style="text-align: end;">
+                                    <h2 class="mb-5" style="color:orangered">${{ amount|floatformat:2 }}</h2>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <a href="{% url 'ecommerce:checkout' %}" class="btn btn-primary">Place Order</a>
+                                </div>  
+                                <div class="d-flex justify-content-center mb-3">
+                                    <a href="{% url 'ecommerce:cart' %}" class="btn btn-primary">Cancel</a>
+                                </div> 
+                            </div>                   
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {% include 'footer.html' %}
+    
+        {% if messages %}
+            {% for msg in messages %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ msg }}',
+                })
+            </script>    
+            {% endfor %}	
+        {% endif %}
+</body>
+</html>
+

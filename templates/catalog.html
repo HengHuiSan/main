@@ -8,7 +8,7 @@
     <title>Catalog</title>
 
     <!-- Custom StyleSheet -->
-    <link rel="stylesheet" href="{% static 'css/catalog.css' %}"/>   
+    <link rel="stylesheet" href="{% static 'css/catalog2.css' %}"/>   
 </head>
 <body>
     {% include 'header.html' %}
@@ -42,17 +42,17 @@
                     <div class="col-lg-8">
                         <div class="row">
                             {% for getdata in furniture %}
-                            <div class="col-md-4 pr-4">
+                            <div class="col-md-4">
                                 <a class="" href="{{ getdata.update_view_count_url }}">
                                     <div class="card text-center mb-5">
-                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3">
+                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3 px-2">
     
                                         <div class="card-body">
                                             <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
                                             <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
     
-                                            <a href="{% url 'ecommerce:catalog' %}" class="card__button text-uppercase">
-                                                <i class="uil uil-shopping-cart icon__size"></i>
+                                            <a href="{{ getdata.add_to_cart_url }}" class="card__button text-uppercase">
+                                                <i class="uil uil-shopping-cart"></i>
                                                 Add To Cart
                                             </a>
                                         </div>
@@ -92,7 +92,19 @@
             </div>
         </div>
 
-    {% include 'footer.html' %}
+        {% include 'footer.html' %}
+    
+        {% if messages %}
+            {% for message in messages %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ message }}',
+                    footer: '<a href="{% url "ecommerce:cart" %}">Check my cart now.</a>'
+                })
+            </script>    
+            {% endfor %}	
+        {% endif %}
 
 </body>
 </html>

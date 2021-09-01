@@ -2,9 +2,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from ecommerce.models import *
 from django.core.paginator import Paginator
-
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-
 from django.shortcuts import render, redirect 
 from .forms import UserRegistrationForm
 from django.contrib.auth import authenticate, login, logout
@@ -12,12 +10,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-
 from .recommendation import recommendToCustomer, recommendToNormalUser, recommendToNewUser
 
 
-# ======= Views for Account Authentication ======= #
+# ======= Account Authentication ======= #
 
 def registerView(request):
     msg = ''
@@ -48,8 +44,6 @@ def loginView(request):
 
             if user is not None:
                 login(request, user)
-                # active_user = User.objects.get(username=request.user.username)
-                # request.session['userId']= active_user.id
                 return redirect('ecommerce:homepage')
             else:
                 msg = messages.error(request, 'Invalid username or password!')
@@ -57,7 +51,7 @@ def loginView(request):
     context = {'msg':msg}
 
     return render(request, 'login.html', context)
-
+    
 
 def logoutUser(request):
     # try:
@@ -68,7 +62,9 @@ def logoutUser(request):
 	logout(request)
 	return redirect('ecommerce:login')
 
-# ======= Views for Homepage ======= #
+
+
+# ======= Homepage ======= #
 
 @login_required(login_url='ecommerce:login')
 def goHompage(request):
@@ -99,16 +95,24 @@ def goHompage(request):
     return render(request,'homepage.html', context)
 
 
-# ======= Views for Catalog ======= #
+
+# ======= Catalog ======= #
 
 def goCatalog(request): 
-    cid = request.GET.get('cid', 1)       
+    # cid = request.GET.get('cid', 1)       
     page_number = request.GET.get('page', 1)
-
-    furniture = Furniture.objects.filter(categoryId_id=cid)
+    cid=1
+    
+    if request.method == 'GET' and 'cid' in request.GET:
+        cid = request.GET.get('cid')       
+        furniture = Furniture.objects.filter(categoryId_id=cid)
+    else:
+        furniture = Furniture.objects.filter(categoryId_id=1)
+        
     paginator = Paginator(furniture, 12)
     page = paginator.get_page(page_number)
     category = Category.objects.all()
+
 
     if page.has_next():
         next_url = f'?cid='+str(cid)+'&page='+str(page.next_page_number())
@@ -128,40 +132,16 @@ def goCatalog(request):
 
     return render(request,'catalog.html', context)
 
-def goDonate(request):
-    return render(request,'donate.html')
 
-def goAbout(request):
-    return render(request,'about.html')
 
-def goCart(request):
-    return render(request, 'cart.html')
-
-def goProfile(request):
-    return render(request, 'profile.html')
-
-def goProduct(request):
-    return render(request, 'item.html')
+# ======= Product Listings ======= #
 
 class ItemDetailView(DetailView):
     model = Furniture
     template_name = "item.html"
 
-class CartDetailView(LoginRequiredMixin, View):
-    def get(self, *args, **kwargs):
-        try:
-            cart = Cart_Products.objects.filter(userId=self.request.user)
-            amount = sum(item.quantity*item.furnitureId.unitPrice for item in cart)
-            context = {
-                'cart': cart, 
-                'amount':amount
-                }
-            return render(self.request, 'cart.html', context)
-        except ObjectDoesNotExist:
-            messages.warning(self.request, "Your cart is empty")
-            return redirect('ecommerce:cart')
 
-
+# View the item after clicking
 def updateViewToItem(request, slug):
     item = get_object_or_404(Furniture, slug=slug)
 
@@ -179,11 +159,28 @@ def updateViewToItem(request, slug):
 
     return redirect('ecommerce:product', slug=slug)
 
-    
-# ====================================================================================== # 
+
+
+# ======= Shopping Cart ======= #
+
+class CartDetailView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            cart = Cart_Products.objects.filter(userId=self.request.user)
+            amount = sum(item.quantity*item.furnitureId.unitPrice for item in cart)
+            context = {
+                'cart': cart, 
+                'amount':amount
+                }
+            return render(self.request, 'cart.html', context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "Your cart is empty")
+            return redirect('ecommerce:cart')
 
 
 def addToCart(request, slug):
+    # current_url = request.META.get('HTTP_REFERER')
+    # print(current_url)
     item = get_object_or_404(Furniture, slug=slug)
     item_in_cart = Cart_Products.objects.filter(userId=request.user, furnitureId=item)
     
@@ -198,6 +195,7 @@ def addToCart(request, slug):
     
     return redirect('ecommerce:homepage')
 
+
 def removeFromCart(request, slug):
     item = get_object_or_404(Cart_Products, slug=slug)
     cart_item = Cart_Products.objects.filter(userId=request.user, furnitureId=item.furnitureId)
@@ -208,7 +206,6 @@ def removeFromCart(request, slug):
 
 
 def updateCart(request):
-    print()
     if request.method == 'POST':
         cart_item = Cart_Products.objects.get(furnitureId=request.POST['furnitureId'])
         print(cart_item)
@@ -220,17 +217,64 @@ def updateCart(request):
 
 
 
-# def testing(request):
-#     # df = contentBasedRec()
-#     # category_list = popularityBasedFiltering()
-#     # furniture = Furniture.objects.all()
-#     # category = Category.objects.all()
+# ======= Checkout ======= #    
 
-#     # for i in category:
-#     #     category_list.append(i.categoryName)
+class OrderSummaryView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            states = ['Johor','Kedah','Kelantan','Malacca','Negeri Sembilan','Pahang','Perak','Perlis','Pinang','Sabah','Sarawak','Selangor','Terangganu']
+            user = User.objects.get(id=self.request.user.id)
+            cart = Cart_Products.objects.filter(userId=self.request.user)
+            amount = sum(item.quantity*item.furnitureId.unitPrice for item in cart)
+            context = {
+                'customer':user,
+                'object': cart, 
+                'amount':amount,
+                'states':states
+                }
+            customer_profile = Customer_Profile.objects.filter(custId=self.request.user.id)
+            if customer_profile.exists():                
+                context.update({
+                    'profile':Customer_Profile.objects.get(custId=self.request.user.id)
+                })
+            return render(self.request, 'checkout.html', context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "Your cart is empty")
+            return redirect('ecommerce:cart')
+    
+    def post(self, *args, **kwargs):
+        try:
+            order_id = str(random.randint(100000, 999999))
+            while User.objects.filter(orderId=order_id):
+                order_id = str(random.randint(100000, 999999))
 
-#     # context = {"getData":furniture, "categories":category_list}
-#     return HttpResponse(category_list)
+            print(order_id)
+
+            shipping_address = self.request.POST.get['']
+            order = Order(
+                orderId = order_id,
+                orderDate = timezone.now()
+
+            )
+            return render(self.request, 'checkout.html')
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect("ecommerce:order-summary")
+
+
+    def make_order_id():
+        return str(random.randint(100000, 999999))
+
+
+def goDonate(request):
+    return render(request,'donate.html')
+
+def goAbout(request):
+    return render(request,'about.html')
+
+def goProfile(request):
+    return render(request, 'profile.html')
+
 
 
 

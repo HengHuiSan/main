@@ -3,54 +3,42 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from django.utils import timezone # get today date and time 
+from django.utils import timezone
+from numpy import random # get today date and time 
 
 class Customer_Profile(models.Model):
-    custId = models.OneToOneField(User, on_delete=models.CASCADE)
+    custId = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     phoneNo = models.CharField(max_length=20, null=True)
     gender = models.CharField(max_length=10, null=True)
     dob = models.DateField(auto_now=False, null=True)
+    address1 = models.CharField(max_length=255, null=True)
+    address2 = models.CharField(max_length=255, null=True)
+    town = models.CharField(max_length=50, null=True)
+    postcode = models.IntegerField(default=0, null=True)
+    state = models.CharField(max_length=50, null=True)
 
     def __str__(self):
-        return self.custId
+        template = '{0.custId} {0.phoneNo}'
+        return template.format(self)
 
-class Addresses(models.Model):
-    addressId = models.OneToOneField(User, on_delete=models.CASCADE)
-    address = models.TextField()
-    postcode = models.IntegerField()
-    state = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.address
-
-class Customer_Addresses(models.Model):
-    userId = models.OneToOneField(User, on_delete=models.CASCADE)
-    addressId = models.IntegerField(primary_key=True,auto_created=True)
-
-    class Meta:
-        unique_together = (("userId","addressId"),)
-
-    def __str__(self):
-        return self.userId,  " and ", self.addressId
 
 class Category(models.Model):
     categoryId = models.IntegerField(primary_key=True,auto_created=True)
-    categoryName = models.CharField(max_length=20)
+    categoryName = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.categoryId
+        return self.categoryName
 
 class Furniture(models.Model):
     furnitureId = models.CharField(primary_key=True, max_length=50)
     furnitureName = models.CharField(max_length=50)
     furnitureImg = models.ImageField(upload_to='furniture')
     furnitureGenres = models.TextField(max_length=1000)
-    unitPrice = models.DecimalField(max_digits=5, decimal_places=2)
+    unitPrice = models.DecimalField(max_digits=8, decimal_places=2)
     stock = models.IntegerField(default=0)
     categoryId = models.ForeignKey(Category, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=100)
     
-
     def __str__(self):
         template = '{0.furnitureId} {0.furnitureName}'
         return template.format(self)
@@ -117,8 +105,11 @@ class Payment(models.Model):
 class Order(models.Model):
     orderId = models.CharField(primary_key=True, max_length=50)
     orderDate = models.DateField(auto_now_add=True)
-    shippingAddress = models.ForeignKey(Customer_Addresses, on_delete=models.CASCADE, blank=True, null=True)
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, blank=True, null=True)
+    name = models.CharField(max_length=100, null=True)
+    shippingAddress = models.CharField(max_length=255)
+    phoneNo = models.CharField(max_length=20)
+    email = models.CharField(max_length=255, null=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     isDelivered = models.BooleanField(default=False)
     isReceived = models.BooleanField(default=False)
@@ -126,6 +117,8 @@ class Order(models.Model):
     def __str__(self):
         return self.orderId
 
+    def make_order_id():
+        return str(random.randint(100000, 999999))
     # def get_total(self):
     #     total = 0
     #     for order_item in self.items.all():
@@ -155,7 +148,6 @@ class Order_Products(models.Model):
     #     if self.item.discount_price:
     #         return self.get_total_discount_item_price()
     #     return self.get_total_item_price()
-
 
 
 class Rating(models.Model):
