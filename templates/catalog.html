@@ -95,17 +95,26 @@
         {% include 'footer.html' %}
     
         {% if messages %}
-            {% for message in messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
             <script>
                 Swal.fire({
                     icon: 'success',
                     title: '{{ message }}',
                     footer: '<a href="{% url "ecommerce:cart" %}">Check my cart now.</a>'
                 })
-            </script>    
-            {% endfor %}	
-        {% endif %}
-
+            </script>  
+            {% endif %} 
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+            <script>
+                Swal.fire({
+                    icon: 'info',
+                    title: '{{ message }}',
+                })
+            </script>   
+            {% endif %}  
+        {% endfor %}	
+    {% endif %}
 </body>
 </html>
 

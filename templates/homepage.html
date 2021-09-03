@@ -51,7 +51,7 @@
                                             <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
                                             <h3 class="card__fName text-uppercase">{{object.furnitureName}}</h3>
                                             <h2 class="card__fPrice mb-3">${{object.unitPrice}}</h2>
-                                            <a href="{{ object.add_to_cart_url }}" class="card__button text-uppercase mb-3">
+                                            <a href="{{ object.add_to_cart_url }}"  class="card__button text-uppercase mb-3">
                                                 <i class="uil uil-shopping-cart"></i>
                                                 Add To Cart
                                             </a>
@@ -61,7 +61,8 @@
                             </div>
                             {% endfor %}
                             </div>
-                        {% endfor %}                        
+                        {% endfor %}  
+
                     {% endif %}                
 
                     {% if cf_recommend_list %}
@@ -168,16 +169,25 @@
     
     {% if messages %}
         {% for message in messages %}
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: '{{ message }}',
-                footer: '<a href="{% url "ecommerce:cart" %}">Check my cart now.</a>'
-            })
-        </script>    
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ message }}',
+                    footer: '<a href="{% url "ecommerce:cart" %}">Check my cart now.</a>'
+                })
+            </script>  
+            {% endif %} 
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+            <script>
+                Swal.fire({
+                    icon: 'info',
+                    title: '{{ message }}',
+                })
+            </script>   
+            {% endif %}  
         {% endfor %}	
     {% endif %}
-
     
     <!-- Owl Carousel JS (SWIPER) -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -203,5 +213,7 @@
            }
          });
         </script>
+
+
 </body>
 </html>

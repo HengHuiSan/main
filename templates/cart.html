@@ -79,20 +79,10 @@
                                 </div>
 
                                 <div class="">
-                                    <!-- <div class="row d-flex justify-content-between">
-                                        <div class="col-md-4">
-                                            <a href="" class="btn mt-3" style="border: 0; background-color: transparent;">
-                                                <i class="material-icons align-middle" style="font-size:25px;">edit</i>
-                                                Update
-                                            </a>
-                                        </div> -->
-                                        <!-- <div class="col-md-6"> -->
-                                            <a href="{{ item.remove_from_cart_url }}" class="btn mt-3">
-                                                <i class="material-icons align-middle" style="font-size:25px;">delete</i>
-                                                Remove
-                                            </a>
-                                        <!-- </div> -->
-                                    <!-- </div> -->
+                                    <a href="{{ item.remove_from_cart_url }}" class="btn mt-3">
+                                        <i class="material-icons align-middle" style="font-size:25px;">delete</i>
+                                        Remove
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +101,8 @@
                             <hr />
                             <!-- Amount -->
                             <h1 class="mb-5" style="color:orangered">$ <span id="amount">{{ amount|floatformat:2 }}</span></h1>
-                            <div class="d-flex justify-content-center mb-3">
+                            <!-- <input type="text" name="txtAmount" id="txtAmount" style="color:orangered; font-size: var(--biggest-font-size); font-weight: 600; font-family: var(--title-font);" value="${{ amount|floatformat:2 }}"> -->
+                            <div class="d-flex justify-content-center my-4">
                                 <a href="{% url 'ecommerce:checkout' %}" class="btn btn-primary">Checkout</a>
                             </div>
                         </div>
@@ -127,25 +118,31 @@
 
             var fid = []
             var fprice = []
+            var totalPrice = []
             "{% for item in cart %}"
                 fid.push( "{{ item.furnitureId.furnitureId }}" )
                 fprice.push( "{{ item.furnitureId.unitPrice }}" )
+                totalPrice.push( parseFloat("{{ item.get_item_total_price }}") ) 
             "{% endfor %}"
     
     
             function calcAmount(elem) 
             {
-                var id = elem.id;
+                var id = elem.id; 
                 var qty = document.getElementById(id).value;
                 var token = '{{csrf_token}}';
+                var amount = 0;
+                var total = 0;
     
                 for (var i=0; i<fprice.length; i++) {
                     if(fid[i] == id){
                         total = qty * fprice[i]
+                        totalPrice[i] = total
+
                         //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
                         if (!isNaN(total))
                             document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
-    
+
                         $.ajax({
                             url: '{% url "ecommerce:update-cart" %}',
                             type: 'POST',
@@ -160,10 +157,12 @@
                                 console.log(response, typeof(response))
                             }
                         })
-                        location.reload();
-    
                     }
+                    amount = amount + totalPrice[i]
                 }
+                //location.reload();
+                document.getElementById("amount").innerHTML = amount.toFixed(2);
+
             }
         </script>
     

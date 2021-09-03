@@ -73,7 +73,7 @@ class Cart_Products(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     dateCreated = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(max_length=50)
+    slug = models.SlugField(max_length=10, null=True)
 
     def __str__(self):
         template = '{0.furnitureId} {0.userId}  {0.quantity}'
@@ -115,7 +115,8 @@ class Order(models.Model):
     isReceived = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.orderId
+        template = '{0.orderId} {0.orderDate} {0.name} {0.shippingAddress} {0.phoneNo} {0.amount}'
+        return template.format(self)
 
     def make_order_id():
         return str(random.randint(100000, 999999))

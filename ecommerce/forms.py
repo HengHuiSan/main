@@ -25,5 +25,3 @@ class UserRegistrationForm(UserCreationForm):
 		fields = ['username', 'email', 'password1', 'password2']
 		
 
-	
-

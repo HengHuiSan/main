@@ -31,45 +31,39 @@
     {% include 'header.html' %}
     
     <div class="container py-5">
+        <form action="" method="POST">
+
         <div class="row">
             <div class="col-lg-7">
                 <div class="card shadow border-0 mb-3">
                     <div class="card-body">
                         <h2 class="pl-3 pt-3"><b>Billing Details</b></h2>
                         <hr>
-                        <form action="" method="POST">
                         {% csrf_token %}
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-md-6">
-                                    <label for="firstName">&nbsp;First name</label>
-                                    <input type="text" class="form-control" id="firstName" value="{{ customer.first_name }}" required />
+                                        <label for="firstName">&nbsp;First name</label>
+                                        <input type="text" class="form-control" id="txtFname" name="txtFname" value="{{ customer.first_name }}" required />
                                     </div>
                                     <div class="col-md-6">
-                                    <label for="lastName">&nbsp;Last name</label>
-                                    <input type="text" class="form-control" id="lastName" value="{{ customer.last_name }}" required />
-                                    <!-- <div class="invalid-feedback">
-                                        Valid last name is required.
-                                    </div> -->
+                                        <label for="lastName">&nbsp;Last name</label>
+                                        <input type="text" class="form-control" id="txtLname" name="txtLname" value="{{ customer.last_name }}" required />
                                     </div>
                                 </div>
                             </div>
-                            <!--  -->
-                            <!-- <div class="input-group mb-4 register-field">
-                                <span class="input-group-text"><i class="material-icons">person</i></span>
-                                {{form.amount}}
-                            </div> -->
-                            <!--  -->
                             <div class="form-group">
-                                <label for="txtEmail">&nbsp;&nbsp;Email Address</label>
+                                <label for="txtEmail">&nbsp;&nbsp;Email Address (Optional)</label>
                                 <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="{{ customer.email }}" required>
                             </div>
                             <div class="form-group">
                                 <label for="txtPhoneNo">&nbsp; Phone Number</label>
-                                <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ profile.phoneNo }}" required>
+                                <!-- <input class="mdl-textfield__input" id="txtPhoneNo" name="txtPhoneNo" type="text" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$"> -->
+                                <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ profile.phoneNo }}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
+                                <small>&nbsp;e.g. 012-3456789</small>
                             </div>
                             <br>
-                            <h5 style="color: var(--title-color);">&nbsp;Billing Addres</h5>
+                            <h5 style="color: var(--title-color);">&nbsp;<b>Billing Addres</b></h5>
                             <hr>
                             <div class="form-group">
                                 <label for="txtAddress1">&nbsp;&nbsp;Line 1</label>
@@ -81,36 +75,25 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-5 mb-3">
-                                <label for="txtTown">&nbsp;Town/City</label>
-                                <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if profile %} {{ profile.town }} {% endif %}" required />
-                                <!-- <div class="invalid-feedback">
-                                    Town or city is required.
-                                </div> -->
+                                    <label for="txtTown">&nbsp;Town/City</label>
+                                    <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if profile %} {{ profile.town }} {% endif %}" required />
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="txtPostcode">&nbsp;Postcode</label>
                                     <input type="text" class="form-control" id="txtPostcode" name="txtPostcode" value="{% if profile %} {{ profile.postcode }} {% endif %}" required />
-                                    <!-- <div class="invalid-feedback">
-                                    Postcode is required.
-                                    </div> -->
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                <label for="state">&nbsp;State</label>
-                                <select class="form-control" id="state" name="ddlState" required>
-                                    {% for state in states %}
-                                    <option value="{{ state }}"
-                                        {% ifequal state profile.state %} selected {% endifequal %}>
-                                        {{ state }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please provide a valid state.
-                                </div>
+                                    <label for="state">&nbsp;State</label>
+                                    <select class="form-control" id="state" name="ddlState" required>
+                                        {% for state in states %}
+                                        <option value="{{ state }}"
+                                            {% ifequal state profile.state %} selected {% endifequal %}>
+                                            {{ state }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -140,23 +123,25 @@
                                 <div class="col" style="color: var(--first-color);">
                                     <h3>Total: </h3>
                                 </div>
-                                <div class="col"  style="text-align: end;">
+                                <div class="col" style="text-align: right;">
                                     <h2 class="mb-5" style="color:orangered">${{ amount|floatformat:2 }}</h2>
+                                    <input type="hidden" name="hdfAmount" value="{{ amount|floatformat:2 }}">
                                 </div>
                             </div>
 
                             <div>
                                 <div class="d-flex justify-content-center mb-3">
-                                    <a href="{% url 'ecommerce:checkout' %}" class="btn btn-primary">Place Order</a>
+                                    <button class="btn btn-primary" type="submit">Place Order</button>
                                 </div>  
                                 <div class="d-flex justify-content-center mb-3">
                                     <a href="{% url 'ecommerce:cart' %}" class="btn btn-primary">Cancel</a>
                                 </div> 
                             </div>                   
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
         {% include 'footer.html' %}

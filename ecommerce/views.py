@@ -1,5 +1,7 @@
+from datetime import date, datetime
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls.base import resolve
 from ecommerce.models import *
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -137,6 +139,7 @@ def goCatalog(request):
 # ======= Product Listings ======= #
 
 class ItemDetailView(DetailView):
+    # print("kjkjknnj")
     model = Furniture
     template_name = "item.html"
 
@@ -179,25 +182,31 @@ class CartDetailView(LoginRequiredMixin, View):
 
 
 def addToCart(request, slug):
-    # current_url = request.META.get('HTTP_REFERER')
-    # print(current_url)
     item = get_object_or_404(Furniture, slug=slug)
     item_in_cart = Cart_Products.objects.filter(userId=request.user, furnitureId=item)
     
     if item_in_cart.exists():
         item_in_cart = Cart_Products.objects.get(userId=request.user, furnitureId=item)
-        item_in_cart.quantity += 1
-        item_in_cart.save()
-        messages.info(request, "This item quantity was updated.")
+        target_item = Furniture.objects.get(furnitureId=item_in_cart.furnitureId.furnitureId)
+
+        if item_in_cart.quantity < target_item.stock:
+            item_in_cart.quantity += 1
+            item_in_cart.save()
+            messages.success(request, "This item quantity was updated.")
+        else:
+            messages.info(request, "The quantity of " + item_in_cart.furnitureId.furnitureName + " is not sufficient.")
     else:
         Cart_Products.objects.create(userId=request.user, furnitureId=item, quantity=1,slug=item.furnitureId)
-        messages.info(request, "This item was added to your cart.")
+        messages.success(request, "This item was added to your cart.")
     
+    previous = resolve(request.META.get('HTTP_REFERER')).url_name
+    print("bskdas" , previous)
     return redirect('ecommerce:homepage')
 
 
 def removeFromCart(request, slug):
-    item = get_object_or_404(Cart_Products, slug=slug)
+    item = get_object_or_404(Cart_Products, userId=request.user.id, slug=slug)
+    # print(item)
     cart_item = Cart_Products.objects.filter(userId=request.user, furnitureId=item.furnitureId)
     cart_item.delete()
     messages.info(request, "This item was removed from your cart.")
@@ -205,13 +214,13 @@ def removeFromCart(request, slug):
     return redirect('ecommerce:cart')
 
 
+# update modified quantity in cart page
 def updateCart(request):
     if request.method == 'POST':
-        cart_item = Cart_Products.objects.get(furnitureId=request.POST['furnitureId'])
+        cart_item = Cart_Products.objects.get(furnitureId=request.POST['furnitureId'], userId=request.user.id)
         print(cart_item)
         cart_item.quantity =  request.POST['quantity']
         cart_item.save()
-        # messages.info(request, "qty updated")
 
     return redirect('ecommerce:cart')
 
@@ -244,26 +253,43 @@ class OrderSummaryView(LoginRequiredMixin, View):
     
     def post(self, *args, **kwargs):
         try:
-            order_id = str(random.randint(100000, 999999))
-            while User.objects.filter(orderId=order_id):
-                order_id = str(random.randint(100000, 999999))
+            order_id = str(random.randint(1000000, 9999999))
 
-            print(order_id)
+            while Order.objects.filter(orderId=order_id).exists():
+                order_id = str(random.randint(1000000, 9999999))
 
-            shipping_address = self.request.POST.get['']
+            customer_name = self.request.POST['txtFname'] + ' ' + self.request.POST['txtLname'] 
+            shipping_address =  self.request.POST['txtAddress1'].rstrip() + ',' + self.request.POST['txtAddress2'].rstrip() + ',' +  self.request.POST['txtTown'].rstrip() +' '+  self.request.POST['txtPostcode'].rstrip() +','+ self.request.POST['ddlState'] +'.'
+
             order = Order(
                 orderId = order_id,
-                orderDate = timezone.now()
-
+                orderDate = datetime.today(),
+                name = customer_name,
+                shippingAddress = shipping_address,
+                phoneNo = self.request.POST['txtPhoneNo'].rstrip(),
+                email = self.request.POST['txtEmail'].rstrip(),
+                amount = self.request.POST['hdfAmount'],
+                userId = self.request.user,
+                isDelivered = False,
+                isReceived = False
             )
-            return render(self.request, 'checkout.html')
+            order.save()
+
+            order_items = Cart_Products.objects.filter(userId=self.request.user.id)
+
+            Order_Products.objects.bulk_create([Order_Products(orderId=Order.objects.get(orderId=order_id), furnitureId=item.furnitureId, quantity=item.quantity) for item in order_items])
+            
+            # delete items in cart
+            clear_cart = Cart_Products.objects.filter(userId = self.request.user.id)
+            clear_cart.delete()
+            
+            # print(order)
+            messages.success(self.request, 'Order Successfully!')
+            return render(self.request, 'homepage.html')
         except ObjectDoesNotExist:
-            messages.warning(self.request, "You do not have an active order")
-            return redirect("ecommerce:order-summary")
+            messages.warning(self.request, "Order Failed")
+            return redirect("ecommerce:cart")
 
-
-    def make_order_id():
-        return str(random.randint(100000, 999999))
 
 
 def goDonate(request):
