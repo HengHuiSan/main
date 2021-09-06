@@ -1,13 +1,49 @@
+{% load crispy_forms_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donate</title>
+    <style>
+        .form-control{
+            margin-bottom: 1rem;
+        }
+        .form-control:focus, .btn:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .btn-primary{
+            background-color: var(--title-color) !important;
+            border: 0  !important;
+            width: 20%;
+            height: 40px;
+            float: right;
+        }
+        .btn-primary:hover{
+            background-color: #0075F6 !important;
+        }
+    </style>
 </head>
 <body>
     {% include 'header.html' %}
-    <h1>hello donate</h1>
-    
+    <div class="container p-5" style="margin-top: 3rem; max-width: 50%;">
+        <form action="" method="POST">
+            <div class="card shadow border-0 px-5 py-2">
+                <div class="card-body">
+                    <h2 class="pl-3 pt-3"><b>Furniture Donation Request</b></h2>
+                    <hr>
+                    {% csrf_token %}
+                    {% crispy form %}
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-primary mr-3" type="submit">Submit</button>
+                        <a href="{% url 'ecommerce:cart' %}" class="btn btn-primary">Cancel</a>
+                    </div> 
+
+                </div>
+            </div>
+        </form>
+    </div>
+        
 </body>
 </html>

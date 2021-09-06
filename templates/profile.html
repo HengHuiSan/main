@@ -1,52 +1,49 @@
 {% load static %}
+{% static "images//" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  {% include 'header.html' %}
 
-{% include 'header.html' %}
-
-<link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.carousel.min.css">
-<link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.theme.default.min.css">
-<style>
-  .owl-theme .owl-dots .owl-dot {
-    outline: none;
-
-}
-</style>
-<div class="container">
-  <div class="owl-carousel owl-theme">
-    <div class="item"><h4>1</h4></div>
-    <div class="item"><h4>2</h4></div>
-    <div class="item"><h4>3</h4></div>
-    <div class="item"><h4>4</h4></div>
-    <div class="item"><h4>5</h4></div>
-    <div class="item"><h4>6</h4></div>
-    <div class="item"><h4>7</h4></div>
-    <div class="item"><h4>8</h4></div>
-    <div class="item"><h4>9</h4></div>
-    <div class="item"><h4>10</h4></div>
-    <div class="item"><h4>11</h4></div>
-    <div class="item"><h4>12</h4></div>
-</div>
-</div>
+  <div class="container-fluid p-5" style="margin-top: 5rem; max-width: 85%;">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card border-0">
+          <div class="card-body">
+            <img src="" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <h1>askdnla</h1>
+        <div class="card border-0">
+          <div class="card-body">
+<!-- 
+            <h2>{{ donation.donationId }}</h2>
+            <h2>{{ donation.dateCreated }}</h2>
+            <h2>{{ donation.donationImg }}</h2>
 
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/owl.carousel.js"></script>
+            <img src="{{baseUrl}}/{{donation.image}}" alt=""> -->
+            {% load crispy_forms_tags %}  
+            <form action="" method="post">
+              {% csrf_token %}
+              {{form|crispy}}
+              <!-- <input type="file" name="imgTest" id="imgTest"> -->
+              <input type="submit" value="submit">
+            </form>
 
-<script type="text/javascript">
-$('.owl-carousel').owlCarousel({
-   loop:true,
-   margin:10,
-   nav:true,
-   responsive:{
-     0:{
-       items:2
-     },
-     600:{
-       items:3
-     },
-     1000:{
-       items:4
-     }
-   }
- });
-</script>
-{{request.user}}
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
+  </div>
+</body>
+</html>

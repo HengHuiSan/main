@@ -45,7 +45,7 @@
                             <div class="owl-carousel owl-theme row text-center">
                             {% for object in query %}
                             <div class="col">
-                                <a href="{{ object.update_view_count_url }}">
+                                <a href="{{ object.update_view_count_url }}" data-toggle="modal" data-target="#product_modal">
                                     <div class="card text-center">
                                         <div class="card-body">
                                             <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
@@ -62,7 +62,6 @@
                             {% endfor %}
                             </div>
                         {% endfor %}  
-
                     {% endif %}                
 
                     {% if cf_recommend_list %}
@@ -73,7 +72,7 @@
                         <div class="owl-carousel owl-theme row text-center">
                             {% for object in cf_recommend_list %}
                             <div class="col">
-                                <a href="{{ object.update_view_count_url }}">
+                                <a href="{{ object.update_view_count_url }}" data-toggle="modal" data-target="#product_modal">
                                     <div class="card text-center">
                                         <div class="card-body">
                                             <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
@@ -99,7 +98,7 @@
                         <div class="owl-carousel owl-theme row text-center">
                             {% for object in popularity_recommend_list %}
                             <div class="col">
-                                <a href="{{ object.update_view_count_url }}">
+                                <a href="{{ object.update_view_count_url }}" data-toggle="modal" data-target="#product_modal">
                                     <div class="card text-center">
                                         <div class="card-body">
                                             <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
@@ -118,6 +117,7 @@
                     {% endif %}
                 </div>
             </div>
+            {% include 'product.html' %}
         </section>
 
         <!------------ COMPANY INFO ------------>

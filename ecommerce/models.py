@@ -1,4 +1,3 @@
-from enum import unique
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -88,11 +87,6 @@ class Cart_Products(models.Model):
     def get_item_total_price(self):
         return self.quantity * self.furnitureId.unitPrice
 
-    @property
-    def get_cart_total(self):
-        return self.objects.all().count()
-        # return self.objects.all().aggregate(sum('quantity'))
-        # return sum([item.get_item_total_price for item in self.objects.all()])
 
 class Payment(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -109,7 +103,7 @@ class Order(models.Model):
     shippingAddress = models.CharField(max_length=255)
     phoneNo = models.CharField(max_length=20)
     email = models.CharField(max_length=255, null=True)
-    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     isDelivered = models.BooleanField(default=False)
     isReceived = models.BooleanField(default=False)
@@ -117,16 +111,6 @@ class Order(models.Model):
     def __str__(self):
         template = '{0.orderId} {0.orderDate} {0.name} {0.shippingAddress} {0.phoneNo} {0.amount}'
         return template.format(self)
-
-    def make_order_id():
-        return str(random.randint(100000, 999999))
-    # def get_total(self):
-    #     total = 0
-    #     for order_item in self.items.all():
-    #         total += order_item.get_final_price()
-    #     if self.coupon:
-    #         total -= self.coupon.amount
-    #     return total    
 
 class Order_Products(models.Model):
     orderId = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -136,20 +120,6 @@ class Order_Products(models.Model):
     def __str__(self):
         return self.orderId, " and ", self.furnitureId
 
-    # def get_total_item_price(self):
-    #     return self.quantity * self.item.price
-
-    # def get_total_discount_item_price(self):
-    #     return self.quantity * self.item.discount_price
-
-    # def get_amount_saved(self):
-    #     return self.get_total_item_price() - self.get_total_discount_item_price()
-
-    # def get_final_price(self):
-    #     if self.item.discount_price:
-    #         return self.get_total_discount_item_price()
-    #     return self.get_total_item_price()
-
 
 class Rating(models.Model):
     furnitureId = models.ForeignKey(Furniture, on_delete=models.CASCADE)
@@ -158,3 +128,21 @@ class Rating(models.Model):
 
     def __str__(self):
         return self.furnitureId, " and ", self.userId, " and ", self.rating
+
+class Donation(models.Model):
+    donationId = models.CharField(primary_key=True, max_length=50)
+    dateCreated = models.DateField(auto_now_add=True)
+    name = models.CharField(max_length=100, null=True)
+    itemType = models.CharField(max_length=20)
+    description = models.CharField(max_length=500)
+    image = models.ImageField(upload_to='donation')
+    yearPurchased = models.PositiveIntegerField(null=True)
+    originalPrice = models.DecimalField(max_digits=8, decimal_places=2)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        template = '{0.donationId} {0.name}  {0.itemType}'
+        return template.format(self)
+
+class Image(models.Model):
+    img = models.ImageField()

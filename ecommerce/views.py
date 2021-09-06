@@ -6,7 +6,7 @@ from ecommerce.models import *
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, redirect 
-from .forms import UserRegistrationForm
+from .forms import CustomFieldForm, UserRegistrationForm, DonationForm, texting
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -139,9 +139,9 @@ def goCatalog(request):
 # ======= Product Listings ======= #
 
 class ItemDetailView(DetailView):
-    # print("kjkjknnj")
+    # print('dfsdgd')
     model = Furniture
-    template_name = "item.html"
+    template_name = "product.html"
 
 
 # View the item after clicking
@@ -155,13 +155,24 @@ def updateViewToItem(request, slug):
         get_viewed_item = User_Views.objects.get(userId=request.user, furnitureId=item)
         get_viewed_item.viewCount += 1       
         get_viewed_item.save()
+        # print('viewed')
         # print(get_viewed_item)
     else:
-        User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
+        view = User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
+        # print('new view')
         # print(view)
-
     return redirect('ecommerce:product', slug=slug)
 
+
+def getItem(request, slug):
+    item = get_object_or_404(Furniture, slug=slug)
+    # furniture = Furniture.objects.get(furnitureId = item)
+    print('me is here')
+    context = {
+        'object':item
+    }
+
+    return render(request, 'product.html', context)
 
 
 # ======= Shopping Cart ======= #
@@ -199,9 +210,13 @@ def addToCart(request, slug):
         Cart_Products.objects.create(userId=request.user, furnitureId=item, quantity=1,slug=item.furnitureId)
         messages.success(request, "This item was added to your cart.")
     
-    previous = resolve(request.META.get('HTTP_REFERER')).url_name
-    print("bskdas" , previous)
-    return redirect('ecommerce:homepage')
+    previous_url = request.META.get('HTTP_REFERER')
+    # print(previous_url)
+
+    if "homepage" in previous_url:
+        return redirect('ecommerce:homepage')
+    elif "catalog" in previous_url:
+        return redirect('ecommerce:catalog')
 
 
 def removeFromCart(request, slug):
@@ -291,15 +306,82 @@ class OrderSummaryView(LoginRequiredMixin, View):
             return redirect("ecommerce:cart")
 
 
+# ======= Donation ======= #
+
+
 
 def goDonate(request):
-    return render(request,'donate.html')
+    if request.method == 'POST':
+        form = DonationForm(request.POST, request.FILES)
+        print(form.cleaned_data('firstname'))
+
+        if form.is_valid():
+            try:
+                print("aaksbdkas")
+
+                # firstname = form.cleaned_data['firstname']
+                # lastname = form.cleaned_data['lastname']
+                # form.save()
+                # send_mail(subject, message, sender, recipients)
+                # msg = messages.success(request, 'Donate Successfully!')
+                donation = Donation()
+                donation = form.save(commit=False)
+                print("aaksbdkas")
+
+            except ValidationError as e:
+                print(e)
+    else:
+        print('form start')
+        form = DonationForm()
+
+    context = {'form':form}
+
+    return render(request, 'donate.html', context)
+
+
+def requestDonation(request):
+    if request.method == "POST":
+        
+        donation = Donation(
+            donationId = 'D' + str(random.randint(10000, 99999)),
+            dateCreated = datetime.today(),
+            name = request.POST.get('txtFname') + ' ' + request.POST.get('txtLname'),
+            itemType = request.POST.get('txtType'),
+            description = request.POST.get('txtDescription'),
+            image = request.FILES['imgDonation '],
+            yearPurchased = request.POST.get('txtYearPurchased'),
+            originalPrice = request.POST.get('txtOriginalPrice'),
+            userId = request.user
+        )
+
+        donation.save()
+
+        messages.success(request, "Donation Request Created Successfully!")
+        return redirect('ecommerce:donate')
+
+    return render(request, 'donation.html')
+    
+
+
 
 def goAbout(request):
-    return render(request,'about.html')
+    return render(request,'about.html') 
 
 def goProfile(request):
-    return render(request, 'profile.html')
+    if request.method == "POST":
+        form = texting(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            print('asdhahj')
+            return redirect("ecommerce:profile")
+        else:
+            print('sdjnaks')
+
+    form = texting()
+    context = {
+        'form':form
+    }
+    return render(request,'profile.html', context)
 
 
 

@@ -1,62 +1,25 @@
 {% load static %}
 {% static "images/" as baseUrl %}
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Boostrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <!-- Custom StyleSheet -->
-    <link rel="stylesheet" href="{% static 'css/homepage1.css' %}"/>
 </head>
 <body>
+
+  <h1>Testing Item Profile Listing</h1>
+  <div class="row">
+    <div class="col-md-7">
+      <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="">
+    </div>
+    <div class="col md-5" style="color: black;">
+      <span>Name : {{ object.furnitureName }}</span><br>
+      <span>Price : ${{ object.unitPrice }}</span><br>
+    </div>
+  </div>  
     
 </body>
 </html>
-<!-- <h1>{{ targetItem.furnitureName }}</h1>
-<h1>{{ targetItem.price }}</h1> -->
-<h1>Item</h1>
-<img src="{{baseUrl}}/{{object.furnitureImg}}" alt=""><br>
-<span>ID : {{ object.furnitureId }}</span><br>
-<span>Name : {{ object.furnitureName }}</span><br>
-<span>Price : ${{ object.unitPrice }}</span><br>
-<span>Description: Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores incidunt nisi adipisci possimus voluptatum itaque tempore cupiditate obcaecati. Enim, cum!</span><br>
 
-<a href="{% url 'ecommerce:cart' %}" class="card__button text-uppercase">
-    <i class="uil uil-shopping-cart icon__size"></i>
-    Add To Cart
-</a>
-
-<!-- <div class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Modal body text goes here.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary">Save changes</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
-{% endblock content %}
-
-<!-- <script>
-    var myModal = new bootstrap.Modal(document.getElementById('myModal'), options)
-</script> -->
