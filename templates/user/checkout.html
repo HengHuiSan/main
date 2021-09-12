@@ -1,0 +1,285 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furnishh Online Store</title>
+
+    <style>
+        @import url(../css/variables.css);
+        .form-control:focus, .btn:focus {
+            outline: none !important;
+            box-shadow: none !important;
+          }
+    
+        .btn-primary{
+            background-color: var(--title-color) !important;
+            border: 0  !important;
+            width: 100%;
+            height: 40px;
+            border-radius: 2rem !important;
+        }
+
+        .btn-primary:hover{
+            background-color: #0075F6 !important;
+        }
+
+    </style>
+</head>
+<body >
+    {% include 'user/header.html' %}
+    
+    <div class="container py-5">
+        <form action="" method="POST" id="form">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card shadow border-0 mb-3">
+                        <div class="card-body">
+                            <h2 class="pl-3 pt-3"><b>Billing Details</b></h2>
+                            <hr>
+                            <!-- {% csrf_token %} -->
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="firstName">&nbsp;First name</label>
+                                            <input type="text" class="form-control" id="txtFname" name="txtFname" value="{{ request.user.first_name }}" required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="lastName">&nbsp;Last name</label>
+                                            <input type="text" class="form-control" id="txtLname" name="txtLname" value="{{ request.user.last_name }}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtEmail">&nbsp;&nbsp;Email Address (Optional)</label>
+                                    <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="{{ request.user.email }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtPhoneNo">&nbsp; Phone Number</label>
+                                    <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ profile.phoneNo }}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
+                                    <small>&nbsp;e.g. 012-3456789</small>
+                                </div>
+                                <br>
+                                <h5 style="color: var(--title-color);">&nbsp;<b>Billing Addres</b></h5>
+                                <hr>
+                                <div class="form-group">
+                                    <label for="txtAddress1">&nbsp;&nbsp;Line 1</label>
+                                    <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{% if profile %} {{ profile.address1 }} {% endif %}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtAddress2">&nbsp;&nbsp;Line 2</label>
+                                    <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{% if profile %} {{ profile.address2 }} {% endif %}" required>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-5 mb-3">
+                                        <label for="txtTown">&nbsp;Town/City</label>
+                                        <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if profile %} {{ profile.town }} {% endif %}" required />
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="txtPostcode">&nbsp;Postcode</label>
+                                        <input type="text" class="form-control" id="txtPostcode" name="txtPostcode" value="{% if profile %} {{ profile.postcode }} {% endif %}" required />
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="ddlState">&nbsp;State</label>
+                                        <select class="form-control" id="ddlState" name="ddlState" required>
+                                            {% for state in states %}
+                                            <option value="{{ state }}"
+                                                {% ifequal state profile.state %} selected {% endifequal %}>
+                                                {{ state }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-5">
+                    <div class="card shadow border-0">
+                        <div class="card-body p-5">
+                                <h3 style="color: var(--title-color); font-weight: 700;">Order Summary</h3>
+                                <hr>    
+                                {% for item in object %}
+                                <div class="row" style="color: var(--first-color);">
+                                    <div class="col">
+                                        <h5><b>{{ item.furnitureId.furnitureName }}</b></h5>
+                                        <span>Quantity: {{ item.quantity }}</span>
+                                    </div>
+                                    <div class="col">
+                                        <div style="text-align: end;"> 
+                                            <h5><b>${{ item.get_item_total_price }}</b></h5>  
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                {% endfor %}
+                                
+                                <div class="row">
+                                    <div class="col" style="color: var(--first-color);">
+                                        <h3>Total: </h3>
+                                    </div>
+                                    <div class="col" style="text-align: right;">
+                                        <h2 class="mb-5" style="color:orangered">${{ amount|floatformat:2 }}</h2>
+                                        <input type="hidden" name="hdfAmount" value="{{ amount|floatformat:2 }}">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <!-- <div class="d-flex justify-content-center mb-3">
+                                        <button class="btn btn-primary" type="submit">Place Order</button>
+                                    </div> -->
+                                    
+                                    <div id="smart-button-container">
+                                        <div style="text-align: center;">
+                                          <div id="paypal-button-container"></div>
+                                        </div>
+                                      </div>
+
+                                    <!-- <div class="d-flex justify-content-center mb-3">
+                                        <a href="{% url 'ecommerce:cart' %}" class="btn btn-primary">Cancel</a>
+                                    </div>  -->
+                                </div>                   
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+        {% include 'user/footer.html' %}
+    
+        {% if messages %}
+            {% for msg in messages %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ msg }}',
+                })
+            </script>    
+            {% endfor %}	
+        {% endif %}
+
+        <!-- Include the PayPal JavaScript SDK -->
+        <script src="https://www.paypal.com/sdk/js?client-id=AWSVOhqbWFSetM_PVPW86Cf2TWFIneZvyaAEuGrxHRPvRFZFelgpB_RblP8145Y-FtiapmHTkMpMzJgl&vault=true&currency=MYR" data-sdk-integration-source="button-factory"></script>
+
+        <script>
+            var total = '{{ amount|floatformat:2 }}'
+
+            document.write(document.getElementById('txtEmail').value)
+
+            function initPayPalButton() {
+                paypal.Buttons({
+                    style: {
+                    shape: 'pill',
+                    color: 'blue',
+                    layout: 'vertical',
+                    label: 'paypal',                
+                },
+
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{"amount":{"currency_code":"MYR","value":total}}],
+
+                        application_context: {
+                            shipping_preference: 'NO_SHIPPING'
+                        }
+                    });
+                },
+
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(orderData) {                        
+                        submitFormData();
+                        
+                        Swal.fire({
+                            title: 'Payment Successful!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "{% url 'ecommerce:profile' %}";
+                            }
+                          })
+                        
+                    });
+                },
+
+                onError: function(err) {
+                    console.log(err);
+                }
+                
+                }).render('#paypal-button-container');
+            }
+                initPayPalButton();
+
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function submitFormData(){
+
+                var userFormData = {
+                    'fname':null,
+                    'lname':null,
+                    'email':null,
+                    'phoneNo':null,
+                    'total':total
+                }
+    
+                var shippingInfo = {
+                    'addressLine1':null,
+                    'addressLine2':null,
+                    'town':null,
+                    'postcode':null,
+                    'state':null,
+                }
+
+                userFormData.fname = document.getElementById('txtFname').value
+                userFormData.lname = document.getElementById('txtLname').value
+                userFormData.email = document.getElementById('txtEmail').value
+                userFormData.phoneNo = document.getElementById('txtPhoneNo').value
+
+                shippingInfo.addressLine1 = document.getElementById('txtAddress1').value
+                shippingInfo.addressLine2 = document.getElementById('txtAddress2').value
+                shippingInfo.town = document.getElementById('txtTown').value
+                shippingInfo.postcode = document.getElementById('txtPostcode').value
+                shippingInfo.state = document.getElementById('ddlState').value
+
+                console.log('Shipping Info:', shippingInfo)
+                console.log('User Info:', userFormData)
+
+                var url = "{% url 'ecommerce:complete' %}"
+                fetch(url, {                    
+                    method:'POST',
+                    headers:{
+                        'Content-type':'application/json',
+                        'X-CSRFToken':csrftoken,
+                    }, 
+                    body:JSON.stringify({
+                        'form':userFormData, 'shipping':shippingInfo 
+                        
+                    })
+                })
+            }
+        </script>
+
+
+</body>
+</html>
+

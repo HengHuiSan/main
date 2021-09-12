@@ -1,0 +1,79 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+
+
+{% block content %}
+
+      {% include 'user/header.html' %}
+      <br>
+
+      <!-- Custom StyleSheet -->
+      <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+
+
+      <style>
+          .form-control{
+              background-color: transparent !important;
+              border-radius: 0px 50px 50px 0px;
+          }
+      </style>
+
+        <!-- Search Bar -->
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-center">
+                <div class="bg-white rounded rounded-pill shadow-sm w-50">
+                    <div class="input-group pr-2 pt-2">
+                        <div class="input-group-append">
+                            <button id="button-addon1" type="submit" class="btn btn-link text-primary"><i class="material-icons">search</i></button>
+                        </div>
+                        <input type="search" name="txtSearch" placeholder="Search" aria-describedby="button-addon1" class="form-control border-0">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="container mt-5" id="search_container" style="display: none;">
+            <h5>Search result for {{ keyword }}</h5>
+            <div class="row mt-4">
+                {% for getdata in furniture %}
+                <div class="col-md-3">
+                    <a class="" href="{{ getdata.update_view_count_url }}">
+                        <div class="card text-center mb-5">
+                            <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3 px-4">
+
+                            <div class="card-body">
+                                <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
+                                <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
+
+                                <a href="{{ getdata.add_to_cart_url }}" class="card__button text-uppercase">
+                                    <i class="uil uil-shopping-cart"></i>
+                                    Add To Cart
+                                </a>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if messages %}
+        {% for msg in messages %}
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '{{ msg }}',
+            })
+        </script>    
+        {% endfor %}	
+      {% endif %}
+
+      {% if furniture %}
+      <script>
+          document.getElementById('search_container').style.display = 'block';
+      </script>
+      {% endif %}
+
+
+{% endblock %}

@@ -5,13 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalog</title>
+    <title>Furnishh Online Store</title>
 
     <!-- Custom StyleSheet -->
-    <link rel="stylesheet" href="{% static 'css/catalog2.css' %}"/>   
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}"/>   
 </head>
 <body>
-    {% include 'header.html' %}
+    {% include 'user/header.html' %}
     
         <div class="catalog pt-4">
             <img src="{% static 'images/banner/banner3.jpg' %}" alt="" class="catalog__img">
@@ -43,7 +43,7 @@
                         <div class="row">
                             {% for getdata in furniture %}
                             <div class="col-md-4">
-                                <a class="" href="{{ getdata.update_view_count_url }}">
+                                <a class="" href="{{ getdata.update_view_count_url }}" data-toggle="modal" data-target="#product_modal">
                                     <div class="card text-center mb-5">
                                         <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3 px-2">
     
@@ -60,6 +60,7 @@
                                 </a>
                             </div>
                             {% endfor %}
+                            {% include 'user/product.html' %}
                         </div>
 
                         <div class="anyClass" style="overflow-y: hidden;">
@@ -92,7 +93,34 @@
             </div>
         </div>
 
-        {% include 'footer.html' %}
+        <!------------ SCROLL TOP------------>
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="material-icons">arrow_upward</i>
+        </a>
+        {% include 'user/footer.html' %}
+
+
+    <style>
+        .scrollup{
+            position: fixed;
+            right: 2rem;
+            bottom: -20%;
+            color: white;
+            background-color: var(--title-color);
+            opacity: .8;
+            padding: 0.3rem;
+            border-radius: 25%;
+            transition: .4s;
+        }
+        
+        .scrollup:hover{
+            color: white;
+            transform: scale(1.1);
+        }
+        .show-scroll{
+            bottom: 5rem;
+        }
+    </style>
     
         {% if messages %}
         {% for message in messages %}
@@ -115,6 +143,16 @@
             {% endif %}  
         {% endfor %}	
     {% endif %}
+
+    <script>
+        // SHOW SCROLL UP 
+        function scrollUp(){
+            const scrollUp = document.getElementById('scroll-up');
+            // When the scroll is higher than 560 viewport height, add the show-scroll class to the a tag with the scroll-top class
+            if(this.scrollY >= 560) scrollUp.classList.add('show-scroll'); else scrollUp.classList.remove('show-scroll')
+        }
+        window.addEventListener('scroll', scrollUp)
+    </script>
 </body>
 </html>
 

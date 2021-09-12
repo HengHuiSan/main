@@ -1,0 +1,379 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    @import url(../css/variables.css);
+    .form-control:focus, .btn:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    .card-body a{
+      color: var(--title-color);
+    }
+    .btn-primary{
+      color: var(--title-color) !important;
+      border: none !important; 
+      background: none !important; 
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      color: #0075F6 !important;;
+    }
+    .btn-secondary{
+      background-color: var(--title-color) !important;
+      border: 0  !important;
+      width: 20%;
+      height: 40px;
+      float: right;
+      color: white !important;
+  }
+  .btn-secondary:hover{
+      background-color: #0075F6 !important;
+  }
+  .profile_pic{
+		max-width: 300px;
+		max-height: 300px;
+		margin: 0 auto;
+		border-radius: 50%;
+	}
+  </style>
+</head>
+<body>
+  {% include 'user/header.html' %}
+
+  <div class="container-fluid p-4 mb-5" style="margin-top: 5rem; max-width: 90%;">
+    <div class="row">
+      <!------------- Side Bar ------------->
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <div class="text-center">
+              <img src="{{baseUrl}}/{{customer.profile_pic}}" alt="" style="max-width: 50%;" class="profile_pic mb-2">
+              <h3>Hey, {{ request.user }}</h3>
+            </div>
+            <hr>
+
+            <button type="button" class="btn btn-primary active" onclick="showProfile()" autofocus>
+              <i class="material-icons align-middle mr-2" aria-hidden="true">person</i>
+              <span class="align-middle">My Account</span>
+            </button>
+            <hr>
+            <button type="button" class="btn btn-primary" onclick="showOrders()">
+              <i class="material-icons align-middle mr-2" aria-hidden="true">list_alt</i>
+              <span class="align-middle">My Order</span>
+            </button>
+            <hr>
+            <button  type="button" class="btn btn-primary" onclick="showDonations()">
+              <i class="material-icons align-middle mr-2" aria-hidden="true">volunteer_activism</i>
+              <span class="align-middle">My Donation</span>
+            </button>
+            <hr>
+
+          </div>
+        </div>
+      </div>
+
+      <!------------- Main Area ------------->
+      <div class="col-md-9">
+        <!------------- Profile Area ------------->
+        <section id="profile" style="display: block; color: var(--title-color);">
+          <h1>&nbsp;My Profile</h1>
+          <div class="card shadow-sm  border-0">
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data" class="py-3 px-4 form-horizontal">
+                {% csrf_token %}
+               <h5 style="color: var(--title-color);">&nbsp;<b>Personal Information</b></h5>
+                <hr>
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <div class="form-group row">
+                        <label for="txtUname" class="col-sm-3 col-form-label">Username</label>
+                        <div class="col-sm-9">
+                          <input type="text" class="form-control" id="txtUname" name="txtUname" value="{{ request.user }}" required>
+                        </div>
+                      </div>
+                      <div class="row">
+                          <div class="col row">
+                              <label for="txtFname" class="col col-form-label">First Name</label>
+                              <div class="col">
+                                <input type="text" class="form-control" id="txtFname" name="txtFname" value="{{ request.user.first_name }}" required />
+                              </div>
+                          </div>
+                          <div class="col row">
+                            <label for="txtLname" class="col col-form-label">Last Name</label>
+                            <div class="col">
+                              <input type="text" class="form-control" id="txtLname" name="txtLname" value="{{ request.user.last_name }}" required />
+                            </div>
+                        </div>
+                      </div>
+                    </div>                     
+                    <div class="form-group row">
+                        <label for="txtEmail" class="col-sm-3 col-form-label">Email</label>
+                        <div class="col-sm-9">
+                          <input type="email" class="form-control" id="txtEmail" name="txtEmail" value="{{ request.user.email }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="txtPhoneNo" class="col-sm-3 col-form-label">Phone Number</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ customer.phoneNo }}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="rbtnGender" class="col-sm-3 col-form-label">Gender</label>
+                      <div class="col-sm-9 mt-2">
+                        <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" class="custom-control-input" id="rbtnMale" name="rbtnGender" value="male" {% if customer.gender == 'male' %} checked {% endif %} />
+                          <label class="custom-control-label" for="rbtnMale">Male</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                          <input type="radio" class="custom-control-input" id="rbtnFemale" name="rbtnGender" value="female" {% if customer.gender == 'female' %} checked {% endif %}/>
+                          <label class="custom-control-label" for="rbtnFemale">Female</label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <label for="txtDOB" class="col-sm-3 col-form-label">Date of Birth</label>
+                      <div class="col-sm-9">
+                        <input type="date" class="form-control" id="txtDOB" name="txtDOB" value="{{ customer.dob|date:'Y-m-d' }}" required>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <img src="{{baseUrl}}/{{customer.profile_pic}}" alt="" style="max-width: 50%;" class="profile_pic mt-5 mb-3">
+                    <div class="d-flex justify-content-center">
+                      <input type="file" name="imgProfile" id="imgProfile" class="form-control border-0 ml-3">
+                    </div>
+                  </div>
+                </div>
+                <br>
+                <h5 style="color: var(--title-color);">&nbsp;<b>Billing Address</b></h5>
+                <hr>
+                <div class="form-group  row">
+                    <label for="txtAddress" class="col-sm-2 col-form-label">Line 1</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{{ customer.address1 }}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                  <label for="txtAddress" class="col-sm-2 col-form-label">Line 2</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{{ customer.address2 }}" required>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="txtTown" class="col-sm-2 col-form-label">Town/City</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txtTown" name="txtTown" value="{{ customer.town }}" required>
+                  </div>
+                </div>
+                <div class="row mb-5">
+                  <div class="col row">
+                      <label for="txtPostCode" class="col-sm-4 col-form-label">Postcode</label>
+                      <div class="col-sm-8">
+                        <input type="text" class="form-control" id="txtPostCode" name="txtPostCode" value="{{ customer.postcode }}" required />
+                      </div>
+                  </div>
+                  <div class="col row">
+                    <label for="ddlState" class="col-sm-4 col-form-label">State</label>
+                    <div class="col-sm-8">
+                      <select class="form-control" id="ddlState" name="ddlState" required>
+                        {% for state in states %}
+                        <option value="{{ state }}"
+                            {% ifequal state customer.state %} selected {% endifequal %}>
+                            {{ state }}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div> 
+                <div class="d-flex justify-content-center">
+                  <input type="submit" class="btn btn-secondary mr-3" name="btnUpdate" value="Update"/>
+                  <a href="{% url 'ecommerce:profile' %}" class="btn btn-secondary">Cancel</a>
+                </div> 
+              </form> 
+            </div>
+          </div>
+        </section>
+
+        <!------------- Order Area ------------->
+        <section id="order" style="display: none;">
+          <h1>&nbsp;My Order</h1>
+          {% for order,items_list in order_data %}
+          <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+            <div class="card-body py-4 px-5">
+              <h3><b>Order ID :</b> {{ order.orderId }}</h3><hr>
+              <div class="row"> 
+                <div class="col-md-9">
+                  <span><b>Date :</b> {{ order.orderDate }}</span><br>
+                  <span><b>Address :</b> {{ order.shippingAddress }}</span>
+                </div>
+                <div class="col-md-3">
+                  {% if order.isReceived == True %}
+                  <h3 class="text-right" style="color: orangered;">Completed</h3>
+                  {% elif order.isDelivered == False %}
+                  <h3 class="text-right" style="color: orangered;">Processing</h3>
+                  {% else %}
+                  <h3 class="text-right" style="color: orangered;">Delivered</h3>
+                  {% endif %}
+                </div>
+              </div>
+              <table class="table mt-3 text-center">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Unit Price</th>
+                    <th scope="col">Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for item in items_list %}
+                  <tr>
+                    <td style="max-width: 10px;">
+                      <img src="{{baseUrl}}/{{item.furnitureId.furnitureImg}}" alt="" style="width: 80px; height: 80px;">
+                    </td>
+                    <td class="align-middle">{{ item.furnitureId.furnitureName}}</td>
+                    <td class="align-middle">{{ item.furnitureId.unitPrice}}</td>
+                    <td class="align-middle">{{ item.quantity }}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              <hr>
+              <div class="row">
+                <div class="col">
+                  <h4><b>Total Amount: ${{ order.amount }}</b></h4>
+                </div>
+                {% if order.isReceived == False %}
+                  <div class="col">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="hidden" name="hdfOrderId" value="{{ order.orderId }}">
+                      <input type="submit" class="btn btn-secondary" name="btnReceive" value="Receive" {% if order.isDelivered == False %} disabled {% endif %}/>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <br><br>
+          {% endfor %}
+        </section>
+
+        <!------------- Donation Area ------------->
+        <section id="donation" style="display: none;">
+          <h1>&nbsp;My Donation</h1>
+          {% for donation in donations %}
+          <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+            <div class="card-body py-4 px-5">
+              <div class="row">
+                <div class="col">
+                  <h3>Donation ID: {{ donation.donationId }}</h3>
+                </div>
+                <div class="col">
+                  {% if donation.isApproved == True %}
+                  <h2 class="text-uppercase text-right" style="color: orangered;"><b>accepted</b></h2>
+                  {% else %}
+                  <h2 class="text-uppercase text-right" style="color: orangered;"><b>rejected</b></h2>
+                  {% endif %}
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-md-3">
+                  <img src="{{baseUrl}}/{{donation.image}}" alt="" style="max-width: 80%;">
+                </div>
+                <div class="col-md-9">
+                  <table class="table table-borderless table-sm">
+                    <tbody>
+                      <tr>
+                        <th>Request Date</th>
+                        <td>{{ donation.dateCreated }}</td>
+                      </tr>
+                      <tr>
+                        <th>Description</th>
+                        <td>{{ donation.description }}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Year Purchased</th>
+                        <td>{{ donation.yearPurchased }}</td>
+                      </tr>
+                      <tr>
+                        <th>Original Price</th>
+                        <td>{{ donation.originalPrice }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          {% endfor %}
+        </section>
+      </div>
+    </div>
+  </div>
+
+  {% include 'user/footer.html' %}
+
+  {% if messages %}
+    {% for msg in messages %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: '{{ msg }}',
+        })
+    </script>    
+    {% endfor %}	
+  {% endif %}
+
+  <script>
+    function showProfile() {
+      var x = document.getElementById("profile");
+      var y = document.getElementById("order");
+      var z = document.getElementById("donation");
+
+      if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none";
+        z.style.display = "none";
+      }
+    }
+
+    function showOrders() {
+      var x = document.getElementById("profile");
+      var y = document.getElementById("order");
+      var z = document.getElementById("donation");
+
+      if (y.style.display === "none") {
+        x.style.display = "none";
+        y.style.display = "block";
+        z.style.display = "none";
+      }
+    }
+
+    function showDonations() {
+      var x = document.getElementById("profile");
+      var y = document.getElementById("order");
+      var z = document.getElementById("donation");
+
+      if (z.style.display === "none") {
+        x.style.display = "none";
+        y.style.display = "none";
+        z.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>

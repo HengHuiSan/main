@@ -1,0 +1,341 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Furnishh Online Store</title>
+
+    <!-- Custom StyleSheet -->
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}"/>  
+    
+    <!-- Owl Carousel StyleSheet -->
+    <link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.theme.default.min.css">
+
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+</head>
+<body>
+    {% include 'user/header.html' %}
+
+    <main class="main">
+        <!------------ BANNER ------------>
+        <section class="home" id="home">
+            <img src="{% static 'images/banner/banner2.jpg' %}" alt="" class="home__img">
+
+            <div class="home__container container grid">
+                <div class="home__data">
+                    <h1 class="home__data-title">
+                        Choose<br>
+                        <b style="font-size: larger;">Refurbished Furniture</b><br>
+                        For Better Living
+                    </h1>
+                    <a href="{% url 'ecommerce:catalog' %}" class="card__button text-uppercase py-3 mt-3">shop now</a>
+                </div>
+            </div>
+        </section>
+
+        <!------------ RECOMMENDATION AREA - HOT PRODUCTS------------>
+        <section class="recommendation mb-5" id="recommendation">
+            <div class="carousel recommendation__container">
+                <div class="container">
+                    {% if popularity_recommend_list %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="d-flex align-self-center hot__products">
+                                    <i class="material-icons">local_fire_department</i>
+                                    <h2>Hot Products</h2> 
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="swiper mySwiper">
+                                    <div class="swiper-wrapper">
+                                    {% for object in popularity_recommend_list %}
+                                      <div class="swiper-slide">
+                                        <a href="{{ object.update_view_count_url }}">
+                                            <img src="{{baseUrl}}/{{object.furnitureImg}}" class="px-2"/>
+                                        </a>
+                                      </div>
+                                    {% endfor %}
+                                    </div>
+                                    <div class="swiper-pagination"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!------------ INFO ------------>
+        <section class="donation container" id="donation">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="donate__image">
+                        <img src="{% static 'images/banner/chair.png' %}" alt="About us" class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="donation__info w-75">
+                        <h2>Donate Used Furniture</h2>
+                        <div class="paragraph">
+                            <p class="text-justify">
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit.  
+                                nesciunt obcaecati dolor fuga nostrum eos laborum vitae! Nisi porro 
+                                ipsa quaerat soluta dolorem quidem culpa 
+                            </p>
+                        </div>
+                        <a href="{% url 'ecommerce:catalog' %}" class="btn btn-primary text-uppercase mt-2">donate now</a>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!------------ RECOMMENDATION AREA - PRODUCTS BASED ON USER PREFERENCES ------------>
+        <section class="recommendation mb-5" id="recommendation">
+            <div class="carousel recommendation__container">
+            <h1 class="text-center font-weight-bold">Recommend For You</h1>
+
+                <div class="container">
+                    {% if zip_data %}
+                        {% for fname,query in zip_data %}
+                            <div class="mt-5">
+                                <h3><span style="font-weight: bolder; color: var(--text-color);">| </span>Because you bought {{ fname }}</h3>
+                            </div>
+
+                            <div class="owl-carousel owl-theme row text-center">
+                            {% for object in query %}
+                            <div class="col">
+                                <a href="{{ object.update_view_count_url }}">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
+                                            <h3 class="card__fName text-uppercase">{{object.furnitureId}}</h3>
+                                            <h3 class="card__fName text-uppercase">{{object.furnitureName}}</h3>
+                                            <h2 class="card__fPrice mb-3">${{object.unitPrice}}</h2>
+                                            <a href="{{ object.add_to_cart_url }}"  class="card__button text-uppercase mb-3">
+                                                <i class="uil uil-shopping-cart"></i>
+                                                Add To Cart
+                                            </a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}                
+
+                    {% if cf_recommend_list %}
+                        <div class="mt-5">
+                            <h3><span style="font-weight: bolder; color: var(--text-color);">| </span>Inspired by your browsing history</h3>
+                        </div>
+
+                        <div class="owl-carousel owl-theme row text-center">
+                            {% for object in cf_recommend_list %}
+                            <div class="col">
+                                <a href="{{ object.update_view_count_url }}">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
+                                            <h3 class="card__fName text-uppercase">{{object.furnitureName}}</h3>
+                                            <h2 class="card__fPrice mb-3">${{object.unitPrice}}</h2>
+                                            <a href="{{ object.add_to_cart_url }}" class="card__button text-uppercase mb-3">
+                                                <i class="uil uil-shopping-cart"></i>
+                                                Add To Cart
+                                            </a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!------------ COMPANY INFO ------------>
+        <section class="info" id="info">
+            <div id="intro" class="view">
+                <div class="mask rgba-black-strong">
+                    <div class="container-fluid d-flex align-items-center justify-content-center h-100">
+                        <div class="container">
+                            <div class="text-center">
+                                <h1>Company Info</h1>
+                                <p class="mt-4 mb-5">
+                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde ut nulla repellendus? <br>
+                                    Unde eveniet recusandae veritatis sit assumenda. Delectus iusto sapiente cupiditate tempora aperiam<br>
+                                    dolore eligendi dolor velit laudantium quo perferendis, expedita quaerat facilis. Ex, repudiandae sint! 
+                                </p>
+                                <br>
+                            </div>
+            
+                            <div class="row">
+                                <div class="col-lg-4 text-center">
+                                    <i class="material-icons">thumb_up_off_alt</i>
+                                    <p class="h4 font-weight-bold">Best Quality</p>
+                                    <p>Lorem ipsum dolor sit amet <br> consectetur adipisicing elit.</p>
+                                </div>
+                
+                                <div class="col-lg-4 text-center">
+                                    <i class="material-icons">monetization_on</i>
+                                    <p class="h4 font-weight-bold">Best Price</p>
+                                    <p>Lorem ipsum dolor sit amet <br> consectetur adipisicing elit.</p>
+                                    </div>
+                
+                                <div class="col-lg-4 text-center">
+                                    <i class="material-icons">support_agent</i>
+                                    <p class="h4 font-weight-bold">Amazing Service</p>
+                                    <p>Lorem ipsum dolor sit amet <br> consectetur adipisicing elit.</p>
+                                </div>               
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!------------ CONTACT US ------------>
+        <section id="contact" class="contact container mt-5"  style="color: var(--title-color-light);">
+            <h1 class="font-weight-bold text-center">Contact Us</h1>
+            <div class="row text-center py-3">
+                <div class="col-lg-4 col-md-12 mb-3">
+                    <p><i class="material-icons mr-2">location_on</i>Kuala Lumpur, Malaysia</p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <p><i class="material-icons mr-2">work</i>Mon - Fri, 9:00 am - 18:00 pm</p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <p><i class="material-icons mr-2">call</i></i>+60 12 345 6789</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <form>
+                        <div class="mb-3"> 
+                            <input type="text" class="form-control">
+                            <label for="form3">Your name</label>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control">
+                            <label for="form2">Your email</label>
+                        </div>
+                        <div class="mb-3">
+                            <textarea type="text" class="md-textarea form-control" rows="5"></textarea>
+                            <label for="form8">Your message</label>
+                        </div>
+                        <div class="float-right mt-2">
+                            <button class="card__button text-uppercase">Send</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col">
+                    <!--Google map-->
+                  <div class="mapouter">
+                    <div class="gmap_canvas">
+                      <iframe width="600" 
+                              height="400" 
+                              id="gmap_canvas" 
+                              src="https://maps.google.com/maps?q=2A,%20Jalan%20Cochrane,%20Maluri,%2055100%20Kuala%20Lumpur,%20Wilayah%20Persekutuan%20Kuala%20Lumpur&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                              frameborder="0" 
+                              scrolling="no" 
+                              marginheight="0" 
+                              marginwidth="0">
+                      </iframe>
+                    <a href="https://123movies-to.org"></a><br>
+
+                    <a href="https://www.embedgooglemap.net">embedgooglemap.net</a>
+                </div>
+            </div>
+        </section>
+
+        <!------------ SCROLL TOP------------>
+
+    </main>   
+
+    {% include 'user/footer.html' %}
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '{{ message }}',
+                    showConfirmButton: false,
+                    footer: '<a href="{% url "ecommerce:cart" %}" class="message_footer">Check my cart now.</a>',
+                    timer: 3500
+                })
+            </script>  
+            {% endif %} 
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+            <script>
+                Swal.fire({
+                    icon: 'info',
+                    title: '{{ message }}',
+                    showConfirmButton: false,
+                    timer: 3000
+                })
+            </script>   
+            {% endif %}  
+        {% endfor %}	
+    {% endif %}
+    
+    <!-- Owl Carousel JS (SWIPER) -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/owl.carousel.js"></script>
+
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <script type="text/javascript">
+        // Owl Carousel JS
+        $('.owl-carousel').owlCarousel({
+           loop:true,
+           nav:true,
+           dots: true,
+           margin: 10,
+           navText : ['<i class="uil uil-angle-left-b swiper-portfolio-icon"></i>','<i class="uil uil-angle-right-b swiper-portfolio-icon"></i>'],
+           responsive:{
+             0:{
+               items:2
+             },
+             600:{
+               items:3
+             },
+             1000:{
+               items:4
+             }
+           }
+         });
+
+         // Swiper JS
+         var swiper = new Swiper(".mySwiper", {
+            effect: "coverflow",
+            centeredSlides: true,
+            slidesPerView: "auto",
+            coverflowEffect: {
+              rotate: 50,
+              stretch: 0,
+              depth: 100,
+              modifier: 1,
+              slideShadows: true,
+            },
+            pagination: {
+              el: ".swiper-pagination",
+              clickable: true
+            },
+            loop: true
+          });      
+
+    </script>
+</body>
+</html>

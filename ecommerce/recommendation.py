@@ -249,6 +249,6 @@ def popularityBasedFiltering():
     most_popular_items = popular_items.sort_values(by=['viewCount'], ascending=False)
     
     recommend_list = list(most_popular_items.index)
-    recommend_list = recommend_list[:12]
+    recommend_list = recommend_list[:8]
 
     return recommend_list

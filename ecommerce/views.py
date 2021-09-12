@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls.base import resolve
 from ecommerce.models import *
@@ -12,6 +12,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+
+from django.db.models import Q # new
+
+import json
 from .recommendation import recommendToCustomer, recommendToNormalUser, recommendToNewUser
 
 
@@ -32,7 +37,7 @@ def registerView(request):
 
     context = {'form':form, 'msg':msg}
 
-    return render(request, 'register.html', context)
+    return render(request, 'account/register.html', context)
 
 
 def loginView(request):
@@ -52,7 +57,7 @@ def loginView(request):
 
     context = {'msg':msg}
 
-    return render(request, 'login.html', context)
+    return render(request, 'account/login.html', context)
     
 
 def logoutUser(request):
@@ -78,23 +83,27 @@ def goHompage(request):
             cb_recommend_query.append(Furniture.objects.filter(pk__in=i))
 
         context = {
-            'zipped_data': zip(furniture_name, cb_recommend_query),
+            'zip_data': zip(furniture_name, cb_recommend_query),
             'cf_recommend_list':Furniture.objects.filter(pk__in=cf_recommend_list), 
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
         }
+        print(furniture_name)
+        print('here')
     elif User_Views.objects.filter(userId=request.user):
         cf_recommend_list, popularity_recommend_list = recommendToNormalUser(request.user,'normal user')
         context = {
             'cf_recommend_list':Furniture.objects.filter(pk__in=cf_recommend_list), 
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
-        }        
+        }
+        print('andsjaks')        
     else:
         popularity_recommend_list = recommendToNewUser()
         context = {
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
         }
+        print('dasds')
 
-    return render(request,'homepage.html', context)
+    return render(request,'user/homepage.html', context)
 
 
 
@@ -106,12 +115,15 @@ def goCatalog(request):
     cid=1
     
     if request.method == 'GET' and 'cid' in request.GET:
-        cid = request.GET.get('cid')       
+        if request.GET.get('cid') == '':
+            cid = 1
+        else:
+            cid = request.GET.get('cid')       
         furniture = Furniture.objects.filter(categoryId_id=cid)
     else:
         furniture = Furniture.objects.filter(categoryId_id=1)
         
-    paginator = Paginator(furniture, 12)
+    paginator = Paginator(furniture, 15)
     page = paginator.get_page(page_number)
     category = Category.objects.all()
 
@@ -132,35 +144,47 @@ def goCatalog(request):
                "next_page_url":next_url,
                "prev_page_url":prev_url}
 
-    return render(request,'catalog.html', context)
+    return render(request,'user/catalog1.html', context)
 
+
+class catalogDetailView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            category = Category.objects.all()
+            furniture = Furniture.objects.filter(categoryId_id=1)
+
+            context = {
+                'categories':category,
+                'furniture':furniture
+            }
+            return render(self.request, 'user/catalog1.html', context)
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "Your cart is empty")
+            return redirect('ecommerce:cart')
+            
 
 
 # ======= Product Listings ======= #
 
 class ItemDetailView(DetailView):
-    # print('dfsdgd')
     model = Furniture
-    template_name = "product.html"
-
+    template_name = "user/product.html"
 
 # View the item after clicking
 def updateViewToItem(request, slug):
     item = get_object_or_404(Furniture, slug=slug)
+    print(item)
+    print("posttt")
 
-    # item that has been viewed before
     viewed_item = User_Views.objects.filter(userId=request.user, furnitureId=item)
 
     if viewed_item.exists():
         get_viewed_item = User_Views.objects.get(userId=request.user, furnitureId=item)
         get_viewed_item.viewCount += 1       
         get_viewed_item.save()
-        # print('viewed')
-        # print(get_viewed_item)
     else:
         view = User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
-        # print('new view')
-        # print(view)
+
     return redirect('ecommerce:product', slug=slug)
 
 
@@ -172,7 +196,7 @@ def getItem(request, slug):
         'object':item
     }
 
-    return render(request, 'product.html', context)
+    return render(request, 'user/product.html', context)
 
 
 # ======= Shopping Cart ======= #
@@ -186,7 +210,7 @@ class CartDetailView(LoginRequiredMixin, View):
                 'cart': cart, 
                 'amount':amount
                 }
-            return render(self.request, 'cart.html', context)
+            return render(self.request, 'user/cart.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "Your cart is empty")
             return redirect('ecommerce:cart')
@@ -233,7 +257,7 @@ def removeFromCart(request, slug):
 def updateCart(request):
     if request.method == 'POST':
         cart_item = Cart_Products.objects.get(furnitureId=request.POST['furnitureId'], userId=request.user.id)
-        print(cart_item)
+        # print(cart_item)
         cart_item.quantity =  request.POST['quantity']
         cart_item.save()
 
@@ -247,11 +271,9 @@ class OrderSummaryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
             states = ['Johor','Kedah','Kelantan','Malacca','Negeri Sembilan','Pahang','Perak','Perlis','Pinang','Sabah','Sarawak','Selangor','Terangganu']
-            user = User.objects.get(id=self.request.user.id)
             cart = Cart_Products.objects.filter(userId=self.request.user)
             amount = sum(item.quantity*item.furnitureId.unitPrice for item in cart)
             context = {
-                'customer':user,
                 'object': cart, 
                 'amount':amount,
                 'states':states
@@ -261,7 +283,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
                 context.update({
                     'profile':Customer_Profile.objects.get(custId=self.request.user.id)
                 })
-            return render(self.request, 'checkout.html', context)
+            return render(self.request, 'user/checkout.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "Your cart is empty")
             return redirect('ecommerce:cart')
@@ -273,22 +295,26 @@ class OrderSummaryView(LoginRequiredMixin, View):
             while Order.objects.filter(orderId=order_id).exists():
                 order_id = str(random.randint(1000000, 9999999))
 
-            customer_name = self.request.POST['txtFname'] + ' ' + self.request.POST['txtLname'] 
-            shipping_address =  self.request.POST['txtAddress1'].rstrip() + ',' + self.request.POST['txtAddress2'].rstrip() + ',' +  self.request.POST['txtTown'].rstrip() +' '+  self.request.POST['txtPostcode'].rstrip() +','+ self.request.POST['ddlState'] +'.'
+            # name = self.request.POST['fname'] + ' ' + self.request.POST['lname']
 
-            order = Order(
-                orderId = order_id,
-                orderDate = datetime.today(),
-                name = customer_name,
-                shippingAddress = shipping_address,
-                phoneNo = self.request.POST['txtPhoneNo'].rstrip(),
-                email = self.request.POST['txtEmail'].rstrip(),
-                amount = self.request.POST['hdfAmount'],
-                userId = self.request.user,
-                isDelivered = False,
-                isReceived = False
-            )
-            order.save()
+            # order = Order(
+            #     orderId = order_id,
+            #     orderDate = datetime.today(),
+            #     name = customer_name,
+            #     shippingAddress = shipping_address,
+            #     phoneNo = self.request.POST['txtPhoneNo'].rstrip(),
+            #     email = self.request.POST['txtEmail'].rstrip(),
+            #     amount = self.request.POST['hdfAmount'],
+            #     userId = self.request.user,
+            #     isDelivered = False,
+            #     isReceived = False
+            # )
+            # order.save()
+
+            data = json.loads(self.request.body)
+
+            print(data['email'])
+            print(data['phoneNo'])
 
             order_items = Cart_Products.objects.filter(userId=self.request.user.id)
 
@@ -300,15 +326,52 @@ class OrderSummaryView(LoginRequiredMixin, View):
             
             # print(order)
             messages.success(self.request, 'Order Successfully!')
-            return render(self.request, 'homepage.html')
+            return render(self.request, 'user/homepage.html')
         except ObjectDoesNotExist:
             messages.warning(self.request, "Order Failed")
             return redirect("ecommerce:cart")
 
+def payment_complete(request):
+    order_id = str(random.randint(1000000, 9999999))
+
+    while Order.objects.filter(orderId=order_id).exists():
+        order_id = str(random.randint(1000000, 9999999))
+
+    body = json.loads(request.body)
+    print('BODY', body)
+
+    customer_name = body['form']['fname'] + ' ' + body['form']['lname']
+    shipping_address = body['shipping']['addressLine1'] + ', ' + body['shipping']['addressLine2'] + ', ' + body['shipping']['postcode'] + ' ' + body['shipping']['town'] + ', ' + body['shipping']['state']
+    order = Order(
+        orderId = order_id,
+        orderDate = datetime.today(),
+        name = customer_name,
+        shippingAddress = shipping_address,
+        phoneNo = body['form']['phoneNo'],
+        email = body['form']['email'],
+        amount = body['form']['total'], 
+        userId = request.user,
+        isDelivered = False,
+        isReceived = False
+    )
+    order.save()
+
+    order_items = Cart_Products.objects.filter(userId=request.user.id)
+
+    Order_Products.objects.bulk_create([Order_Products(orderId=Order.objects.get(orderId=order_id), furnitureId=item.furnitureId, quantity=item.quantity) for item in order_items])
+    
+    # delete items in cart
+    clear_cart = Cart_Products.objects.filter(userId=request.user.id)
+    clear_cart.delete()
+    
+    # print(order)
+    # messages.success(request, 'Order Successfully!')
+
+    # return redirect("ecommerce:profile")
+
+
 
 # ======= Donation ======= #
-
-
 
 def goDonate(request):
     if request.method == 'POST':
@@ -336,7 +399,7 @@ def goDonate(request):
 
     context = {'form':form}
 
-    return render(request, 'donate.html', context)
+    return render(request, 'user/donate.html', context)
 
 
 def requestDonation(request):
@@ -348,43 +411,139 @@ def requestDonation(request):
             name = request.POST.get('txtFname') + ' ' + request.POST.get('txtLname'),
             itemType = request.POST.get('txtType'),
             description = request.POST.get('txtDescription'),
-            image = request.FILES['imgDonation '],
+            image = request.FILES['imgDonation'],
             yearPurchased = request.POST.get('txtYearPurchased'),
             originalPrice = request.POST.get('txtOriginalPrice'),
             userId = request.user
         )
-
         donation.save()
 
         messages.success(request, "Donation Request Created Successfully!")
         return redirect('ecommerce:donate')
 
-    return render(request, 'donation.html')
-    
+    return render(request, 'user/donation.html')
 
 
+
+# =======  ======= #
 
 def goAbout(request):
-    return render(request,'about.html') 
+    context = {
+        'furniture':Furniture.objects.all()[:10]
+    }
+    return render(request,'user/about.html', context) 
+
+
+
+# ======= Profile ======= #
 
 def goProfile(request):
+    openOrder = False
+
     if request.method == "POST":
-        form = texting(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            print('asdhahj')
-            return redirect("ecommerce:profile")
-        else:
-            print('sdjnaks')
+        if (request.POST.get('btnUpdate')):
+            updateProfile(request)
+            return redirect('ecommerce:profile')
+        elif (request.POST.get('btnReceive')):
+            receiveOrder(request)
+            openOrder = True
+            return redirect('ecommerce:profile')
+    else:
+        context = get_profile_data(request)
 
-    form = texting()
+        if openOrder == True:
+            return render(request,'user/profile.html', context, {'openOrder':True})
+
+
+        return render(request,'user/profile.html', context)
+
+def receiveOrder(request):
+    id = request.POST.get('hdfOrderId')
+    order = Order.objects.get(orderId = id)
+    order.isReceived = True
+    order.save()
+
+    return messages.success(request, "Thank you for supporting our business!")
+
+def updateProfile(request):
+    # update data in User modal
+    user = User.objects.get(id = request.user.id)
+
+    user.username = request.POST.get('txtUname')
+    user.first_name = request.POST.get('txtFname')
+    user.last_name = request.POST.get('txtLname')
+    user.email = request.POST.get('txtEmail')
+
+    user.save()
+
+    # update data in Customer_Profile modal
+    customer = Customer_Profile.objects.get(custId = request.user)
+
+    customer.phoneNo = request.POST.get('txtPhoneNo')
+    customer.gender = request.POST.get('rbtnGender')
+    customer.dob = request.POST.get('txtDOB')
+    customer.address1 = request.POST.get('txtAddress1')
+    customer.address2 = request.POST.get('txtAddress2')
+    customer.town = request.POST.get('txtTown')
+    customer.postcode = request.POST.get('txtPostCode')
+    customer.state = request.POST.get('ddlState')
+
+    print("akhsdk")
+    print(request.POST.get('ddlState'))
+    print(customer.state)
+
+    if len(request.FILES) != 0:
+        # remove old image
+        import os
+        if os.path.exists(customer.profile_pic.path):
+            os.remove(customer.profile_pic.path)        
+        customer.profile_pic = request.FILES['imgProfile']
+
+
+    customer.save()
+
+    return messages.success(request, "Your profile is updated!")
+
+def get_profile_data(request):
+    profile_data = Customer_Profile.objects.get(custId=request.user)
+    states = ['Johor','Kedah','Kelantan','Malacca','Negeri Sembilan','Pahang',
+            'Perak','Perlis','Pinang','Sabah','Sarawak','Selangor','Terangganu']
+
+    orders = Order.objects.filter(userId = request.user).order_by('-orderDate')
+    items_list = []
+
+    for order in orders:
+        query = Order_Products.objects.filter(orderId = order.orderId)
+        if(query.exists()):
+            items_list.append(query)
+        
+    donations = Donation.objects.filter(userId = request.user).order_by('-dateCreated')
+    
     context = {
-        'form':form
+        'customer':profile_data,
+        'states':states,
+        'order_data': zip(orders, items_list),
+        'donations':donations
     }
-    return render(request,'profile.html', context)
 
+    return context
 
+# ======= Search Items ======= #
 
+def searchProduct(request):
+    if request.method == 'POST':
+        keyword = request.POST.get('txtSearch')
+        furniture = Furniture.objects.filter(Q(furnitureName__icontains=keyword) | Q(furnitureGenres__icontains=keyword))
 
+        if furniture.exists():
+            context = {
+                'furniture':furniture,
+                'keyword':keyword
+            }
+            return render(request, 'user/search.html', context)
+        else:
+            messages.error(request, "Item not found")
+
+    return render(request, 'user/search.html')
 
 

@@ -1,0 +1,59 @@
+    {% load static %}
+    {% static "images/" as baseUrl %}
+    {% block content %}
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+      <link rel="stylesheet" href="{% static 'css/homepage.css' %}"/> 
+    
+      <style>
+        .modal {
+          display:block;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="modal fade in" id="product_modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" style="max-width: 80%;">
+                </div>
+                <div class="col-md-4" style="color: var(--title-color);">
+                    <h3 >Name : {{ object.furnitureName }}</h3>
+                    <h3>Current Stock : {{ object.stock }}</h3>
+                    <h3>Price : ${{ object.unitPrice }}</h3>
+                </div>
+              </div>       
+            </div>
+            <div class="modal-footer">
+              <a href="{% url 'ecommerce:cart' %}" class="card__button text-uppercase">
+                <i class="uil uil-shopping-cart icon__size"></i>
+                Add To Cart
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+
+
+  
+    {% endblock content %}
+

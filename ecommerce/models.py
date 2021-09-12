@@ -13,8 +13,9 @@ class Customer_Profile(models.Model):
     address1 = models.CharField(max_length=255, null=True)
     address2 = models.CharField(max_length=255, null=True)
     town = models.CharField(max_length=50, null=True)
-    postcode = models.IntegerField(default=0, null=True)
+    postcode = models.CharField(max_length=20, null=True)
     state = models.CharField(max_length=50, null=True)
+    profile_pic = models.ImageField(upload_to='account', default="default.png", null=True, blank=True)
 
     def __str__(self):
         template = '{0.custId} {0.phoneNo}'
@@ -118,7 +119,8 @@ class Order_Products(models.Model):
     quantity = models.IntegerField(default=1)
     
     def __str__(self):
-        return self.orderId, " and ", self.furnitureId
+        template = '{0.orderId} {0.furnitureId} {0.quantity}'
+        return template.format(self)
 
 
 class Rating(models.Model):
@@ -136,13 +138,15 @@ class Donation(models.Model):
     itemType = models.CharField(max_length=20)
     description = models.CharField(max_length=500)
     image = models.ImageField(upload_to='donation')
-    yearPurchased = models.PositiveIntegerField(null=True)
-    originalPrice = models.DecimalField(max_digits=8, decimal_places=2)
+    yearPurchased = models.PositiveIntegerField()
+    originalPrice = models.DecimalField(max_digits=8, decimal_places=2, null=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    isApproved = models.BooleanField(default=False)
+
 
     def __str__(self):
         template = '{0.donationId} {0.name}  {0.itemType}'
         return template.format(self)
 
 class Image(models.Model):
-    img = models.ImageField()
+    img = models.ImageField(upload_to='testing')

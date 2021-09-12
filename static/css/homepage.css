@@ -1,17 +1,17 @@
-@import url(../css/main2.css);
+@import url(../css/main.css);
 
 .home__img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 85vh;
+    height: 70vh;
     object-fit: cover;
 }
 
 .home__container {
     position: relative;
-    height: 80vh;
+    height: 60vh;
     align-content: center;
     padding-top: 10rem;
     /* row-gap: 2rem; */
@@ -27,7 +27,7 @@
 .home__data-title {
     font-size: var(--biggest-font-size);
     font-weight: var(--font-medium);
-    margin-bottom: var(--mb-2-5);
+    /* margin-bottom: var(--mb-2-5); */
 }
 
 /*=============== BUTTONS ===============*/
@@ -53,32 +53,18 @@
     margin-left: 3.5rem;
 }
 
-
-
 /*=============== RECOMMEDANTION AREA ===============*/
+.hot__products{
+    margin-top: 6rem;
+}
+
+.hot__products i{
+    font-size: 4.5rem; 
+    color: var(--title-color);
+}
 .recommendation__container{
     margin-top: 6rem;
 }
-/* .rec__btn{
-    position: relative;
-    color: var(--text-color-light);
-    font-weight: var(--font-semi-bold);
-    text-transform: uppercase;
-  } */
-
-/* .active__input, .rec__btn:hover{
-    color: var(--title-color);
-}
-
-.active__input::before{
-    content: '';
-    position: absolute;
-    background-color: var(--title-color);
-    width: 100%;
-    height: 2.5px;
-    bottom: -.75rem;
-    left: 0;
-} */
 
 .card{
     border: none !important;
@@ -86,10 +72,6 @@
     cursor: pointer;
     transition: 1s;
     margin: var(--mb-1-25) var(--mb-0-25) var(--mb-1-25) var(--mb-0-25);
-}
-
-.card__button:hover{
-    color: var(--text-color-light);
 }
 
 .card:hover{
@@ -119,10 +101,9 @@
     border: none;
 }
 
-.card__button i{
-    font-size: var(--h3-font-size);
-    font-weight: var(--font-semi-bold);
-    margin-right: var(--mb-0-25);
+.card__button:hover{
+    background-color: #0075F6;
+    color: white;
 }
 
 .owl-theme .owl-dots .owl-dot {
@@ -130,11 +111,6 @@
     color: var(--title-color) !important;
 
 }
-
-/* .owl-theme .owl-dots{
-    outline: none !important;
-    text-decoration: none !important;
-} */
 
 .owl-theme .owl-nav .owl-prev,
 .owl-theme .owl-nav .owl-next{
@@ -161,32 +137,115 @@
 
 
 /*=============== COMPANY INFO ===============*/
-.info__container{
-    background: var(--title-color);
+.info{
     margin-top: 5rem;
-}
-
-.img-fluid{
-    max-width: 50% !important;
-    max-height: auto;
-    /* remove extra space below image */
-}
-
-.donation__container{
-    background: var(--title-color);
-    border-radius: 2rem;
-    margin-top: 5rem;
-    margin-bottom: 5rem;
-}
-
-.donation__title{
     color: var(--white-color);
 }
 
+.info h1{
+    color: var(--white-color);
+}
+
+.info i{
+    font-size: 5rem;
+}
+
+#intro {
+    background: url("../images/banner/banner4.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    padding: 5rem 0 5rem 0;
+    height: auto;
+}
+
+
+/*=============== COMPANY INFO ===============*/
+.donation{
+    background: var(--first-color);
+    height: 40vh;
+    margin-top: 5rem;
+}
+
+.donation__info{
+    margin-top: 3rem;
+}
+
+.donation__info h2{
+    color: var(--white-color);
+}
+
+.donate__image{
+    position: absolute;
+    top: -60px;
+}
+
+
 .btn-info{
     border: 0 !important;
-    /* background-color: var(--body-color) !important; */
-    /* color: var(--title-color) !important; */
     color: var(--title-color) !important;
     font-weight: bolder !important;
 }
+
+
+/*=============== SWIPER ===============*/
+.swiper {
+    width: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px !important;
+  }
+
+  .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 300px !important;
+    height: 300px !important;
+  }
+
+  .swiper-slide img {
+    display: block;
+    width: 100%;         
+
+  }
+
+
+/*=============== CONTACT US ===============*/
+.contact{
+    color: var(--title-color-light);
+    font-size: medium;
+}
+
+.contact i{
+    font-size: x-large; 
+    vertical-align: middle;
+}
+
+.contact form{
+    padding-left: 6rem; 
+    padding-right: 4rem;
+}
+
+/*=============== GOOGLE MAP ===============*/
+
+.mapouter{
+    position:relative;
+    text-align:right;
+    height:500px;
+    width:600px;
+  }
+
+.gmap_canvas {
+    overflow:hidden;
+    background:none!important;
+    height:400px;
+    width:500px;
+  }
+
+/*=============== SWEET ALERT ===============*/
+
+.message_footer:focus{
+    outline: none !important;
+}
+
+
