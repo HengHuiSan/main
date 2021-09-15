@@ -1,18 +1,18 @@
 from datetime import date, datetime
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls.base import resolve
 from ecommerce.models import *
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, redirect 
-from .forms import CustomFieldForm, UserRegistrationForm, DonationForm, texting
-from django.contrib.auth import authenticate, login, logout
+from .forms import UserRegistrationForm, DonationForm
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.contrib.auth.forms import PasswordChangeForm
+
 
 from django.db.models import Q # new
 
@@ -70,7 +70,6 @@ def logoutUser(request):
 	return redirect('ecommerce:login')
 
 
-
 # ======= Homepage ======= #
 
 @login_required(login_url='ecommerce:login')
@@ -106,11 +105,9 @@ def goHompage(request):
     return render(request,'user/homepage.html', context)
 
 
-
 # ======= Catalog ======= #
 
 def goCatalog(request): 
-    # cid = request.GET.get('cid', 1)       
     page_number = request.GET.get('page', 1)
     cid=1
     
@@ -144,31 +141,27 @@ def goCatalog(request):
                "next_page_url":next_url,
                "prev_page_url":prev_url}
 
-    return render(request,'user/catalog1.html', context)
-
-
-class catalogDetailView(LoginRequiredMixin, View):
-    def get(self, *args, **kwargs):
-        try:
-            category = Category.objects.all()
-            furniture = Furniture.objects.filter(categoryId_id=1)
-
-            context = {
-                'categories':category,
-                'furniture':furniture
-            }
-            return render(self.request, 'user/catalog1.html', context)
-        except ObjectDoesNotExist:
-            messages.warning(self.request, "Your cart is empty")
-            return redirect('ecommerce:cart')
-            
+    return render(request,'user/catalog.html', context)
 
 
 # ======= Product Listings ======= #
 
-class ItemDetailView(DetailView):
-    model = Furniture
-    template_name = "user/product.html"
+# class ItemDetailView(DetailView):
+#     model = Furniture
+#     template_name = "user/product.html"
+class ItemDetailView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            item = get_object_or_404(Furniture, slug=self.kwargs['slug'])
+            related_items = Furniture.objects.filter(furnitureGenres__icontains = item.furnitureGenres)[:8]
+
+            context = {
+                'object': item, 
+                'related_items': related_items
+            }
+            return render(self.request, 'user/product.html', context)
+        except ObjectDoesNotExist:
+            return redirect(self.request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 # View the item after clicking
 def updateViewToItem(request, slug):
@@ -187,16 +180,11 @@ def updateViewToItem(request, slug):
 
     return redirect('ecommerce:product', slug=slug)
 
+# You may also like
+def getRelatedItems(item):
+    related_items = Furniture.objects.filter(furnitureGenres__icontains = item.furnitureGenres)
 
-def getItem(request, slug):
-    item = get_object_or_404(Furniture, slug=slug)
-    # furniture = Furniture.objects.get(furnitureId = item)
-    print('me is here')
-    context = {
-        'object':item
-    }
-
-    return render(request, 'user/product.html', context)
+    return related_items
 
 
 # ======= Shopping Cart ======= #
@@ -241,6 +229,8 @@ def addToCart(request, slug):
         return redirect('ecommerce:homepage')
     elif "catalog" in previous_url:
         return redirect('ecommerce:catalog')
+    elif "product" in previous_url:
+        return redirect('ecommerce:cart')
 
 
 def removeFromCart(request, slug):
@@ -262,7 +252,6 @@ def updateCart(request):
         cart_item.save()
 
     return redirect('ecommerce:cart')
-
 
 
 # ======= Checkout ======= #    
@@ -331,6 +320,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
             messages.warning(self.request, "Order Failed")
             return redirect("ecommerce:cart")
 
+
 def payment_complete(request):
     order_id = str(random.randint(1000000, 9999999))
 
@@ -368,7 +358,6 @@ def payment_complete(request):
     # messages.success(request, 'Order Successfully!')
 
     # return redirect("ecommerce:profile")
-
 
 
 # ======= Donation ======= #
@@ -425,37 +414,31 @@ def requestDonation(request):
 
 
 
-# =======  ======= #
+# ======= testing ======= #
 
-def goAbout(request):
-    context = {
-        'furniture':Furniture.objects.all()[:10]
-    }
-    return render(request,'user/about.html', context) 
-
+# def goAbout(request):
+#     # return render(request, 'admin/login.html')
+#     return -
 
 
 # ======= Profile ======= #
 
-def goProfile(request):
-    openOrder = False
-
+def goProfile(request, section):
     if request.method == "POST":
         if (request.POST.get('btnUpdate')):
             updateProfile(request)
-            return redirect('ecommerce:profile')
+            return redirect('ecommerce:profile', section='account')
         elif (request.POST.get('btnReceive')):
             receiveOrder(request)
-            openOrder = True
-            return redirect('ecommerce:profile')
+            return redirect('ecommerce:profile', section='order')
+        elif (request.POST.get('btnSave')):
+            updateAccount(request)
+            return redirect('ecommerce:profile', section='settings')
     else:
         context = get_profile_data(request)
 
-        if openOrder == True:
-            return render(request,'user/profile.html', context, {'openOrder':True})
-
-
         return render(request,'user/profile.html', context)
+
 
 def receiveOrder(request):
     id = request.POST.get('hdfOrderId')
@@ -464,6 +447,18 @@ def receiveOrder(request):
     order.save()
 
     return messages.success(request, "Thank you for supporting our business!")
+
+def updateAccount(request):
+    form = PasswordChangeForm(request.user, request.POST)
+    if form.is_valid():
+        user = form.save()
+        update_session_auth_hash(request, user)  # Important!
+        
+        messages.success(request, 'Your password was successfully updated!')
+        return redirect('ecommerce:profile', section='settings')
+    else:
+        messages.error(request, 'Please correct the error below.')
+
 
 def updateProfile(request):
     # update data in User modal
@@ -488,10 +483,6 @@ def updateProfile(request):
     customer.postcode = request.POST.get('txtPostCode')
     customer.state = request.POST.get('ddlState')
 
-    print("akhsdk")
-    print(request.POST.get('ddlState'))
-    print(customer.state)
-
     if len(request.FILES) != 0:
         # remove old image
         import os
@@ -499,10 +490,10 @@ def updateProfile(request):
             os.remove(customer.profile_pic.path)        
         customer.profile_pic = request.FILES['imgProfile']
 
-
     customer.save()
 
     return messages.success(request, "Your profile is updated!")
+
 
 def get_profile_data(request):
     profile_data = Customer_Profile.objects.get(custId=request.user)
@@ -519,14 +510,18 @@ def get_profile_data(request):
         
     donations = Donation.objects.filter(userId = request.user).order_by('-dateCreated')
     
+    form = PasswordChangeForm(request.user)
+
     context = {
         'customer':profile_data,
         'states':states,
         'order_data': zip(orders, items_list),
-        'donations':donations
+        'donations':donations,
+        'form': form,
     }
 
     return context
+
 
 # ======= Search Items ======= #
 

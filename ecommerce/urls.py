@@ -1,14 +1,9 @@
 from django.urls import path
 from . import views
 from . import recommendation
-from .views import ItemDetailView, CartDetailView, OrderSummaryView, catalogDetailView
+from .views import ItemDetailView, CartDetailView, OrderSummaryView
 
 app_name = 'ecommerce'
-
-urlpatterns = [
-    path('view/<slug>/', views.updateViewToItem, name='view'),
-    path('product/<slug>/', ItemDetailView.as_view(), name='product'),
-]
 
 urlpatterns = [
     path('register/',views.registerView,name='register'),
@@ -17,9 +12,8 @@ urlpatterns = [
     path('homepage/',views.goHompage,name='homepage'),
     path('catalog/',views.goCatalog, name='catalog'),
     path('donate/',views.requestDonation, name='donate'),
-    path('about/',views.goAbout, name='about'),
     path('cart/',CartDetailView.as_view(), name='cart'),
-    path('profile/',views.goProfile, name='profile'),
+    path('profile/<slug:section>/',views.goProfile, name='profile'),
     path('view/<slug>/', views.updateViewToItem, name='view'),
     path('product/<slug>/', ItemDetailView.as_view(), name='product'),
     path('update-cart/', views.updateCart, name='update-cart'),
@@ -29,5 +23,6 @@ urlpatterns = [
     path('update/', views.updateProfile, name='update'),
     path('complete/', views.payment_complete, name="complete"),
     path('search/', views.searchProduct, name="search"),
-
 ]
+
+    # path('about/',views.goAbout, name='about'),

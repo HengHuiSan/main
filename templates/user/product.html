@@ -1,6 +1,5 @@
     {% load static %}
     {% static "images/" as baseUrl %}
-    {% block content %}
 
     <!DOCTYPE html>
     <html lang="en">
@@ -8,52 +7,94 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <!-- Custom StyleSheet -->
+      <link rel="stylesheet" href="{% static 'css/homepage.css' %}"/>  
 
-      <link rel="stylesheet" href="{% static 'css/homepage.css' %}"/> 
-    
       <style>
-        .modal {
-          display:block;
+        .btn{
+          background-color: var(--title-color) !important;
+          border: none !important;
+        }
+        .btn:focus {
+          outline: none !important;
+          box-shadow: none !important;
         }
       </style>
+
     </head>
 
     <body>
-      <div class="modal fade in" id="product_modal" role="dialog">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-md-8">
-                  <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" style="max-width: 80%;">
-                </div>
-                <div class="col-md-4" style="color: var(--title-color);">
-                    <h3 >Name : {{ object.furnitureName }}</h3>
-                    <h3>Current Stock : {{ object.stock }}</h3>
-                    <h3>Price : ${{ object.unitPrice }}</h3>
-                </div>
-              </div>       
-            </div>
-            <div class="modal-footer">
-              <a href="{% url 'ecommerce:cart' %}" class="card__button text-uppercase">
-                <i class="uil uil-shopping-cart icon__size"></i>
-                Add To Cart
-              </a>
-            </div>
+      {% include 'user/header.html' %}
+
+
+      <div class="container mb-5">
+        <div class="row">
+          <div class="col">
+            <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mt-5">
+          </div>
+          <div class="col" style="margin-top: 15%;">
+            <h1><b>{{ object.furnitureName }}</b></h1>
+            <h3>Current Stock : {{ object.stock }}</h3>
+            <h3>Price : RM {{ object.unitPrice }}</h3>
+            <a href="{{ object.add_to_cart_url }}" class="btn btn-primary text-uppercase my-3" >
+              <i class="uil uil-shopping-cart"></i>
+              Add To Cart
+          </a>
           </div>
         </div>
       </div>
+
+      <div class="container py-5">
+        <h2>You may also like</h2>
+        <div class="owl-carousel owl-theme row text-center">
+          {% for object in related_items %}
+          <div class="col">
+              <a href="{{ object.update_view_count_url }}">
+                  <div class="card text-center">
+                      <div class="card-body">
+                          <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
+                          <h3 class="card__fName text-uppercase">{{object.furnitureName}}</h3>
+                          <h2 class="card__fPrice mb-3">RM {{object.unitPrice}}</h2>
+                          <a href="{{ object.add_to_cart_url }}" class="card__button text-uppercase mb-3">
+                              <i class="uil uil-shopping-cart"></i>
+                              Add To Cart
+                          </a>
+                      </div>
+                  </div>
+              </a>
+          </div>
+          {% endfor %}
+      </div>
+      </div>
+      
+      {% include 'user/footer.html' %}
+      
+
+      <script type="text/javascript">
+        // Owl Carousel JS
+        $('.owl-carousel').owlCarousel({
+           loop:true,
+           nav:true,
+           dots: true,
+           margin: 10,
+           navText : ['<i class="uil uil-angle-left-b swiper-portfolio-icon"></i>','<i class="uil uil-angle-right-b swiper-portfolio-icon"></i>'],
+           responsive:{
+             0:{
+               items:2
+             },
+             600:{
+               items:3
+             },
+             1000:{
+               items:4
+             }
+           }
+         });
+        </script>
+
     </body>
     </html>
 
 
   
-    {% endblock content %}
 

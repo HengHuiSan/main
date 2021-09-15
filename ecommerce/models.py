@@ -122,15 +122,6 @@ class Order_Products(models.Model):
         template = '{0.orderId} {0.furnitureId} {0.quantity}'
         return template.format(self)
 
-
-class Rating(models.Model):
-    furnitureId = models.ForeignKey(Furniture, on_delete=models.CASCADE)
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField(null=True)
-
-    def __str__(self):
-        return self.furnitureId, " and ", self.userId, " and ", self.rating
-
 class Donation(models.Model):
     donationId = models.CharField(primary_key=True, max_length=50)
     dateCreated = models.DateField(auto_now_add=True)
@@ -141,7 +132,7 @@ class Donation(models.Model):
     yearPurchased = models.PositiveIntegerField()
     originalPrice = models.DecimalField(max_digits=8, decimal_places=2, null=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
-    isApproved = models.BooleanField(default=False)
+    isApproved = models.BooleanField(null=True)
 
 
     def __str__(self):

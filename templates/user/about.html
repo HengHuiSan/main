@@ -1,158 +1,30 @@
 {% load static %}
 {% static "images/" as baseUrl %}
+{% load crispy_forms_tags %} 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Swiper demo</title>
+
+    
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"/>
     <!-- Link Swiper's CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" /> -->
 
     <!-- Demo styles -->
 </html>
 <body>
-         <!--Section: Contact-->
-         <section id="contact">
-
-          <!-- Heading -->
-          <h2 class="mb-5 font-weight-bold text-center">Contact us</h2>
-
-          <!--Grid row-->
-          <div class="row">
-
-              <!--Grid column-->
-              <div class="col-lg-5 col-md-12">
-                  <!-- Form contact -->
-                  <form class="p-5 grey-text">
-                      <div class="md-form form-sm"> <i class="fa fa-user prefix"></i>
-                          <input type="text" id="form3" class="form-control form-control-sm">
-                          <label for="form3">Your name</label>
-                      </div>
-                      <div class="md-form form-sm"> <i class="fa fa-envelope prefix"></i>
-                          <input type="text" id="form2" class="form-control form-control-sm">
-                          <label for="form2">Your email</label>
-                      </div>
-                      <div class="md-form form-sm"> <i class="fa fa-tag prefix"></i>
-                          <input type="text" id="form32" class="form-control form-control-sm">
-                          <label for="form34">Subject</label>
-                      </div>
-                      <div class="md-form form-sm"> <i class="fa fa-pencil prefix"></i>
-                          <textarea type="text" id="form8" class="md-textarea form-control form-control-sm" rows="4"></textarea>
-                          <label for="form8">Your message</label>
-                      </div>
-                      <div class="text-center mt-4">
-                          <button class="btn btn-primary">Send <i class="fa fa-paper-plane-o ml-1"></i></button>
-                      </div>
-                  </form>
-                  <!-- Form contact -->
-              </div>
-              <!--Grid column-->
-
-              <!--Grid column-->
-              <div class="col-lg-7 col-md-12">
-
-                  <!--Grid row-->
-                  <div class="row text-center">
-
-                      <!--Grid column-->
-                      <div class="col-lg-4 col-md-12 mb-3">
-
-                          <p><i class="fa fa-map fa-1x mr-2 grey-text"></i>New York, NY 10012</p>
-
-                      </div>
-                      <!--Grid column-->
-
-                      <!--Grid column-->
-                      <div class="col-lg-4 col-md-6 mb-3">
-
-                          <p><i class="fa fa-building fa-1x mr-2 grey-text"></i>Mon - Fri, 8:00-22:00</p>
-
-                      </div>
-                      <!--Grid column-->
-
-                      <!--Grid column-->
-                      <div class="col-lg-4 col-md-6 mb-3">
-
-                          <p><i class="fa fa-phone fa-1x mr-2 grey-text"></i>+ 01 234 567 89</p>
-
-                      </div>
-                      <!--Grid column-->
-
-                  </div>
-                  <!--Grid row-->
-
-                  <!--Google map-->
-                  <div class="mapouter">
-                    <div class="gmap_canvas">
-                      <iframe width="600" 
-                              height="500" 
-                              id="gmap_canvas" 
-                              src="https://maps.google.com/maps?q=2A,%20Jalan%20Cochrane,%20Maluri,%2055100%20Kuala%20Lumpur,%20Wilayah%20Persekutuan%20Kuala%20Lumpur&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                              frameborder="0" 
-                              scrolling="no" 
-                              marginheight="0" 
-                              marginwidth="0">
-                      </iframe>
-                      <a href="https://123movies-to.org"></a><br>
-
-                      <style>
-                        .mapouter{
-                          position:relative;
-                          text-align:right;
-                          height:500px;
-                          width:600px;
-                        }
-                      </style>
-
-                      <a href="https://www.embedgooglemap.net">embedgooglemap.net</a>
-                    <style>
-                      .gmap_canvas {
-                        overflow:hidden;
-                        background:none!important;
-                        height:500px;
-                        width:600px;
-                      }
-                    </style>
-
-              </div>
-              <!--Grid column-->
-
-          </div>
-          <!--Grid row-->
-
-      </section>
-      <!--Section: Contact-->
-      <script>
-        // Regular map
-        function regular_map() {
-          var var_location = new google.maps.LatLng(40.725118, -73.997699);
-
-          var var_mapoptions = {
-              center: var_location,
-              zoom: 14
-          };
-
-          var var_map = new google.maps.Map(document.getElementById("map-container"),
-              var_mapoptions);
-
-          var var_marker = new google.maps.Marker({
-              position: var_location,
-              map: var_map,
-              title: "New York"
-          });
-      }
-
-      // Initialize maps
-      google.maps.event.addDomListener(window, 'load', regular_map);
-
-// Carousel options
-
-$('.carousel').carousel({
-          interval: 3000,
-      })
-      </script>
+  {% include 'user/header.html' %}
+    
+    <form method="POST" action="{% url 'ecommerce:about' %}" class="password_change">
+        username :
+        <input type="text" name="txtUname" value="{{ username }}">
+        {% csrf_token %}
+        {% crispy form %}
+        <!-- <input type="submit" value="save" name="btnSave"> -->
+    </form>
 </body>
 </html>

@@ -11,10 +11,6 @@
     <!-- Custom StyleSheet -->
     <link rel="stylesheet" href="{% static 'css/homepage.css' %}"/>  
     
-    <!-- Owl Carousel StyleSheet -->
-    <link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.theme.default.min.css">
-
     <!-- Link Swiper's CSS -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
@@ -71,7 +67,7 @@
             </div>
         </section>
 
-        <!------------ INFO ------------>
+        <!------------ DONATION INFO ------------>
         <section class="donation container" id="donation">
             <div class="row">
                 <div class="col-lg-6">
@@ -89,7 +85,7 @@
                                 ipsa quaerat soluta dolorem quidem culpa 
                             </p>
                         </div>
-                        <a href="{% url 'ecommerce:catalog' %}" class="btn btn-primary text-uppercase mt-2">donate now</a>
+                        <a href="{% url 'ecommerce:donate' %}" class="btn btn-primary text-uppercase mt-2">donate now</a>
 
                     </div>
                 </div>
@@ -117,7 +113,7 @@
                                             <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
                                             <h3 class="card__fName text-uppercase">{{object.furnitureId}}</h3>
                                             <h3 class="card__fName text-uppercase">{{object.furnitureName}}</h3>
-                                            <h2 class="card__fPrice mb-3">${{object.unitPrice}}</h2>
+                                            <h2 class="card__fPrice mb-3">RM {{object.unitPrice}}</h2>
                                             <a href="{{ object.add_to_cart_url }}"  class="card__button text-uppercase mb-3">
                                                 <i class="uil uil-shopping-cart"></i>
                                                 Add To Cart
@@ -144,7 +140,7 @@
                                         <div class="card-body">
                                             <img src="{{baseUrl}}/{{object.furnitureImg}}" alt="" class="mb-3 mx-auto">
                                             <h3 class="card__fName text-uppercase">{{object.furnitureName}}</h3>
-                                            <h2 class="card__fPrice mb-3">${{object.unitPrice}}</h2>
+                                            <h2 class="card__fPrice mb-3">RM {{object.unitPrice}}</h2>
                                             <a href="{{ object.add_to_cart_url }}" class="card__button text-uppercase mb-3">
                                                 <i class="uil uil-shopping-cart"></i>
                                                 Add To Cart
@@ -256,10 +252,13 @@
                 </div>
             </div>
         </section>
+    </main>  
 
-        <!------------ SCROLL TOP------------>
+    <!------------ SCROLL TOP------------>
+    <a href="#" class="scrollup" id="scroll-up">
+        <i class="material-icons">arrow_upward</i>
+    </a>
 
-    </main>   
 
     {% include 'user/footer.html' %}
 
@@ -288,10 +287,6 @@
             {% endif %}  
         {% endfor %}	
     {% endif %}
-    
-    <!-- Owl Carousel JS (SWIPER) -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/owl.carousel.js"></script>
 
     <!-- Swiper JS -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
@@ -336,6 +331,16 @@
             loop: true
           });      
 
+        // Show Scroll Up
+        function scrollUp(){
+            const scrollUp = document.getElementById('scroll-up');
+            // When the scroll is higher than 560 viewport height, add the show-scroll class to the a tag with the scroll-top class
+            if(this.scrollY >= 500) 
+                scrollUp.classList.add('show-scroll'); 
+            else 
+                scrollUp.classList.remove('show-scroll')
+        }
+        window.addEventListener('scroll', scrollUp)
     </script>
 </body>
 </html>

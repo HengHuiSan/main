@@ -1,5 +1,6 @@
 {% load static %}
 {% static "images/" as baseUrl %}
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,22 +60,21 @@
             </div>
             <hr>
 
-            <button type="button" class="btn btn-primary active" onclick="showProfile()" autofocus>
+            <a href="{% url 'ecommerce:profile' section='account' %}" class="btn btn-primary ml-3">
               <i class="material-icons align-middle mr-2" aria-hidden="true">person</i>
               <span class="align-middle">My Account</span>
-            </button>
+            </a>
             <hr>
-            <button type="button" class="btn btn-primary" onclick="showOrders()">
+            <a href="{% url 'ecommerce:profile' section='order' %}" class="btn btn-primary ml-3">
               <i class="material-icons align-middle mr-2" aria-hidden="true">list_alt</i>
               <span class="align-middle">My Order</span>
-            </button>
+            </a>
             <hr>
-            <button  type="button" class="btn btn-primary" onclick="showDonations()">
+            <a href="{% url 'ecommerce:profile' section='donation' %}" class="btn btn-primary ml-3">
               <i class="material-icons align-middle mr-2" aria-hidden="true">volunteer_activism</i>
               <span class="align-middle">My Donation</span>
-            </button>
+            </a>
             <hr>
-
           </div>
         </div>
       </div>
@@ -83,8 +83,18 @@
       <div class="col-md-9">
         <!------------- Profile Area ------------->
         <section id="profile" style="display: block; color: var(--title-color);">
-          <h1>&nbsp;My Profile</h1>
-          <div class="card shadow-sm  border-0">
+          <div class="row">
+            <div class="col">
+              <h1>&nbsp;My Profile</h1>
+            </div>
+            <div class="col">
+              <a type="submit" class="btn btn-secondary w-50" href="{% url 'ecommerce:profile' section='settings' %}">
+                <i class="material-icons align-middle" aria-hidden="true">settings</i>
+                Change Password
+              </a>
+            </div>
+          </div>
+          <div class="card shadow-sm border-0">
             <div class="card-body">
               <form action="" method="POST" enctype="multipart/form-data" class="py-3 px-4 form-horizontal">
                 {% csrf_token %}
@@ -92,13 +102,13 @@
                 <hr>
                 <div class="row">
                   <div class="col-md-8">
-                    <div class="form-group">
-                      <div class="form-group row">
-                        <label for="txtUname" class="col-sm-3 col-form-label">Username</label>
-                        <div class="col-sm-9">
-                          <input type="text" class="form-control" id="txtUname" name="txtUname" value="{{ request.user }}" required>
-                        </div>
+                    <div class="form-group row">
+                      <label for="txtUname" class="col-sm-3 col-form-label">Username</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtUname" name="txtUname" value="{{ request.user }}" required>
                       </div>
+                    </div>
+                    <div class="form-group">
                       <div class="row">
                           <div class="col row">
                               <label for="txtFname" class="col col-form-label">First Name</label>
@@ -198,12 +208,29 @@
                 </div> 
                 <div class="d-flex justify-content-center">
                   <input type="submit" class="btn btn-secondary mr-3" name="btnUpdate" value="Update"/>
-                  <a href="{% url 'ecommerce:profile' %}" class="btn btn-secondary">Cancel</a>
+                  <a href="{% url 'ecommerce:profile' section='account' %}" class="btn btn-secondary">Cancel</a>
                 </div> 
               </form> 
             </div>
           </div>
         </section>
+
+        <section class="settings" id="settings" style="display: none;">
+          <h1>&nbsp;Change Password</h1>
+          <div class="card shadow-sm border-0 px-5 py-3" style="color: var(--first-color);">
+            <div class="card-body">
+              <form method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-flex justify-content-center pt-3">
+                  <input type="submit" name="btnSave" value="Save" class="btn btn-secondary mr-3">
+                  <a href="{% url 'ecommerce:profile' section='profile' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
 
         <!------------- Order Area ------------->
         <section id="order" style="display: none;">
@@ -283,8 +310,10 @@
                 <div class="col">
                   {% if donation.isApproved == True %}
                   <h2 class="text-uppercase text-right" style="color: orangered;"><b>accepted</b></h2>
-                  {% else %}
+                  {% elif donation.isApproved == False %}
                   <h2 class="text-uppercase text-right" style="color: orangered;"><b>rejected</b></h2>
+                  {% else %}
+                  <h2 class="text-uppercase text-right" style="color: orangered;"><b>processing</b></h2>
                   {% endif %}
                 </div>
               </div>
@@ -338,13 +367,31 @@
     {% endfor %}	
   {% endif %}
 
-  <script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      if (window.location.href.indexOf('account') > -1) {
+        showProfile(); 
+      }
+      else if (window.location.href.indexOf('order') > -1){
+        showOrders(); 
+      }
+      else if (window.location.href.indexOf('donation') > -1){
+        showDonations(); 
+      }
+      else if (window.location.href.indexOf('settings') > -1){
+        showSettings(); 
+      }
+    });
+
     function showProfile() {
+      var w = document.getElementById("settings");
       var x = document.getElementById("profile");
       var y = document.getElementById("order");
       var z = document.getElementById("donation");
 
       if (x.style.display === "none") {
+        w.style.display = "none";
         x.style.display = "block";
         y.style.display = "none";
         z.style.display = "none";
@@ -352,11 +399,13 @@
     }
 
     function showOrders() {
+      var w = document.getElementById("settings");
       var x = document.getElementById("profile");
       var y = document.getElementById("order");
       var z = document.getElementById("donation");
 
       if (y.style.display === "none") {
+        w.style.display = "none";
         x.style.display = "none";
         y.style.display = "block";
         z.style.display = "none";
@@ -364,14 +413,30 @@
     }
 
     function showDonations() {
+      var w = document.getElementById("settings");
       var x = document.getElementById("profile");
       var y = document.getElementById("order");
       var z = document.getElementById("donation");
 
       if (z.style.display === "none") {
+        w.style.display = "none";
         x.style.display = "none";
         y.style.display = "none";
         z.style.display = "block";
+      }
+    }
+
+    function showSettings() {
+      var w = document.getElementById("settings");
+      var x = document.getElementById("profile");
+      var y = document.getElementById("order");
+      var z = document.getElementById("donation");
+
+      if (z.style.display === "none") {
+        w.style.display = "block";
+        x.style.display = "none";
+        y.style.display = "none";
+        z.style.display = "none";
       }
     }
   </script>

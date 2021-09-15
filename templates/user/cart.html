@@ -16,7 +16,6 @@
           }
     
         .btn-primary{
-            /* background-color:hsl(190, 64%, 18%); */
             background-color: var(--title-color) !important;
             border: 0  !important;
             width: 100%;
@@ -34,6 +33,7 @@
     
     <div class="container py-5">
         <div class="row">
+            <!------------ CART INFORMATION ------------>
             <div class="col-lg-7">
                 <div class="card shadow border-0 mb-3">
                     <div class="card-body">
@@ -54,7 +54,7 @@
                             <div class="col-md-8 mt-4">
                                 <div class="mb-2 mb-md-0">
                                     <div class="d-flex justify-content-between">
-                                        <div class="col-md-6">
+                                        <div class="col-md-7">
                                             <h3>{{ item.furnitureId.furnitureName }}</h3>
                                             <table>
                                                 <tr>
@@ -72,10 +72,9 @@
                                             </table>
                                         </div>
 
-                                        <!-- Total Price -->
-                                        <div class="col-md-7">
-                                            <h2 style="color:orangered">$<span id="result+{{ item.furnitureId.furnitureId }}">{{ item.get_item_total_price }}</span></h2>
-                                            <!-- <h2><span style="color:orangered">$&nbsp;{% widthratio item.furnitureId.unitPrice 1 item.quantity %}</h2> -->
+                                        <!-- Total Price of The Item-->
+                                        <div class="col-md-6">
+                                            <h3 style="color:orangered">RM <span id="result+{{ item.furnitureId.furnitureId }}">{{ item.get_item_total_price }}</span></h3>
                                         </div>
                                     </div>
                                 </div>
@@ -94,16 +93,14 @@
                 </div>
             </div>
 
-            <!-- Total Amount -->
+            <!------------ AMOUNT ------------>
             <div class="col-lg-5">
                 <div class="card shadow border-0">
                     <div class="card-body">
                         <div class="pl-3 mt-2">
                             <h3><b>Total Amount</b></h3>
                             <hr />
-                            <!-- Amount -->
-                            <h1 class="mb-5" style="color:orangered">$ <span id="amount">{{ amount|floatformat:2 }}</span></h1>
-                            <!-- <input type="text" name="txtAmount" id="txtAmount" style="color:orangered; font-size: var(--biggest-font-size); font-weight: 600; font-family: var(--title-font);" value="${{ amount|floatformat:2 }}"> -->
+                            <h1 class="mb-5" style="color:orangered">RM <span id="amount">{{ amount|floatformat:2 }}</span></h1>
                             <div class="d-flex justify-content-center my-4">
                                 <a href="{% url 'ecommerce:checkout' %}" class="btn btn-primary">Checkout</a>
                             </div>
@@ -114,72 +111,70 @@
         </div>
     </div>
 
-        {% include 'user/footer.html' %}
+    {% include 'user/footer.html' %}
     
+    {% if messages %}
+        {% for msg in messages %}
         <script>
+            Swal.fire({
+                icon: 'success',
+                title: '{{ msg }}',
+                showConfirmButton: false,
+                timer: 1200
+            })
+        </script>    
+        {% endfor %}	
+    {% endif %}
 
-            var fid = []
-            var fprice = []
-            var totalPrice = []
-            "{% for item in cart %}"
-                fid.push( "{{ item.furnitureId.furnitureId }}" )
-                fprice.push( "{{ item.furnitureId.unitPrice }}" )
-                totalPrice.push( parseFloat("{{ item.get_item_total_price }}") ) 
-            "{% endfor %}"
-    
-    
-            function calcAmount(elem) 
-            {
-                var id = elem.id; 
-                var qty = document.getElementById(id).value;
-                var token = '{{csrf_token}}';
-                var amount = 0;
-                var total = 0;
-    
-                for (var i=0; i<fprice.length; i++) {
-                    if(fid[i] == id){
-                        total = qty * fprice[i]
-                        totalPrice[i] = total
+    <script>
+        var fid = []
+        var fprice = []
+        var totalPrice = []
+        "{% for item in cart %}"
+            fid.push( "{{ item.furnitureId.furnitureId }}" )
+            fprice.push( "{{ item.furnitureId.unitPrice }}" )
+            totalPrice.push( parseFloat("{{ item.get_item_total_price }}") ) 
+        "{% endfor %}"
 
-                        //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
-                        if (!isNaN(total))
-                            document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
+        function calcAmount(elem) 
+        {
+            var id = elem.id; 
+            var qty = document.getElementById(id).value;
+            var token = '{{csrf_token}}';
+            var amount = 0;
+            var total = 0;
 
-                        $.ajax({
-                            url: '{% url "ecommerce:update-cart" %}',
-                            type: 'POST',
-                            headers:{
-                                "X-CSRFToken": token
-                            },
-                            data: {
-                                'furnitureId':fid[i] ,
-                                'quantity': qty,
-                            },
-                            success: function (response) {
-                                console.log(response, typeof(response))
-                            }
-                        })
-                    }
-                    amount = amount + totalPrice[i]
+            for (var i=0; i<fprice.length; i++) {
+                if(fid[i] == id){
+                    total = qty * fprice[i]
+                    totalPrice[i] = total
+
+                    //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
+                    if (!isNaN(total))
+                        document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
+
+                    $.ajax({
+                        url: '{% url "ecommerce:update-cart" %}',
+                        type: 'POST',
+                        headers:{
+                            "X-CSRFToken": token
+                        },
+                        data: {
+                            'furnitureId':fid[i] ,
+                            'quantity': qty,
+                        },
+                        success: function (response) {
+                            console.log(response, typeof(response))
+                        }
+                    })
                 }
-                //location.reload();
-                document.getElementById("amount").innerHTML = amount.toFixed(2);
-
+                amount = amount + totalPrice[i]
             }
-        </script>
-    
-        {% if messages %}
-            {% for msg in messages %}
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: '{{ msg }}',
-                    showConfirmButton: false,
-                    timer: 1200
-                })
-            </script>    
-            {% endfor %}	
-        {% endif %}
+            document.getElementById("amount").innerHTML = amount.toFixed(2);
+        }
+    </script>
+
+
 </body>
 </html>
 

@@ -1,24 +1,41 @@
 {% load static %}
 {% static "images/" as baseUrl %}
-
-
 {% block content %}
-
-      {% include 'user/header.html' %}
-      <br>
 
       <!-- Custom StyleSheet -->
       <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
 
-
       <style>
           .form-control{
               background-color: transparent !important;
-              border-radius: 0px 50px 50px 0px;
+              border-radius: 0px 50px 50px 0px !important;
+          }
+
+          .scrollup{
+            position: fixed;
+            right: 2rem;
+            bottom: -20%;
+            color: white;
+            background-color: var(--title-color);
+            opacity: .8;
+            padding: 0.3rem;
+            border-radius: 25%;
+            transition: .4s;
+          }
+          
+          .scrollup:hover{
+            color: white;
+            transform: scale(1.1);
+          }
+          .show-scroll{
+            bottom: 15rem;
           }
       </style>
 
-        <!-- Search Bar -->
+        {% include 'user/header.html' %}
+        <br>
+
+        <!------------ SEARCH BAR ------------>
         <form action="" method="post">
             {% csrf_token %}
             <div class="d-flex justify-content-center">
@@ -33,6 +50,7 @@
             </div>
         </form>
 
+        <!------------ ITEMS FOUND ------------>
         <div class="container mt-5" id="search_container" style="display: none;">
             <h5>Search result for {{ keyword }}</h5>
             <div class="row mt-4">
@@ -58,6 +76,11 @@
             </div>
         </div>
 
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="material-icons">arrow_upward</i>
+        </a>
+
+
         {% if messages %}
         {% for msg in messages %}
         <script>
@@ -71,7 +94,18 @@
 
       {% if furniture %}
       <script>
-          document.getElementById('search_container').style.display = 'block';
+            document.getElementById('search_container').style.display = 'block';
+
+            // Show Scroll Up
+            function scrollUp(){
+                const scrollUp = document.getElementById('scroll-up');
+                // When the scroll is higher than 560 viewport height, add the show-scroll class to the a tag with the scroll-top class
+                if(this.scrollY >= 500) 
+                    scrollUp.classList.add('show-scroll'); 
+                else 
+                    scrollUp.classList.remove('show-scroll')
+            }
+            window.addEventListener('scroll', scrollUp)
       </script>
       {% endif %}
 

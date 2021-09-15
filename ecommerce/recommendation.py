@@ -224,6 +224,7 @@ def getAllOrderItems(uid):
 
     # Get all items from the order list of target user
     all_items_purchased_list = list(Order_Products.objects.values_list('orderId', 'furnitureId'))
+    print(all_items_purchased_list)
 
     # List out all items from each order
     items_purchased = []

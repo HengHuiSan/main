@@ -34,18 +34,6 @@
              <div class="form-inner">
                 <div class="form-inner">
                     <form action="#" class="login" method="POST">
-                        {% if msg != '' %}
-                            {% if messages %}
-                                {% for message in messages %}
-                                <script>
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: '{{ message }}',
-                                    })
-                                </script>    
-                                {% endfor %}	
-                            {% endif %} 
-                        {% endif %}	
                         
                         {% csrf_token %}
                         <div class="input-group mb-4 login-field">
@@ -69,5 +57,17 @@
                 </div>
              </div>
          </div>
+        {% if msg != '' %}
+            {% if messages %}
+                {% for message in messages %}
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ message }}',
+                    })
+                </script>    
+                {% endfor %}	
+            {% endif %} 
+        {% endif %}	
    </body>
 </html>

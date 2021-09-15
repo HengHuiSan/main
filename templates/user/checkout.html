@@ -34,12 +34,14 @@
     <div class="container py-5">
         <form action="" method="POST" id="form">
             <div class="row">
+
+                <!------------ CHECKOUT FORM ------------>
                 <div class="col-lg-7">
                     <div class="card shadow border-0 mb-3">
                         <div class="card-body">
                             <h2 class="pl-3 pt-3"><b>Billing Details</b></h2>
                             <hr>
-                            <!-- {% csrf_token %} -->
+                                {% csrf_token %}
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-6">
@@ -97,54 +99,46 @@
                     </div>
                 </div>
 
-                <!-- Order Summary -->
+                <!------------ ORDER SUMMARY ------------>
                 <div class="col-lg-5">
                     <div class="card shadow border-0">
                         <div class="card-body p-5">
-                                <h3 style="color: var(--title-color); font-weight: 700;">Order Summary</h3>
-                                <hr>    
-                                {% for item in object %}
-                                <div class="row" style="color: var(--first-color);">
-                                    <div class="col">
-                                        <h5><b>{{ item.furnitureId.furnitureName }}</b></h5>
-                                        <span>Quantity: {{ item.quantity }}</span>
-                                    </div>
-                                    <div class="col">
-                                        <div style="text-align: end;"> 
-                                            <h5><b>${{ item.get_item_total_price }}</b></h5>  
-                                        </div>
+                            <h3 style="color: var(--title-color); font-weight: 700;">Order Summary</h3>
+                            <hr>    
+                            {% for item in object %}
+                            <div class="row" style="color: var(--first-color);">
+                                <div class="col">
+                                    <h5><b>{{ item.furnitureId.furnitureName }}</b></h5>
+                                    <span>Quantity: {{ item.quantity }}</span>
+                                </div>
+                                <div class="col">
+                                    <div style="text-align: end;"> 
+                                        <h5><b>RM {{ item.get_item_total_price }}</b></h5>  
                                     </div>
                                 </div>
-                                <hr>
-                                {% endfor %}
-                                
-                                <div class="row">
-                                    <div class="col" style="color: var(--first-color);">
-                                        <h3>Total: </h3>
-                                    </div>
-                                    <div class="col" style="text-align: right;">
-                                        <h2 class="mb-5" style="color:orangered">${{ amount|floatformat:2 }}</h2>
-                                        <input type="hidden" name="hdfAmount" value="{{ amount|floatformat:2 }}">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <!-- <div class="d-flex justify-content-center mb-3">
-                                        <button class="btn btn-primary" type="submit">Place Order</button>
-                                    </div> -->
-                                    
-                                    <div id="smart-button-container">
-                                        <div style="text-align: center;">
-                                          <div id="paypal-button-container"></div>
-                                        </div>
-                                      </div>
-
-                                    <!-- <div class="d-flex justify-content-center mb-3">
-                                        <a href="{% url 'ecommerce:cart' %}" class="btn btn-primary">Cancel</a>
-                                    </div>  -->
-                                </div>                   
                             </div>
+                            <hr>
+                            {% endfor %}
+                            
+                            <div class="row">
+                                <div class="col-md-4" style="color: var(--first-color);">
+                                    <h3>Total: </h3>
+                                </div>
+                                <div class="col-md-8" style="text-align: right;">
+                                    <h2 class="mb-5" style="color:orangered">RM {{ amount|floatformat:2 }}</h2>
+                                    <input type="hidden" name="hdfAmount" value="{{ amount|floatformat:2 }}">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div id="smart-button-container">
+                                    <div style="text-align: center;">
+                                        <div id="paypal-button-container"></div>
+                                    </div>
+                                </div>
+                            </div>                   
                         </div>
+                    </div>
                 </div>
             </div>
         </form>
@@ -168,9 +162,6 @@
 
         <script>
             var total = '{{ amount|floatformat:2 }}'
-
-            document.write(document.getElementById('txtEmail').value)
-
             function initPayPalButton() {
                 paypal.Buttons({
                     style: {
@@ -200,7 +191,7 @@
                             confirmButtonText: 'OK'
                           }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = "{% url 'ecommerce:profile' %}";
+                                window.location.href = "{% url 'ecommerce:profile' section='order' %}";
                             }
                           })
                         
@@ -213,7 +204,7 @@
                 
                 }).render('#paypal-button-container');
             }
-                initPayPalButton();
+            initPayPalButton();
 
             function getCookie(name) {
                 var cookieValue = null;
@@ -278,8 +269,6 @@
                 })
             }
         </script>
-
-
 </body>
 </html>
 

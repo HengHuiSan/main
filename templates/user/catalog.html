@@ -13,123 +13,102 @@
 <body>
     {% include 'user/header.html' %}
     
-        <div class="catalog pt-4">
-            <img src="{% static 'images/banner/banner3.jpg' %}" alt="" class="catalog__img">
+    <!------------ CATEGORY SIDEBAR ------------>
+    <div class="catalog pt-4">
+        <img src="{% static 'images/banner/banner3.jpg' %}" alt="" class="catalog__img">
 
-            <div class="catalog__container">
-                <div class="catalog__data text-center mt-5">
-                    <h1 class="catalog__data-title">Catalog</h1>
-                </div>
-            </div>
-
-            <div class="container">
-                <div class="row">
-                    <!-- category sidebar -->
-                    <div class="col-lg-4">
-                        <div class="category__container">
-                            <h3 class="category__title">Category</h3>
-                            <ul class="category__menu">
-                                {% for category in categories %}
-                                <li class="category__item">
-                                    <a href="?cid={{category.categoryId}}" class="category__link">{{category.categoryName}}</a>
-                                </li>
-                                <hr>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-8">
-                        <div class="row">
-                            {% for getdata in furniture %}
-                            <div class="col-md-4">
-                                <a class="" href="{{ getdata.update_view_count_url }}" data-toggle="modal" data-target="#product_modal">
-                                    <div class="card text-center mb-5">
-                                        <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3 px-2">
-    
-                                        <div class="card-body">
-                                            <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
-                                            <h2 class="card__fPrice">${{getdata.unitPrice}}</h2>
-    
-                                            <a href="{{ getdata.add_to_cart_url }}" class="card__button text-uppercase">
-                                                <i class="uil uil-shopping-cart"></i>
-                                                Add To Cart
-                                            </a>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            {% endfor %}
-                            {% include 'user/product.html' %}
-                        </div>
-
-                        <div class="anyClass" style="overflow-y: hidden;">
-                            <nav aria-label="...">
-                                <ul class="pagination float-right">
-                                  <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
-                                    <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Previous</a>
-                                  </li>
-
-                                  {% for n in page.paginator.page_range %}
-                                    {% if page.number == n %}
-                                        <li class="page-item active">
-                                            <a class="page-link" href="?cid={{ request.GET.cid }}&page={{ n }}">{{ n }}<span class="sr-only">(current)</span></a>
-                                        </li>
-                                    {% elif n >= page.number|add:-3 and n < page.number|add:2 %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?cid={{ request.GET.cid }}&page={{ n }}">{{ n }}</a>
-                                        </li>
-                                    {% endif %}
-                                  {% endfor%}
-
-                                  <li class="page-item {% if not next_page_url %} disabled {% endif %}">
-                                    <a class="page-link" href="{{ next_page_url }}">Next</a>
-                                  </li>
-                                </ul>
-                              </nav>
-                        </div>
-                    </div>                          
-                </div>
+        <div class="catalog__container">
+            <div class="catalog__data text-center mt-5">
+                <h1 class="catalog__data-title">Catalog</h1>
             </div>
         </div>
+    </div>
 
-        <!------------ SCROLL TOP------------>
-        <a href="#" class="scrollup" id="scroll-up">
-            <i class="material-icons">arrow_upward</i>
-        </a>
-        {% include 'user/footer.html' %}
+    <!------------ PRODUCTS ------------>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="category__container">
+                    <h3 class="category__title">| Category</h3>
+                    <ul>
+                        {% for category in categories %}
+                        <li class="category__item">
+                            <a href="?cid={{category.categoryId}}" class="category__link">{{category.categoryName}}</a>
+                        </li>
+                        <hr>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
 
+            <div class="col-lg-9">
+                <div class="row mr-5">
+                    {% for getdata in furniture %}
+                    <div class="col-md-4">
+                        <a class="" href="{{ getdata.update_view_count_url }}">
+                            <div class="card text-center mb-5 mx-3">
+                                <img src="{{baseUrl}}/{{getdata.furnitureImg}}" alt="" class="card-img-top mt-3 p-2">
 
-    <style>
-        .scrollup{
-            position: fixed;
-            right: 2rem;
-            bottom: -20%;
-            color: white;
-            background-color: var(--title-color);
-            opacity: .8;
-            padding: 0.3rem;
-            border-radius: 25%;
-            transition: .4s;
-        }
-        
-        .scrollup:hover{
-            color: white;
-            transform: scale(1.1);
-        }
-        .show-scroll{
-            bottom: 5rem;
-        }
-    </style>
-    
-        {% if messages %}
+                                <div class="card-body">
+                                    <h3 class="card__fName text-uppercase">{{getdata.furnitureName}}</h3>
+                                    <h2 class="card__fPrice">RM {{getdata.unitPrice}}</h2>
+
+                                    <a href="{{ getdata.add_to_cart_url }}" class="card__button text-uppercase">
+                                        <i class="uil uil-shopping-cart"></i>
+                                        Add To Cart
+                                    </a>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="anyClass" style="overflow-y: hidden;">
+                    <nav aria-label="...">
+                        <ul class="pagination float-right">
+                          <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
+                            <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Previous</a>
+                          </li>
+
+                          {% for n in page.paginator.page_range %}
+                            {% if page.number == n %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="?cid={{ request.GET.cid }}&page={{ n }}">{{ n }}<span class="sr-only">(current)</span></a>
+                                </li>
+                            {% elif n >= page.number|add:-3 and n < page.number|add:2 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?cid={{ request.GET.cid }}&page={{ n }}">{{ n }}</a>
+                                </li>
+                            {% endif %}
+                          {% endfor%}
+
+                          <li class="page-item {% if not next_page_url %} disabled {% endif %}">
+                            <a class="page-link" href="{{ next_page_url }}">Next</a>
+                          </li>
+                        </ul>
+                      </nav>
+                </div>
+            </div>  
+        </div>
+    </div>
+
+    <!------------ SCROLL TOP------------>
+    <a href="#" class="scrollup" id="scroll-up">
+        <i class="material-icons">arrow_upward</i>
+    </a>
+    {% include 'user/footer.html' %}
+
+    {% if messages %}
         {% for message in messages %}
             {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
             <script>
                 Swal.fire({
                     icon: 'success',
                     title: '{{ message }}',
-                    footer: '<a href="{% url "ecommerce:cart" %}">Check my cart now.</a>'
+                    showConfirmButton: false,
+                    footer: '<a href="{% url "ecommerce:cart" %}" class="message_footer">Check my cart now.</a>',
+                    timer: 3500
                 })
             </script>  
             {% endif %} 
@@ -138,6 +117,8 @@
                 Swal.fire({
                     icon: 'info',
                     title: '{{ message }}',
+                    showConfirmButton: false,
+                    timer: 3000
                 })
             </script>   
             {% endif %}  
@@ -145,11 +126,14 @@
     {% endif %}
 
     <script>
-        // SHOW SCROLL UP 
+        // Show Scroll Up
         function scrollUp(){
             const scrollUp = document.getElementById('scroll-up');
             // When the scroll is higher than 560 viewport height, add the show-scroll class to the a tag with the scroll-top class
-            if(this.scrollY >= 560) scrollUp.classList.add('show-scroll'); else scrollUp.classList.remove('show-scroll')
+            if(this.scrollY >= 500) 
+                scrollUp.classList.add('show-scroll'); 
+            else 
+                scrollUp.classList.remove('show-scroll')
         }
         window.addEventListener('scroll', scrollUp)
     </script>

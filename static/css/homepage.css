@@ -248,4 +248,24 @@
     outline: none !important;
 }
 
-
+/*=============== SCROLL TO TOP BUTTON ===============*/
+.scrollup{
+    position: fixed;
+    right: 2rem;
+    bottom: -20%;
+    color: white;
+    background-color: var(--title-color);
+    opacity: .8;
+    padding: 0.3rem;
+    border-radius: 25%;
+    transition: .4s;
+  }
+  
+  .scrollup:hover{
+    color: white;
+    transform: scale(1.1);
+  }
+  .show-scroll{
+    bottom: 15rem;
+  }
+  
