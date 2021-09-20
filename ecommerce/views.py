@@ -5,17 +5,14 @@ from ecommerce.models import *
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, redirect 
-from .forms import UserRegistrationForm, DonationForm
+from .forms import UserRegistrationForm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
-
-
 from django.db.models import Q # new
-
 import json
 from .recommendation import recommendToCustomer, recommendToNormalUser, recommendToNewUser
 
@@ -86,21 +83,17 @@ def goHompage(request):
             'cf_recommend_list':Furniture.objects.filter(pk__in=cf_recommend_list), 
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
         }
-        print(furniture_name)
-        print('here')
     elif User_Views.objects.filter(userId=request.user):
         cf_recommend_list, popularity_recommend_list = recommendToNormalUser(request.user,'normal user')
         context = {
             'cf_recommend_list':Furniture.objects.filter(pk__in=cf_recommend_list), 
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
         }
-        print('andsjaks')        
     else:
         popularity_recommend_list = recommendToNewUser()
         context = {
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
         }
-        print('dasds')
 
     return render(request,'user/homepage.html', context)
 
@@ -124,7 +117,6 @@ def goCatalog(request):
     page = paginator.get_page(page_number)
     category = Category.objects.all()
 
-
     if page.has_next():
         next_url = f'?cid='+str(cid)+'&page='+str(page.next_page_number())
     else:
@@ -146,9 +138,6 @@ def goCatalog(request):
 
 # ======= Product Listings ======= #
 
-# class ItemDetailView(DetailView):
-#     model = Furniture
-#     template_name = "user/product.html"
 class ItemDetailView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
@@ -166,8 +155,6 @@ class ItemDetailView(LoginRequiredMixin, View):
 # View the item after clicking
 def updateViewToItem(request, slug):
     item = get_object_or_404(Furniture, slug=slug)
-    print(item)
-    print("posttt")
 
     viewed_item = User_Views.objects.filter(userId=request.user, furnitureId=item)
 
@@ -179,12 +166,6 @@ def updateViewToItem(request, slug):
         view = User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
 
     return redirect('ecommerce:product', slug=slug)
-
-# You may also like
-def getRelatedItems(item):
-    related_items = Furniture.objects.filter(furnitureGenres__icontains = item.furnitureGenres)
-
-    return related_items
 
 
 # ======= Shopping Cart ======= #
@@ -235,7 +216,6 @@ def addToCart(request, slug):
 
 def removeFromCart(request, slug):
     item = get_object_or_404(Cart_Products, userId=request.user.id, slug=slug)
-    # print(item)
     cart_item = Cart_Products.objects.filter(userId=request.user, furnitureId=item.furnitureId)
     cart_item.delete()
     messages.info(request, "This item was removed from your cart.")
@@ -247,7 +227,6 @@ def removeFromCart(request, slug):
 def updateCart(request):
     if request.method == 'POST':
         cart_item = Cart_Products.objects.get(furnitureId=request.POST['furnitureId'], userId=request.user.id)
-        # print(cart_item)
         cart_item.quantity =  request.POST['quantity']
         cart_item.save()
 
@@ -276,50 +255,6 @@ class OrderSummaryView(LoginRequiredMixin, View):
         except ObjectDoesNotExist:
             messages.warning(self.request, "Your cart is empty")
             return redirect('ecommerce:cart')
-    
-    def post(self, *args, **kwargs):
-        try:
-            order_id = str(random.randint(1000000, 9999999))
-
-            while Order.objects.filter(orderId=order_id).exists():
-                order_id = str(random.randint(1000000, 9999999))
-
-            # name = self.request.POST['fname'] + ' ' + self.request.POST['lname']
-
-            # order = Order(
-            #     orderId = order_id,
-            #     orderDate = datetime.today(),
-            #     name = customer_name,
-            #     shippingAddress = shipping_address,
-            #     phoneNo = self.request.POST['txtPhoneNo'].rstrip(),
-            #     email = self.request.POST['txtEmail'].rstrip(),
-            #     amount = self.request.POST['hdfAmount'],
-            #     userId = self.request.user,
-            #     isDelivered = False,
-            #     isReceived = False
-            # )
-            # order.save()
-
-            data = json.loads(self.request.body)
-
-            print(data['email'])
-            print(data['phoneNo'])
-
-            order_items = Cart_Products.objects.filter(userId=self.request.user.id)
-
-            Order_Products.objects.bulk_create([Order_Products(orderId=Order.objects.get(orderId=order_id), furnitureId=item.furnitureId, quantity=item.quantity) for item in order_items])
-            
-            # delete items in cart
-            clear_cart = Cart_Products.objects.filter(userId = self.request.user.id)
-            clear_cart.delete()
-            
-            # print(order)
-            messages.success(self.request, 'Order Successfully!')
-            return render(self.request, 'user/homepage.html')
-        except ObjectDoesNotExist:
-            messages.warning(self.request, "Order Failed")
-            return redirect("ecommerce:cart")
-
 
 def payment_complete(request):
     order_id = str(random.randint(1000000, 9999999))
@@ -350,46 +285,11 @@ def payment_complete(request):
 
     Order_Products.objects.bulk_create([Order_Products(orderId=Order.objects.get(orderId=order_id), furnitureId=item.furnitureId, quantity=item.quantity) for item in order_items])
     
-    # delete items in cart
     clear_cart = Cart_Products.objects.filter(userId=request.user.id)
     clear_cart.delete()
-    
-    # print(order)
-    # messages.success(request, 'Order Successfully!')
-
-    # return redirect("ecommerce:profile")
 
 
 # ======= Donation ======= #
-
-def goDonate(request):
-    if request.method == 'POST':
-        form = DonationForm(request.POST, request.FILES)
-        print(form.cleaned_data('firstname'))
-
-        if form.is_valid():
-            try:
-                print("aaksbdkas")
-
-                # firstname = form.cleaned_data['firstname']
-                # lastname = form.cleaned_data['lastname']
-                # form.save()
-                # send_mail(subject, message, sender, recipients)
-                # msg = messages.success(request, 'Donate Successfully!')
-                donation = Donation()
-                donation = form.save(commit=False)
-                print("aaksbdkas")
-
-            except ValidationError as e:
-                print(e)
-    else:
-        print('form start')
-        form = DonationForm()
-
-    context = {'form':form}
-
-    return render(request, 'user/donate.html', context)
-
 
 def requestDonation(request):
     if request.method == "POST":
@@ -403,7 +303,8 @@ def requestDonation(request):
             image = request.FILES['imgDonation'],
             yearPurchased = request.POST.get('txtYearPurchased'),
             originalPrice = request.POST.get('txtOriginalPrice'),
-            userId = request.user
+            userId = request.user,
+            slug = 'D' + str(random.randint(10000, 99999))
         )
         donation.save()
 
@@ -411,14 +312,6 @@ def requestDonation(request):
         return redirect('ecommerce:donate')
 
     return render(request, 'user/donation.html')
-
-
-
-# ======= testing ======= #
-
-# def goAbout(request):
-#     # return render(request, 'admin/login.html')
-#     return -
 
 
 # ======= Profile ======= #

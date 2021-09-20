@@ -43,11 +43,6 @@ class Furniture(models.Model):
         template = '{0.furnitureId} {0.furnitureName}'
         return template.format(self)
     
-    def get_absolute_url(self):
-        return reverse("ecommerce:product", kwargs={
-            'slug': self.slug
-        })
-    
     def update_view_count_url(self):
         return reverse("ecommerce:view", kwargs={
             'slug': self.slug
@@ -55,6 +50,16 @@ class Furniture(models.Model):
 
     def add_to_cart_url(self):
         return reverse("ecommerce:add-to-cart", kwargs={
+            'slug': self.slug
+        })
+
+    def get_absolute_url(self):
+        return reverse("administration:edit-item", kwargs={
+            'slug':self.slug,
+        })
+    
+    def delete_item_url(self):
+        return reverse("administration:delete-item", kwargs={
             'slug': self.slug
         })
 
@@ -89,14 +94,6 @@ class Cart_Products(models.Model):
         return self.quantity * self.furnitureId.unitPrice
 
 
-class Payment(models.Model):
-    userId = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    amount = models.FloatField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.userId
-
 class Order(models.Model):
     orderId = models.CharField(primary_key=True, max_length=50)
     orderDate = models.DateField(auto_now_add=True)
@@ -108,10 +105,24 @@ class Order(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     isDelivered = models.BooleanField(default=False)
     isReceived = models.BooleanField(default=False)
+    slug = models.SlugField(max_length=100)
 
     def __str__(self):
         template = '{0.orderId} {0.orderDate} {0.name} {0.shippingAddress} {0.phoneNo} {0.amount}'
         return template.format(self)
+
+    
+    def get_process_order_url(self):
+        return reverse("administration:process-order", kwargs={
+            'slug': self.slug,
+            'action': 'process'
+        })
+
+    def get_view_order_url(self):
+        return reverse("administration:process-order", kwargs={
+            'slug': self.slug,
+            'action': 'view'
+        })
 
 class Order_Products(models.Model):
     orderId = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -133,11 +144,26 @@ class Donation(models.Model):
     originalPrice = models.DecimalField(max_digits=8, decimal_places=2, null=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     isApproved = models.BooleanField(null=True)
+    slug = models.SlugField(max_length=100)
 
 
     def __str__(self):
         template = '{0.donationId} {0.name}  {0.itemType}'
         return template.format(self)
+    
+    def accept_donation_url(self):
+        return reverse("administration:process-donation", kwargs={
+            'slug': self.slug,
+            'approve':True
+        })
+
+    def reject_donation_url(self):
+        return reverse("administration:process-donation", kwargs={
+            'slug': self.slug,
+            'approve':False
+        })
+
+
 
 class Image(models.Model):
     img = models.ImageField(upload_to='testing')

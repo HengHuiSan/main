@@ -1,0 +1,69 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+{% block content %}
+
+{% include 'admin/sidebar.html' %}
+
+    <main class="main-content">
+        <a href="{% url 'administration:order' %}">< back</a>
+        <h1 class="ml-2">Order ID - {{ object.orderId }}</h1>
+
+        <div class="card border-0 shadow-sm px-4 py-5">
+            <h5>Order Details</h5><hr>
+            <div class="row">
+                <div class="col-md-4">Amount</div>
+                <div class="col">RM{{ object.amount }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Date</div>
+                <div class="col">{{ object.orderDate|date:'d-m-Y' }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Items</div>
+                <div class="col">
+                    {% for i in item %}
+                        <span>item {{ forloop.counter }} - {{ i.furnitureId }}</span><br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Status</div>
+                <div class="col">
+                    {% if object.isReceived == True %}
+                        <span style="color: green;">Received</span>  
+                    {% elif object.isDelivered == True %}
+                        <span style="color: darkblue;">Delivered</span>  
+                    {% else %}
+                        <span style="color: goldenrod;">Pending</span>
+                    {% endif %}
+                </div>
+            </div>
+            <hr><br>
+
+            <h5>Customer Information</h5><hr>
+            <div class="row">
+                <div class="col-md-4">Customer Name</div>
+                <div class="col">{{ object.name }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Phone Number</div>
+                <div class="col">{{ object.phoneNo }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Email</div>
+                <div class="col">{{ object.email }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Shipping Address</div>
+                <div class="col">{{ object.shippingAddress }}</div>
+            </div>
+            <hr>
+
+            <div>
+                <a href="{{ object.get_process_order_url }}" class="btn btn-primary px-4 float-right">
+                    Deliver
+                </a>
+            </div>
+        </div>
+    </main>
+{% endblock content %}

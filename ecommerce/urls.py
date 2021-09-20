@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
-from . import recommendation
-from .views import ItemDetailView, CartDetailView, OrderSummaryView
+from ecommerce import views
+from ecommerce import recommendation
+from ecommerce.views import ItemDetailView, CartDetailView, OrderSummaryView
 
 app_name = 'ecommerce'
 

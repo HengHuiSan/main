@@ -1,0 +1,79 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+{% block content %}
+
+
+{% include 'admin/sidebar.html' %}
+
+
+<!-- Magnific Popup core CSS file -->
+<link rel="stylesheet" href="magnific-popup/magnific-popup.css">
+
+<main class="main-content">
+    <h1 class="ml-2">Donation Management</h1>
+
+    <div class="card border-0 shadow-sm px-4 py-5">
+        <table id="product_table" class="table table-hover" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Image</th>
+                <th>Item Type</th>
+                <th>Description</th>
+                <th>Year Purchased</th>
+                <th>Original Price</th>
+                <th class="text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for object in donation %}
+                <tr>
+                    <td>{{ object.donationId }}</td>
+                    <td>{{ object.name }}</td>
+                    <td>{{ object.dateCreated|date:'d-m-Y'  }}</td>
+                    <td>
+                        <a class="test-popup-link" href="{{baseUrl}}/{{object.image}}">
+                            <img src="{{baseUrl}}/{{object.image}}" alt="" class="mb-4" style="width: 80px;">
+                        </a>
+                    </td>
+                    <td>{{ object.itemType }}</td>
+                    <td>{{ object.description }}</td>
+                    <td>{{ object.yearPurchased }}</td>
+                    <td>RM{{ object.originalPrice }}</td>
+                    <td class="text-center">
+                        {% if object.isApproved == True %}
+                            <span style="color: green;">Approve</span>  
+                        {% elif object.isApproved == False %}
+                            <span style="color: orangered;">Reject</span>  
+                        {% else %}
+                            <a href="{{ object.accept_donation_url }}">
+                                <i class='material-icons' style="color: green;">done</i>
+                            </a>
+                            <a href="{{ object.reject_donation_url }}">
+                                <i class='material-icons' style="color: orangered;">clear</i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}  
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- jQuery 1.7.2+ or Zepto.js 1.0+ -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<!-- Magnific Popup core JS file -->
+<script src="magnific-popup/jquery.magnific-popup.js"></script>
+
+
+<script>
+    $(document).ready(function() {
+        $('.test-popup-link').magnificPopup({type:'image',});
+      });
+</script>
+
+{% endblock content %}

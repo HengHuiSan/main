@@ -1,0 +1,98 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+{% block content %}
+
+{% include 'admin/sidebar.html' %}
+
+<main class="main-content">
+    <div class="row mb-3">
+        <div class="col">
+            <h1 class="ml-2">Product Management</h1>
+        </div>
+        <div class="col">
+            <a href="{% url 'administration:save-item' %}" class="btn btn-success mr-3 float-right">
+                Add +
+            </a>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm px-4 py-5 mb-4">
+        <table id="product_table" class="table table-hover" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th class="text-center">Stock</th>
+                <th class="text-center">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for object in furniture %}
+            <tr class="clickable-tr" href="{{ object.get_absolute_url }}">
+                <td>{{ object.furnitureId }}</td>
+                <td>{{ object.furnitureName }}</td>
+                <td>{{ object.categoryId.categoryName }}</td>
+                <td class="text-center">{{ object.stock }}</td>
+                <td class="text-center">
+                    <a href="{{ object.delete_item_url }}">
+                        <i class='material-icons' style="color: brown;">delete</i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}  
+            </tbody>
+        </table>
+    </div>
+
+    <!-- <div class="row">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3">
+                <div class="card-body">
+                <h3>Category List</h3><hr>
+                <div class="scroll">
+                    {% for c in  category %}
+                    <p class="clickable-p">{{ forloop.counter }}. {{ c.categoryName }}</p>
+                    {%  endfor %}
+                </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm p-4">
+                <h3>Category Maintainence</h3><hr>
+                <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Name</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" name="txtFid" value="" required>
+                    </div>
+                </div>  
+                <div>
+                    <input type="submit" value="Save" class="btn btn-primary">
+                </div>
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+    <style>
+        .scroll {
+            max-height: 30vh;
+            overflow-y: auto;
+        }
+    </style>
+
+
+
+</main>
+
+<script>
+    $('.clickable-tr').on('click', function(){
+        var myLink = $(this).attr('href');
+        window.location.href = myLink;
+      });
+</script>
+
+{% endblock content %}

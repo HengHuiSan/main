@@ -89,6 +89,7 @@ def getViewDf():
 
 def contentBasedFiltering(uid):
     furniture_df = getFurnitureDf()
+    # convert the genres that separated with pipes into a list using the "split" function
     furniture_df['furnitureGenres'] = furniture_df.furnitureGenres.str.split('|')
 
     # Use Counter to create a dictionary containing frequency counts of each genre
@@ -99,13 +100,11 @@ def contentBasedFiltering(uid):
     for g in genres:
         furniture_df[g] = furniture_df['furnitureGenres'].transform(lambda x: int(g in x))
 
-    # furniture_matrix = furniture_df[genres].copy(deep=True)
+    items_purchased = getSpecificOrderItems(uid)
 
     # Build item-item recommendation using cosine similarity
     cosine_sim = cosine_similarity(furniture_df[genres], furniture_df[genres])
     # print(f"Dimensions of our movie features cosine similarity matrix: {cosine_sim.shape}")
-
-    items_purchased = getSpecificOrderItems(uid)
 
     # create index mapper which maps furniture ID to the index that it represents in the matrix
     furniture_idx = dict(zip(furniture_df['furnitureId'], list(furniture_df.index)))
@@ -114,6 +113,7 @@ def contentBasedFiltering(uid):
     recommend_list = []
 
     for i in items_purchased:
+        # find the target item in 'furniture_idx'
         fid = furniture_idx[i.furnitureId.furnitureId]
         
         # Add counter to the list e.g. [(0, 'a'), (1, 'b'), (2, 'c')]
@@ -131,8 +131,10 @@ def contentBasedFiltering(uid):
         # recommend_list.append(list(furniture_df['furnitureId'].iloc[similar_furniture]))
         recommend_list.append(recommend_furniture[:12])
         furniture_name.append(i.furnitureId.furnitureName)
-    
-    # print(recommend_list)
+    print('hello')
+    print(recommend_list)
+    print(furniture_name)
+
 
     return recommend_list, furniture_name
 
@@ -159,9 +161,10 @@ def removeViewedItem(uid,similar_items):
 def getSpecificOrderItems(uid):
     # Get all the orders that made by target user from 'Order' table
     oid_list = Order.objects.filter(userId=uid) 
+    # Get the latest order from the 'oid_list'
     latest_order = oid_list.latest('orderDate') 
 
-    # Get all items from the target order
+    # Get all items from the latest order
     items_purchased = Order_Products.objects.filter(orderId=latest_order).all()
 
     return items_purchased
@@ -189,14 +192,17 @@ def collaborativeFiltering(uid,role):
 
     item_list = getAllOrderItems(uid) if role == "customer" else getAllViewedItems(uid)
 
-    # Isolating items purchased by the active user from Correlation Matrix
+    # Loop items purchased/viewed by the active user 
     for i in item_list:
+        # Iterate over the numbers from 0 up to the length of the user-item matrix
         for j in range(len(items_users_pivot_matrix_df)):
+            # Items_users_pivot_matrix_df.index[j] returns furnitureId and try to match the id in 'item_list'
             if(items_users_pivot_matrix_df.index[j] == i):
                 # print(items_users_pivot_matrix_df.index[j])
                 fid_list = list(items_users_pivot_matrix_df.index) # change everything into list form
-                
-                # find the index(location) of the target item
+
+                # find the index of row(location) that stores the target item
+                # e.g 2 or 563
                 item = fid_list.index(i)
                 
                 # get correlation coefficients value of the item
@@ -205,7 +211,7 @@ def collaborativeFiltering(uid,role):
                 # list out items that the pearson correlation value > 0.9 
                 # 0.9 suggests a strong, positive association between two variables 
                 recommend_list = list(items_users_pivot_matrix_df.index[correlation > 0.90])
-                
+
                 # remove the items already bought by the active user
                 recommend_list.remove(i) 
 
@@ -222,11 +228,10 @@ def getAllOrderItems(uid):
     # Get all the orders that made by target user from 'Order' table
     oid_list = list(Order.objects.filter(userId=uid).values_list('orderId', flat=True)) # flat=True : mean that the returned result is a single value, not a tuple. 
 
-    # Get all items from the order list of target user
+    # Get all items from the 'Order_Products' table
     all_items_purchased_list = list(Order_Products.objects.values_list('orderId', 'furnitureId'))
-    print(all_items_purchased_list)
 
-    # List out all items from each order
+    # List out all items that bought by the active user
     items_purchased = []
     for oid in oid_list:
         for i in range(len(all_items_purchased_list)):

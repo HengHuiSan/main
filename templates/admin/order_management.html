@@ -1,0 +1,72 @@
+{% load static %}
+{% static "images/" as baseUrl %}
+{% block content %}
+
+{% include 'admin/sidebar.html' %}
+
+<main class="main-content">
+    <div class="row mb-3">
+        <div class="col">
+            <h1 class="ml-2">Order Management</h1>
+        </div>
+        <div class="col">
+            <input type="submit" value="Add +" class="btn btn-success mr-2 float-right">
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm px-4 py-5">
+        <table id="product_table" class="table table-hover  " cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for object in order %}
+                <tr>
+                    <td>{{ object.orderId }}</td>
+                    <td>{{ object.name }}</td>
+                    <td>{{ object.orderDate|date:'d-m-Y' }}</td>
+                    <td>RM {{ object.amount }}</td>
+                    <td>
+                        {% if object.isReceived == True %}
+                            <span style="color: green;">Received</span>  
+                        {% elif object.isDelivered == True %}
+                            <span style="color: darkblue;">Delivered</span>  
+                        {% else %}
+                            <span style="color: goldenrod;">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ object.get_view_order_url }}">
+                            <i class='material-icons' style="color: darkgray;">visibility</i>
+                        </a>&nbsp;
+                        <a href="{{ object.get_process_order_url }}">
+                            <i class='material-icons' style="color: darkgray;">local_shipping</i>
+                        </a>
+                    </td>
+                </tr>
+               {% endfor %}  
+            </tbody>
+        </table>
+
+
+    </div>
+</main>
+
+
+
+<script>
+    $('.clickable-tr').on('click', function(){
+        var myLink = $(this).attr('href');
+        window.location.href = myLink;
+      });
+</script>
+
+
+
+{% endblock content %}
