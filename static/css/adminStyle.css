@@ -146,7 +146,7 @@ input, button{
     padding: 0rem .6rem;
 }
 
-.sidemenu a.active{
+.active{
     background: var(--main);
     color: #fff;
     border-radius: 5px;
@@ -155,65 +155,33 @@ input, button{
 
 .main-content{
     margin-left: 280px;
-    /* min-height: 100vh; */
     background: var(--bg-body);
-    /* padding: 0.5rem 1rem; */
     transition: margin-left 300ms;
 }
 
 header{
-    /* height: 70px; */
     width: 100%;
     top: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--white);
-    /* padding: 0.5rem 1rem; */
     position: fixed;
     z-index: 1;
-    /*left: calc(280px + 1rem);
-    right: 1rem;
-    top: .5rem; */
-    /* border-radius: 3px; */
     transition: left 300ms;
 }
 
-
-/* 
-.search{
-    display: flex;
-    width: 300px;
-    border-radius: 30px;
-    overflow-x: hidden;
-    border: 3px solid #3e454d;
-    align-items: center;
-
-} */
-
-/* .search span{
-    font-size: 1.3rem;
-    color: #fff;
-    padding-left: 1rem;
+.head-icons{
+    position: fixed;
+    right: 0;
 }
-
-.search input{
-    flex: 1;
-    height: 42px;
-    border: none;
-    background: transparent;
-    padding: 1rem;
-    color: #fff;
-} */
-
 .head-icons span{
     font-size: 1.5rem;
     color: var(--main);
+    margin-right: 10px;
 }
 
 main{
-    /* margin-top: calc(70px + .5rem); */
-    /* margin-top: 1rem; */
     margin-top: 100px;
     padding: 1rem 2rem;
 }
@@ -223,11 +191,6 @@ main{
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 3rem;
 }
-
-/* .card{
-    background: var(--card);
-    padding: 2rem 1rem;
-} */
 
 .card-icon{
     text-align: center;
@@ -427,3 +390,19 @@ main{
 ::-webkit-scrollbar-thumb:hover {
     background-color: var(--text-color-light);
   }  
+
+
+  .clickable-tr{
+    cursor: pointer;
+    background: #eee;
+}
+
+.search_field{
+    background-color: transparent !important;
+    border-radius: 0px 50px 50px 0px !important;
+}
+
+.form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }

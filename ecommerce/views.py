@@ -1,15 +1,13 @@
-from datetime import date, datetime
-from django.http.response import HttpResponse, HttpResponseRedirect
+from datetime import datetime
 from django.shortcuts import get_object_or_404, render
 from ecommerce.models import *
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, redirect 
-from .forms import UserRegistrationForm
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.generic import DetailView, View
+from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q # new
@@ -19,52 +17,52 @@ from .recommendation import recommendToCustomer, recommendToNormalUser, recommen
 
 # ======= Account Authentication ======= #
 
-def registerView(request):
-    msg = ''
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            try:
-                form.save()
-                msg = messages.success(request, 'Register Successfully!')
-            except ValidationError as e:
-                print(e)
-    else:
-        form = UserRegistrationForm()
+# def registerView(request):
+#     msg = ''
+#     if request.method == 'POST':
+#         form = UserRegistrationForm(request.POST)
+#         if form.is_valid():
+#             try:
+#                 form.save()
+#                 msg = messages.success(request, 'Register Successfully!')
+#             except ValidationError as e:
+#                 print(e)
+#     else:
+#         form = UserRegistrationForm()
 
-    context = {'form':form, 'msg':msg}
+#     context = {'form':form, 'msg':msg}
 
-    return render(request, 'account/register.html', context)
+#     return render(request, 'account/register.html', context)
 
 
-def loginView(request):
-    msg = ''
-    if request.method == 'POST':
-        uname = request.POST.get('txtUname')
-        passwd = request.POST.get('txtPasswd')
+# def loginView(request):
+#     msg = ''
+#     if request.method == 'POST':
+#         uname = request.POST.get('txtUname')
+#         passwd = request.POST.get('txtPasswd')
 
-        if uname != '' and passwd != '':
-            user = authenticate(request, username=uname, password=passwd)
+#         if uname != '' and passwd != '':
+#             user = authenticate(request, username=uname, password=passwd)
 
-            if user is not None:
-                login(request, user)
-                return redirect('ecommerce:homepage')
-            else:
-                msg = messages.error(request, 'Invalid username or password!')
+#             if user is not None:
+#                 login(request, user)
+#                 return redirect('ecommerce:homepage')
+#             else:
+#                 msg = messages.error(request, 'Invalid username or password!')
 
-    context = {'msg':msg}
+#     context = {'msg':msg}
 
-    return render(request, 'account/login.html', context)
+#     return render(request, 'account/login.html', context)
     
 
-def logoutUser(request):
-    # try:
-    #     del request.session['userId']
-    # except KeyError:
-    #     pass
+# def logoutUser(request):
+#     # try:
+#     #     del request.session['userId']
+#     # except KeyError:
+#     #     pass
 
-	logout(request)
-	return redirect('ecommerce:login')
+# 	logout(request)
+# 	return redirect('ecommerce:login')
 
 
 # ======= Homepage ======= #

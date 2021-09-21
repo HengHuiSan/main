@@ -131,10 +131,6 @@ def contentBasedFiltering(uid):
         # recommend_list.append(list(furniture_df['furnitureId'].iloc[similar_furniture]))
         recommend_list.append(recommend_furniture[:12])
         furniture_name.append(i.furnitureId.furnitureName)
-    print('hello')
-    print(recommend_list)
-    print(furniture_name)
-
 
     return recommend_list, furniture_name
 

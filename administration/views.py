@@ -4,34 +4,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from ecommerce.models import *
 import os
 
-
-# Create your views here.
-
-def loginView(request):
-    msg = ''
-    if request.method == 'POST':
-        uname = request.POST.get('txtUname')
-        passwd = request.POST.get('txtPasswd')
-
-        if uname != '' and passwd != '':
-            user = authenticate(request, username=uname, password=passwd)
-
-            if user is not None:
-                login(request, user)
-                return redirect('administration:dashboard')
-            else:
-                msg = messages.error(request, 'Invalid username or password!')
-
-    context = {'msg':msg}
-
-    return render(request, 'account/login.html', context)
-
 def prodManagement(request):
-        context = {
-            'furniture':Furniture.objects.all(),
-            'category':Category.objects.all()
-        }
-        return render(request, 'admin/prod_management.html', context)
+    context = {
+        'furniture':Furniture.objects.all(),
+        'category':Category.objects.all()
+    }
+    return render(request, 'admin/prod_management.html', context)
 
 
 def orderManagement(request):

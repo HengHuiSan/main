@@ -1,14 +1,7 @@
-from crispy_forms.layout import Column, Layout, Row, Submit, Button
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.forms import fields
-from django.forms.models import ALL_FIELDS, ModelForm
-from django.forms.widgets import DateInput
 from ecommerce.models import *
-from crispy_forms.helper import FormHelper
-
-
 
 class UserRegistrationForm(UserCreationForm):
 	# email = forms.EmailField(required=True)

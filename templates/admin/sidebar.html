@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,minimun-scale=1,maximum-scale=1,initial-scale=1.0">
 
-    <title>Responsive Admin Dashboard Page With HTML & CSS | Dark Admin Dashboard Template</title>
+    <title>FURNISHH Admin Dashboard</title>
 
     <!-- Google Icons StyleSheet -->
     <link rel="stylesheet" href=" https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -26,10 +26,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 
-    <script
-    src="http://code.jquery.com/jquery-3.3.1.min.js"
-    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
 
@@ -37,59 +34,36 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
 
     <!-- Custom StyleSheet -->
-    <link rel="stylesheet" href="{% static 'css/adminStyle1.css' %}">
-
-    <style>
-        .clickable-tr{
-            cursor: pointer;
-            background: #eee;
-        }
-
-        .search_field{
-            background-color: transparent !important;
-            border-radius: 0px 50px 50px 0px !important;
-        }
-
-        .form-control:focus {
-            outline: none !important;
-            box-shadow: none !important;
-          }
-
-
-          
-    </style>
+    <link rel="stylesheet" href="{% static 'css/adminStyle.css' %}">
     
 </head>
 <body>
     <input type="checkbox" id="menu-toggle">
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="brand">
             <label for="menu-toggle" class="menu-toggler">
                 <span class="las la-bars"></span>
             </label>
+            <!-- LOGO -->
             <h3>FURNISHH</h3>
         </div>
         <div class="sidemenu">
+            <!-- Admin Info -->
             <div class="side-user">
                 <div class="side-img" style="background-image: url({{baseUrl}}/account/default.png);"></div>
                 <div class="user">
                     <p>{{ request.user.first_name }} {{ request.user.last_name }}</p>
                 </div>
             </div>
-
+            <!-- Side Menu -->
             <ul>
                 <li>
                     <a href="{% url 'administration:dashboard' %}" class="active">
                         <span class="las la-balance-scale"></span>
-                        <span>Product</span>
+                        <span>Products</span>
                     </a>
                 </li>
-                <!-- <li>
-                    <a href="{% url 'administration:dashboard' %}">
-                        <span class="las la-chart-pie"></span>
-                        <span>Category</span>
-                    </a>
-                </li> -->
                 <li>
                     <a href="{% url 'administration:order' %}">
                         <span class="las la-file-invoice-dollar"></span>
@@ -119,8 +93,9 @@
     </div>
 
     <div class="main-content">
+        <!-- Header -->
         <header class="shadow-sm">
-            <!-- Search form -->
+            <!-- Search Form -->
             <form action="" method="post">
                 {% csrf_token %}
                 <div class="d-flex justify-content-center m-1">
@@ -135,92 +110,17 @@
                 </div>
             </form>
 
-
             <div class="head-icons">
                 <span class="las la-bell"></span>
-                <span class="las la-bookmark"></span>
                 <span class="las la-comment"></span>
+                <a href="{% url 'account:logout' %}">
+                    <span class="las la-sign-out-alt"></span>
+                </a>
             </div>
         </header>
-
- 
-
-
-        <!-- <main>
-            <div class="cards">
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="card-icon follow">
-                        <span class="las la-users"></span>
-                    </div>
-                    <div class="card-info">
-                        <h2>3,281</h2>
-                        <small>Total followers</small>
-                    </div>
-                    <div class="card-images">
-                        <div style="background-image: url(img/profile.jpg);"></div>
-                        <div style="background-image: url(img/profile2.jpg);"></div>
-                        <div style="background-image: url(img/profile3.jpg);"></div>
-                        <div style="background-image: url(img/profile4.jpg);"></div>
-                        <div style="background-image: url(img/profile5.jpg);"></div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="card-icon likes">
-                        <span class="las la-heart"></span>
-                    </div>
-                    <div class="card-info">
-                        <h2>19,855</h2>
-                        <small>Total likes</small>
-                    </div>
-                    <div class="card-images">
-                        <div style="background-image: url(img/profile2.jpg);"></div>
-                        <div style="background-image: url(img/profile4.jpg);"></div>
-                        <div style="background-image: url(img/profile5.jpg);"></div>
-                        <div style="background-image: url(img/profile3.jpg);"></div>
-                        <div style="background-image: url(img/profile.jpg);"></div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="card-icon comment">
-                        <span class="las la-comment"></span>
-                    </div>
-                    <div class="card-info">
-                        <h2>661</h2>
-                        <small>Total comments</small>
-                    </div>
-                    <div class="card-images">
-                        <div style="background-image: url(img/profile3.jpg);"></div>
-                        <div style="background-image: url(img/profile5.jpg);"></div>
-                        <div style="background-image: url(img/profile2.jpg);"></div>
-                        <div style="background-image: url(img/profile.jpg);"></div>
-                        <div style="background-image: url(img/profile4.jpg);"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-grid">
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="chart-head">
-                        <h3>Followers</h3>
-                        <span class="las la-cog"></span>
-                    </div>
-                    <div id="myfirstchart" style="height: 350px;"></div>
-                </div>
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="chart-head">
-                        <h3>Sales</h3>
-                        <span class="las la-ellipsis-h"></span>
-                    </div>
-                    <div id="donut-example" style="height: 350px;"></div>
-                </div>
-            </div>
-        </main> -->
     </div>
 
     <label for="menu-toggle"class="close-mobile-menu"></label>
-
 
     {% if messages %}
         {% for msg in messages %}
@@ -236,6 +136,16 @@
     <script>
         $(document).ready( function () {
             $('#product_table').DataTable();
+        });
+
+        // Get current page and set current in nav
+        $(document).ready(function () {
+            $(".sidemenu a").click(function() {
+                if ($(".sidemenu a").removeClass("active")) {
+                    $(this).removeClass("active");
+                }
+                $(this).addClass("active");
+            });
         });
     </script>
 </body>

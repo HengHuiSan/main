@@ -19,12 +19,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # path('',include('account.urls')),
-    path('',include('ecommerce.urls', namespace='ecommerce')),
+    path('',include('account.urls', namespace='account')),
+    path('ecommerce/',include('ecommerce.urls', namespace='ecommerce')),
     path('dashboard/',include('administration.urls', namespace='administration')),
     path('admin/', admin.site.urls),
 ]
 
+# This is for opening image in new tab after clicking
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
