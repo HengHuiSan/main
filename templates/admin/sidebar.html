@@ -59,7 +59,7 @@
             <!-- Side Menu -->
             <ul>
                 <li>
-                    <a href="{% url 'administration:dashboard' %}" class="active">
+                    <a href="{% url 'administration:dashboard' %}">
                         <span class="las la-balance-scale"></span>
                         <span>Products</span>
                     </a>
@@ -139,14 +139,16 @@
         });
 
         // Get current page and set current in nav
-        $(document).ready(function () {
-            $(".sidemenu a").click(function() {
-                if ($(".sidemenu a").removeClass("active")) {
-                    $(this).removeClass("active");
-                }
-                $(this).addClass("active");
-            });
-        });
+
     </script>
 </body>
 </html>
+<!-- 
+$(document).ready(function () {
+    $(".sidemenu a").click(function() {
+        if ($(".sidemenu a").removeClass("active")) {
+            $(this).removeClass("active");
+        }
+        $(this).addClass("active");
+    });
+}); -->

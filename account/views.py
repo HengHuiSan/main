@@ -5,26 +5,31 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from ecommerce.models import *
 
+" ========== Register ========== " 
+
 def registerView(request):
-    msg = ''
+    # get the inputs from UserRegistrationForm
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             try:
                 form.save()
-                msg = messages.success(request, 'Register Successfully!')
+                messages.success(request, 'Register Successfully!')
             except ValidationError as e:
                 print(e)
     else:
         form = UserRegistrationForm()
 
-    context = {'form':form, 'msg':msg}
+    context = {'form':form}
 
     return render(request, 'account/register.html', context)
 
 
+" ========== Login & Logout ========== " 
+
 def loginView(request):
     msg = ''
+    url =  request.path
     if request.method == 'POST':
         uname = request.POST.get('txtUname')
         passwd = request.POST.get('txtPasswd')
@@ -42,12 +47,60 @@ def loginView(request):
             else:
                 msg = messages.error(request, 'Invalid username or password!')
 
-    context = {'msg':msg}
-
-    return render(request, 'account/login.html', context)
+    
+    if url.find('user') == -1:
+        return render(request, 'account/ad_login.html', {'msg':msg})
+    else:
+        return render(request, 'account/login.html', {'msg':msg})
     
 
 def logoutUser(request):
-	logout(request)
-	return redirect('account:login')
+    previous_url = request.META.get('HTTP_REFERER')
+    logout(request)
+
+    if previous_url.find('ecommerce') == -1:
+	    return redirect('account:admin_login')
+    else:
+	    return redirect('account:user_login')
+
+
+# def loginView(request):
+#     url =  request.path
+#     if request.method == 'POST':
+#         proceedLogin(request)
+#     elif url.find('ecommerce') == -1:
+#         return render(request, 'account/ad_login.html')
+#     else:
+#         return render(request, 'account/login.html')
+
+# def proceedLogin(request):
+#         msg = ''
+#         uname = request.POST.get('txtUname')
+#         passwd = request.POST.get('txtPasswd')
+
+#         if uname != '' and passwd != '':
+#             user = authenticate(request, username=uname, password=passwd)
+
+#             if user is not None:
+#                 login(request, user)
+
+#                 if user.is_staff == True:
+#                     return redirect('administration:dashboard')
+#                 else:
+#                     return redirect('ecommerce:homepage')
+#             else:
+#                 msg = messages.error(request, 'Invalid username or password!')
+
+#                 context = {'msg':msg}
+
+
+# def logoutUser(request):
+#     url =  request.path
+#     logout(request)
+    
+#     if url.find('ecommerce') == -1:
+# 	    return redirect('account:admin_login')
+#     else:
+# 	    return redirect('account:user_login')
+
 

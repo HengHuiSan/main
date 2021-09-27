@@ -55,7 +55,7 @@
         <div class="card shadow-sm border-0">
           <div class="card-body">
             <div class="text-center">
-              <img src="{{baseUrl}}/{{customer.profile_pic}}" alt="" style="max-width: 50%;" class="profile_pic mb-2">
+              <img src="{% if customer.profile_pic %}{{baseUrl}}/{{customer.profile_pic}} {% else %} {% static 'images/account/default.png' %} {% endif %}" alt="" style="max-width: 50%;" class="profile_pic mb-2">
               <h3>Hey, {{ request.user }}</h3>
             </div>
             <hr>
@@ -158,7 +158,7 @@
                     </div>
                   </div>
                   <div class="col-md-4 text-center">
-                    <img src="{{baseUrl}}/{{customer.profile_pic}}" alt="" style="max-width: 50%;" class="profile_pic mt-5 mb-3">
+                    <img src="{% if customer.profile_pic %}{{baseUrl}}/{{customer.profile_pic}} {% else %} {% static 'images/account/default.png' %} {% endif %}" alt="" style="max-width: 50%;" class="profile_pic mt-5 mb-3">
                     <div class="d-flex justify-content-center">
                       <input type="file" name="imgProfile" id="imgProfile" class="form-control border-0 ml-3">
                     </div>
@@ -215,6 +215,7 @@
           </div>
         </section>
 
+        <!------------- Change Password ------------->
         <section class="settings" id="settings" style="display: none;">
           <h1>&nbsp;Change Password</h1>
           <div class="card shadow-sm border-0 px-5 py-3" style="color: var(--first-color);">

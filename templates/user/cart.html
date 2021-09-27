@@ -26,6 +26,12 @@
         .btn-primary:hover{
             background-color: #0075F6 !important;
         }
+
+        .cart-footer{
+            position: absolute;
+            bottom: 0;
+            width: 100%;    
+        }
     </style>
 </head>
 <body>
@@ -126,6 +132,15 @@
         {% endfor %}	
     {% endif %}
 
+    {% if amount == 0 %}
+    <script>
+        $(document).ready(function() {
+            footer = document.getElementById('footer')
+            footer.classList.add("cart-footer");
+        });
+    </script>
+    {% endif %}
+
     <script>
         var fid = []
         var fprice = []
@@ -136,23 +151,27 @@
             totalPrice.push( parseFloat("{{ item.get_item_total_price }}") ) 
         "{% endfor %}"
 
+        // this function is triggered when the user updates the quantity of the cart item
         function calcAmount(elem) 
         {
-            var id = elem.id; 
-            var qty = document.getElementById(id).value;
-            var token = '{{csrf_token}}';
+            var id = elem.id; // the elem.id is represented as the input ID
+            var qty = document.getElementById(id).value; // get the quantity(input) value
+            var token = '{{csrf_token}}'; // token for to protecting the application from being exploited
             var amount = 0;
             var total = 0;
 
             for (var i=0; i<fprice.length; i++) {
+                // find which item is required to be updated
                 if(fid[i] == id){
+                    // get the total price of the cart item
                     total = qty * fprice[i]
                     totalPrice[i] = total
 
-                    //document.write("the same" + id + " fid " + fid[i]  + " price " + fprice[i] + " total " + total)
+                    // update the total price of the cart item on webpage asynchronously 
                     if (!isNaN(total))
                         document.getElementById("result+"+fid[i]).innerHTML = (Math.round(total * 100) / 100).toFixed(2);
 
+                    // create an AJAX call
                     $.ajax({
                         url: '{% url "ecommerce:update-cart" %}',
                         type: 'POST',
@@ -168,11 +187,13 @@
                         }
                     })
                 }
+                // update the total amount on webpage asynchronously
                 amount = amount + totalPrice[i]
             }
             document.getElementById("amount").innerHTML = amount.toFixed(2);
         }
     </script>
+
 
 
 </body>

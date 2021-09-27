@@ -137,19 +137,10 @@ def contentBasedFiltering(uid):
 def removeViewedItem(uid,similar_items):
     item_viewed = getAllViewedItems(uid)
 
-    # print("viewed Item")
-    # print(len(item_viewed))
-
-    # print("similar_items ")
-    # print(len(similar_items))
-
     for i in item_viewed:
         for j in similar_items:
             if i == j:
                 similar_items.remove(j)
-
-    # print("similar_items ")
-    # print(len(similar_items))
     
     return similar_items
 

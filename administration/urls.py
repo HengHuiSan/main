@@ -22,6 +22,5 @@ urlpatterns = [
     path('donations/',views.donationManagement,name='donation'),
     # For processing the donation requests
     path('process-donation/<slug>/<approve>/',views.processDonation, name='process-donation'),
-
 ]
 

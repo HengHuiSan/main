@@ -22,7 +22,7 @@ urlpatterns = [
     path('',include('account.urls', namespace='account')),
     path('ecommerce/',include('ecommerce.urls', namespace='ecommerce')),
     path('dashboard/',include('administration.urls', namespace='administration')),
-    path('admin/', admin.site.urls),
+    path('django-admin/', admin.site.urls),
 ]
 
 # This is for opening image in new tab after clicking
