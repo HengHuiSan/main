@@ -17,6 +17,12 @@
     /* row-gap: 2rem; */
 }
 
+.home__data{
+    position: absolute;
+    top: 25%;
+    right: 55%;
+}
+
 .home__data-subtitle, 
 .home__data-title, .catalog__data-title
 .home__social-link, 
@@ -59,7 +65,7 @@
 }
 
 .hot__products i{
-    font-size: 4.5rem; 
+    font-size: 3rem; 
     color: var(--title-color);
 }
 .recommendation__container{
@@ -177,8 +183,8 @@
 }
 
 .donate__image{
-    position: absolute;
-    top: -60px;
+    position: relative;
+    top: -90px;
 }
 
 

@@ -91,11 +91,11 @@ def deleteItem(request, slug):
 # For displaying order management page
 def orderManagement(request):
     context = {
-        'order':Order.objects.all(),
+        'order':Order.objects.all().order_by('-orderDate')
     }
     return render(request, 'admin/order_management.html', context)
 
-# For manaaging customer order
+# For managing customer order
 def processOrder(request, slug, action):   
     order = get_object_or_404(Order, slug=slug)
 
@@ -117,7 +117,7 @@ def processOrder(request, slug, action):
 # For displaying donation request management page
 def donationManagement(request):
     context = {
-        'donation':Donation.objects.all()
+        'donation':Donation.objects.all().order_by('-dateCreated')
     }
     return render(request, 'admin/donation_management.html', context)
 

@@ -18,7 +18,7 @@ states = ['Johor','Kedah','Kelantan','Malacca',
 
 " ========== Homepage ========== "  
 
-# @login_required(login_url='ecommerce:login')
+@login_required(login_url='ecommerce:login') # require user login first
 def goHompage(request):
     # if user is customer, he will receive 3 types of recommendation
     if Order.objects.filter(userId=request.user).exists():
@@ -50,6 +50,13 @@ def goHompage(request):
         context = {
             'popularity_recommend_list':Furniture.objects.filter(pk__in=popularity_recommend_list)
         }
+
+    if Customer_Profile.objects.filter(custId=request.user).exists() == False:
+        profile = Customer_Profile.objects.create(custId= request.user)
+        
+        profile.save()
+
+        print(profile)
 
     return render(request,'user/homepage.html', context)
 
@@ -128,8 +135,8 @@ def updateViewToItem(request, slug):
         get_viewed_item.save()
     # else, create a new record in 'view' table
     else:
-        view = User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
-
+        User_Views.objects.create(userId=request.user, furnitureId=item, viewCount=1)
+        
     return redirect('ecommerce:product', slug=slug)
 
 
@@ -165,13 +172,17 @@ def addToCart(request, slug):
         Cart_Products.objects.create(userId=request.user, furnitureId=item, quantity=1,slug=item.furnitureId)
         messages.success(request, "This item was added to your cart.")
 
+    # get previous URL path
     previous_url = request.META.get('HTTP_REFERER')
 
+    # return to the page where user adds cart item
     if "homepage" in previous_url:
         return redirect('ecommerce:homepage')
     elif "catalog" in previous_url:
         return redirect('ecommerce:catalog')
     elif "product" in previous_url:
+        return redirect('ecommerce:cart')
+    elif "search" in previous_url:
         return redirect('ecommerce:cart')
 
 def removeFromCart(request, slug):
@@ -196,7 +207,8 @@ def updateCart(request):
 
 
 " ========== Checkout ========== "   
-
+# this function is triggered when the user clicks 
+# the 'Checkout' button in cart page
 def showOrderSummary(request):
     cart = Cart_Products.objects.filter(userId=request.user)
     # calculate total amount
@@ -206,15 +218,20 @@ def showOrderSummary(request):
         'object': cart, 
         'amount':amount,
         'states':states,
-        'profile':Customer_Profile.objects.get(custId=request.user.id)
         }
+    customer_profile = Customer_Profile.objects.filter(custId = request.user)
+
+    if customer_profile.exists():
+        context.update({
+            'profile':Customer_Profile.objects.get(custId=request.user.id)
+        })
 
     return render(request, 'user/checkout.html', context)
 
+# This function is used to check whether the order ID is duplicated
 def checkOrderId(id):
     if Order.objects.filter(orderId=id).exists():
         order_id = str(random.randint(1000000, 9999999))
-        print("3" , order_id)
         checkOrderId(order_id)
     else:
         print("3" , id)
@@ -242,7 +259,8 @@ def payment_complete(request):
         amount = body['form']['total'], 
         userId = request.user,
         isDelivered = False,
-        isReceived = False
+        isReceived = False,
+        slug = order_id
     )
     order.save()
 
@@ -283,14 +301,17 @@ def requestDonation(request):
 
 " ========== Profile ========== " 
 
-def goProfile(request, section):
+def goProfile(request,section):
     if request.method == "POST":
+        # direct to the 'account' section in profile when user updates profile
         if (request.POST.get('btnUpdate')):
             updateProfile(request)
             return redirect('ecommerce:profile', section='account')
+        # direct to the 'order' section in profile when user confirms that order is received
         elif (request.POST.get('btnReceive')):
             receiveOrder(request)
             return redirect('ecommerce:profile', section='order')
+        # direct to 'settings' section when user wants to change password
         elif (request.POST.get('btnSave')):
             updateAccount(request)
             return redirect('ecommerce:profile', section='settings')
@@ -322,7 +343,7 @@ def updateProfile(request):
         customer = Customer_Profile()    
         customer.custId = request.user
     
-    
+    # save record
     customer.phoneNo = request.POST['txtPhoneNo']
     customer.gender = request.POST['rbtnGender']
     customer.dob = request.POST['txtDOB']
@@ -354,6 +375,7 @@ def updateAccount(request):
     else:
         messages.error(request, 'Please correct the error below.')
 
+# When user confirms that order is received
 def receiveOrder(request):
     id = request.POST.get('hdfOrderId')
     order = Order.objects.get(orderId = id)
@@ -379,7 +401,6 @@ def get_profile_data(request):
             if(query.exists()):
                 items_list.append(query)
 
-        # get user's donation requests
         donations = Donation.objects.filter(userId = request.user).order_by('-dateCreated')
 
         context = {
@@ -421,4 +442,17 @@ def searchProduct(request):
 
 
 
+        # processing_items_list = []
+        # delivered_items_list = []
+        # completed_items_list = []
 
+        # for order in orders:
+        #     query = Order_Products.objects.filter(orderId = order.orderId)
+        #     if order.isReceived == True:
+        #         completed_items_list.append(query)
+        #     elif order.isDelivered == True:
+        #         delivered_items_list.append(query)
+        #     else: 
+        #         processing_items_list.append(query)
+
+        # get user's donation requests

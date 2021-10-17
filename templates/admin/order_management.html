@@ -7,7 +7,7 @@
 <main class="main-content">
     <h1 class="ml-2">Order Management</h1>
     <div class="card border-0 shadow-sm px-4 py-5">
-        <table id="product_table" class="table table-hover  " cellspacing="0" width="100%">
+        <table id="order_table" class="table table-hover  " cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>ID</th>
@@ -54,6 +54,15 @@
 
 
 <script>
+    $(document).ready( function () {
+        $('#order_table').DataTable({
+            "columnDefs": [ {
+                "targets": [5],
+                "orderable": false
+                } ]
+        });
+    });
+
     $('.clickable-tr').on('click', function(){
         var myLink = $(this).attr('href');
         window.location.href = myLink;

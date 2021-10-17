@@ -9,7 +9,10 @@
 
     <style>
         @import url(../css/variables.css);
-        .form-control:focus, .btn:focus {
+        .form-control{
+            margin-bottom: 1.5rem;
+        }
+        .form-control:focus, .form-select:focus, .btn:focus {
             outline: none !important;
             box-shadow: none !important;
           }
@@ -37,7 +40,7 @@
 
                 <!------------ CHECKOUT FORM ------------>
                 <div class="col-lg-7">
-                    <div class="card shadow border-0 mb-3">
+                    <div class="card shadow border-0 mb-3 px-4">
                         <div class="card-body">
                             <h2 class="pl-3 pt-3"><b>Billing Details</b></h2>
                             <hr>
@@ -60,7 +63,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="txtPhoneNo">&nbsp; Phone Number</label>
-                                    <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ profile.phoneNo }}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
+                                    <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{% if profile.phoneNo != NULL %}{{ profile.phoneNo }}{%endif%}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
                                     <small>&nbsp;e.g. 012-3456789</small>
                                 </div>
                                 <br>
@@ -68,24 +71,24 @@
                                 <hr>
                                 <div class="form-group">
                                     <label for="txtAddress1">&nbsp;&nbsp;Line 1</label>
-                                    <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{% if profile %} {{ profile.address1 }} {% endif %}" required>
+                                    <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{% if profile.address1 != NULL %} {{ profile.address1 }} {% endif %}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="txtAddress2">&nbsp;&nbsp;Line 2</label>
-                                    <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{% if profile %} {{ profile.address2 }} {% endif %}" required>
+                                    <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{% if profile.address2 != NULL %} {{ profile.address2 }} {% endif %}" required>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-md-5 mb-3">
                                         <label for="txtTown">&nbsp;Town/City</label>
-                                        <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if profile %} {{ profile.town }} {% endif %}" required />
+                                        <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if profile.town != NULL %} {{ profile.town }} {% endif %}" required />
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <label for="txtPostcode">&nbsp;Postcode</label>
-                                        <input type="text" class="form-control" id="txtPostcode" name="txtPostcode" value="{% if profile %} {{ profile.postcode }} {% endif %}" required />
+                                        <input type="text" class="form-control" id="txtPostcode" name="txtPostcode" value="{% if profile.postcode != NULL %} {{ profile.postcode }} {% endif %}" required />
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="ddlState">&nbsp;State</label>
-                                        <select class="form-control" id="ddlState" name="ddlState" required>
+                                        <select class="form-select" id="ddlState" name="ddlState" required>
                                             {% for state in states %}
                                             <option value="{{ state }}"
                                                 {% ifequal state profile.state %} selected {% endifequal %}>
@@ -133,7 +136,7 @@
                             <div>
                                 <div id="smart-button-container">
                                     <div style="text-align: center;">
-                                        <div id="paypal-button-container"></div>
+                                        <div id="paypal-button-container" style="z-index: 0;"></div>
                                     </div>
                                 </div>
                             </div>                   

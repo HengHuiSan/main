@@ -9,7 +9,10 @@
 
   <style>
     @import url(../css/variables.css);
-    .form-control:focus, .btn:focus {
+    .form-control{
+      margin-bottom: 1.5rem;
+    }
+    .form-control:focus, .form-select:focus, .btn:focus {
       outline: none !important;
       box-shadow: none !important;
     }
@@ -94,7 +97,7 @@
               </a>
             </div>
           </div>
-          <div class="card shadow-sm border-0">
+          <div class="card shadow-sm border-0 px-3">
             <div class="card-body">
               <form action="" method="POST" enctype="multipart/form-data" class="py-3 px-4 form-horizontal">
                 {% csrf_token %}
@@ -133,34 +136,34 @@
                     <div class="form-group row">
                       <label for="txtPhoneNo" class="col-sm-3 col-form-label">Phone Number</label>
                       <div class="col-sm-9">
-                        <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{{ customer.phoneNo }}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
+                        <input type="text" class="form-control" id="txtPhoneNo" name="txtPhoneNo" value="{% if customer.phoneNo != NULL %}{{ customer.phoneNo }}{% endif %}" pattern="^(\+?6?01)[0-46-9]-*[0-9]{7,8}$" required>
                       </div>
                     </div>
                     <div class="form-group row">
                       <label for="rbtnGender" class="col-sm-3 col-form-label">Gender</label>
                       <div class="col-sm-9 mt-2">
-                        <div class="custom-control custom-radio custom-control-inline">
-                          <input type="radio" class="custom-control-input" id="rbtnMale" name="rbtnGender" value="male" {% if customer.gender == 'male' %} checked {% endif %} />
+                        <div class="custom-control custom-radio form-check-inline">
+                          <input type="radio" class="form-check-input" id="rbtnMale" name="rbtnGender" value="male" {% if customer.gender == 'male' %} checked {% endif %} />
                           <label class="custom-control-label" for="rbtnMale">Male</label>
                         </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                          <input type="radio" class="custom-control-input" id="rbtnFemale" name="rbtnGender" value="female" {% if customer.gender == 'female' %} checked {% endif %}/>
+                        <div class="custom-control custom-radio form-check-inline">
+                          <input type="radio" class="form-check-input" id="rbtnFemale" name="rbtnGender" value="female" {% if customer.gender == 'female' %} checked {% endif %}/>
                           <label class="custom-control-label" for="rbtnFemale">Female</label>
                         </div>
                       </div>
-                    </div>
+                    </div><br>
 
                     <div class="form-group row">
                       <label for="txtDOB" class="col-sm-3 col-form-label">Date of Birth</label>
                       <div class="col-sm-9">
-                        <input type="date" class="form-control" id="txtDOB" name="txtDOB" value="{{ customer.dob|date:'Y-m-d' }}" required>
+                        <input type="date" class="form-control" id="txtDOB" name="txtDOB" value="{% if customer.dob != NULL %}{{ customer.dob|date:'Y-m-d' }}{%endif%}" required>
                       </div>
                     </div>
                   </div>
                   <div class="col-md-4 text-center">
                     <img src="{% if customer.profile_pic %}{{baseUrl}}/{{customer.profile_pic}} {% else %} {% static 'images/account/default.png' %} {% endif %}" alt="" style="max-width: 50%;" class="profile_pic mt-5 mb-3">
                     <div class="d-flex justify-content-center">
-                      <input type="file" name="imgProfile" id="imgProfile" class="form-control border-0 ml-3">
+                      <input type="file" name="imgProfile" id="imgProfile" class="ml-3">
                     </div>
                   </div>
                 </div>
@@ -170,32 +173,32 @@
                 <div class="form-group  row">
                     <label for="txtAddress" class="col-sm-2 col-form-label">Line 1</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{{ customer.address1 }}" required>
+                      <input type="text" class="form-control" id="txtAddress1" name="txtAddress1" value="{% if customer.address1 != NULL %}{{ customer.address1 }}{%endif%}" required>
                     </div>
                 </div>
                 <div class="form-group row">
                   <label for="txtAddress" class="col-sm-2 col-form-label">Line 2</label>
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{{ customer.address2 }}" required>
+                    <input type="text" class="form-control" id="txtAddress2" name="txtAddress2" value="{% if customer.address2 != NULL %}{{ customer.address2 }}{%endif%}" required>
                   </div>
                 </div>
                 <div class="form-group row">
                   <label for="txtTown" class="col-sm-2 col-form-label">Town/City</label>
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" id="txtTown" name="txtTown" value="{{ customer.town }}" required>
+                    <input type="text" class="form-control" id="txtTown" name="txtTown" value="{% if customer.town != NULL %}{{ customer.town }}{%endif%}" required>
                   </div>
                 </div>
                 <div class="row mb-5">
                   <div class="col row">
                       <label for="txtPostCode" class="col-sm-4 col-form-label">Postcode</label>
                       <div class="col-sm-8">
-                        <input type="text" class="form-control" id="txtPostCode" name="txtPostCode" value="{{ customer.postcode }}" required />
+                        <input type="text" class="form-control" id="txtPostCode" name="txtPostCode" value="{% if customer.postcode != NULL %}{{ customer.postcode }}{%endif%}" required />
                       </div>
                   </div>
                   <div class="col row">
                     <label for="ddlState" class="col-sm-4 col-form-label">State</label>
                     <div class="col-sm-8">
-                      <select class="form-control" id="ddlState" name="ddlState" required>
+                      <select class="form-select" id="ddlState" name="ddlState" required>
                         {% for state in states %}
                         <option value="{{ state }}"
                             {% ifequal state customer.state %} selected {% endifequal %}>
@@ -207,7 +210,7 @@
                   </div>
                 </div> 
                 <div class="d-flex justify-content-center">
-                  <input type="submit" class="btn btn-secondary mr-3" name="btnUpdate" value="Update"/>
+                  <input type="submit" class="btn btn-secondary mr-3" name="btnUpdate" value="Update"/>&emsp;
                   <a href="{% url 'ecommerce:profile' section='account' %}" class="btn btn-secondary">Cancel</a>
                 </div> 
               </form> 
@@ -224,7 +227,7 @@
                 {% csrf_token %}
                 {{ form|crispy }}
                 <div class="d-flex justify-content-center pt-3">
-                  <input type="submit" name="btnSave" value="Save" class="btn btn-secondary mr-3">
+                  <input type="submit" name="btnSave" value="Save" class="btn btn-secondary mr-3">&emsp;
                   <a href="{% url 'ecommerce:profile' section='profile' %}" class="btn btn-secondary">Cancel</a>
                 </div>
               </form>
@@ -236,6 +239,11 @@
         <!------------- Order Area ------------->
         <section id="order" style="display: none;">
           <h1>&nbsp;My Order</h1>
+          <!-- <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
+            <button type="button" id="{{ processing_items_list }}" class="btn btn-secondary">Processing</button>
+            <button type="button" id="{{ delivered_items_list }}" class="btn btn-secondary">Delivered</button>
+            <button type="button" id="{{ completed_items_list }}" class="btn btn-secondary">Completed</button>
+          </div> -->
           {% for order,items_list in order_data %}
           <div class="card shadow-sm border-0"  style="color: var(--title-color);">
             <div class="card-body py-4 px-5">
@@ -305,16 +313,16 @@
           <div class="card shadow-sm border-0"  style="color: var(--title-color);">
             <div class="card-body py-4 px-5">
               <div class="row">
-                <div class="col">
+                <div class="col-md-9">
                   <h3>Donation ID: {{ donation.donationId }}</h3>
                 </div>
-                <div class="col">
+                <div class="col-md-3 text-uppercase">
                   {% if donation.isApproved == True %}
-                  <h2 class="text-uppercase text-right" style="color: orangered;"><b>accepted</b></h2>
+                  <h2 style="color: orangered;"><b>accepted</b></h2>
                   {% elif donation.isApproved == False %}
-                  <h2 class="text-uppercase text-right" style="color: orangered;"><b>rejected</b></h2>
+                  <h2 style="color: orangered;"><b>rejected</b></h2>
                   {% else %}
-                  <h2 class="text-uppercase text-right" style="color: orangered;"><b>processing</b></h2>
+                  <h2 style="color: orangered;"><b>processing</b></h2>
                   {% endif %}
                 </div>
               </div>

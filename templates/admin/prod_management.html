@@ -89,6 +89,13 @@
 </main>
 
 <script>
+    $(document).ready( function () {
+        $('#product_table').DataTable();
+    });
+
+    // Get current page and set current in nav
+
+
     $('.clickable-tr').on('click', function(){
         var myLink = $(this).attr('href');
         window.location.href = myLink;

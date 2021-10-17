@@ -19,6 +19,14 @@ body {
     background-color: var(--bg-body);
 }
 
+ul {
+    list-style: none;
+}
+  
+a {
+    text-decoration: none !important;
+}
+
 input, button{
     outline: none;
 }
@@ -38,6 +46,10 @@ input, button{
 
 #menu-toggle:checked ~ .sidebar .user{
     display: none;
+}
+
+#menu-toggle:checked ~ .sidebar li{
+    margin-left: -32px;
 }
 
 #menu-toggle:checked ~ .sidebar li a span:last-child{
@@ -311,6 +323,7 @@ main{
         display: none;
     }
     
+    
     #menu-toggle ~ .sidebar li a span:last-child{
         display: none;
     }
@@ -371,7 +384,7 @@ main{
     }
 }
 
-@media only screen and (max-width: 630px) {
+@media only screen and (max-width: 630px) {    
     .cards{
         grid-template-columns: 100%;
     }
