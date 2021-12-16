@@ -46,6 +46,10 @@
 		margin: 0 auto;
 		border-radius: 50%;
 	}
+  .btn.btn-active{
+    color: #333;
+    background-color:#0075F6 !important;
+  }
   </style>
 </head>
 <body>
@@ -235,128 +239,343 @@
           </div>
         </section>
 
-
         <!------------- Order Area ------------->
         <section id="order" style="display: none;">
           <h1>&nbsp;My Order</h1>
-          <!-- <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
-            <button type="button" id="{{ processing_items_list }}" class="btn btn-secondary">Processing</button>
-            <button type="button" id="{{ delivered_items_list }}" class="btn btn-secondary">Delivered</button>
-            <button type="button" id="{{ completed_items_list }}" class="btn btn-secondary">Completed</button>
-          </div> -->
+          <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
+            <button type="button" id="{{ processing_items_list }}" class="btn btn-secondary btn-process btn-active">Processing</button>
+            <button type="button" id="{{ delivered_items_list }}" class="btn btn-secondary btn-deliver">Delivered</button>
+            <button type="button" id="{{ completed_items_list }}" class="btn btn-secondary btn-complete">Completed</button>
+          </div>
+
           {% for order,items_list in order_data %}
-          <div class="card shadow-sm border-0"  style="color: var(--title-color);">
-            <div class="card-body py-4 px-5">
-              <h3><b>Order ID :</b> {{ order.orderId }}</h3><hr>
-              <div class="row"> 
-                <div class="col-md-9">
-                  <span><b>Date :</b> {{ order.orderDate }}</span><br>
-                  <span><b>Address :</b> {{ order.shippingAddress }}</span>
-                </div>
-                <div class="col-md-3">
-                  {% if order.isReceived == True %}
-                  <h3 class="text-right" style="color: orangered;">Completed</h3>
-                  {% elif order.isDelivered == False %}
-                  <h3 class="text-right" style="color: orangered;">Processing</h3>
-                  {% else %}
-                  <h3 class="text-right" style="color: orangered;">Delivered</h3>
-                  {% endif %}
-                </div>
-              </div>
-              <table class="table mt-3 text-center">
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Unit Price</th>
-                    <th scope="col">Quantity</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {% for item in items_list %}
-                  <tr>
-                    <td style="max-width: 10px;">
-                      <img src="{{baseUrl}}/{{item.furnitureId.furnitureImg}}" alt="" style="width: 80px; height: 80px;">
-                    </td>
-                    <td class="align-middle">{{ item.furnitureId.furnitureName}}</td>
-                    <td class="align-middle">{{ item.furnitureId.unitPrice}}</td>
-                    <td class="align-middle">{{ item.quantity }}</td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-              <hr>
-              <div class="row">
-                <div class="col">
-                  <h4><b>Total Amount: ${{ order.amount }}</b></h4>
-                </div>
-                {% if order.isReceived == False %}
-                  <div class="col">
-                    <form action="" method="POST" enctype="multipart/form-data">
-                      {% csrf_token %}
-                      <input type="hidden" name="hdfOrderId" value="{{ order.orderId }}">
-                      <input type="submit" class="btn btn-secondary" name="btnReceive" value="Receive" {% if order.isDelivered == False %} disabled {% endif %}/>
-                    </form>
+              <!-- Processing Order -->
+              {% if order.isDelivered == False and order.isReceived == False %}
+              <div id="processing-order">
+                <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+                  <div class="card-body py-4 px-5">
+                    <h3><b>Order ID :</b> {{ order.orderId }}</h3><hr>
+                    <div class="row"> 
+                      <div class="col-md-9">
+                        <span><b>Date :</b> {{ order.orderDate }}</span><br>
+                        <span><b>Address :</b> {{ order.shippingAddress }}</span>
+                      </div>
+                      <div class="col-md-3">
+                        <h3 class="text-right" style="color: orangered;">Processing</h3>
+                      </div>
+                    </div>
+                    <table class="table mt-3 text-center">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Unit Price</th>
+                          <th scope="col">Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for item in items_list %}
+                        <tr>
+                          <td style="max-width: 10px;">
+                            <img src="{{baseUrl}}/{{item.furnitureId.furnitureImg}}" alt="" style="width: 80px; height: 80px;">
+                          </td>
+                          <td class="align-middle">{{ item.furnitureId.furnitureName}}</td>
+                          <td class="align-middle">{{ item.furnitureId.unitPrice}}</td>
+                          <td class="align-middle">{{ item.quantity }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                    <hr>
+                    <div class="row">
+                      <div class="col">
+                        <h4><b>Total Amount: ${{ order.amount }}</b></h4>
+                      </div>
+                      {% if order.isReceived == False %}
+                        <div class="col">
+                          <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="hdfOrderId" value="{{ order.orderId }}">
+                            <input type="submit" class="btn btn-secondary" name="btnReceive" value="Receive" {% if order.isDelivered == False %} disabled {% endif %}/>
+                          </form>
+                        </div>
+                      {% endif %}
+                    </div>
                   </div>
+                </div>
+                <br><br>
+              </div>
+              {% endif %}
+
+
+              <!-- Delivered Order -->
+              <div id="delivered-order" style="display: none;">
+                {% if order.isDelivered == True and order.isReceived == False %}
+                <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+                  <div class="card-body py-4 px-5">
+                    <h3><b>Order ID :</b> {{ order.orderId }}</h3><hr>
+                    <div class="row"> 
+                      <div class="col-md-9">
+                        <span><b>Date :</b> {{ order.orderDate }}</span><br>
+                        <span><b>Address :</b> {{ order.shippingAddress }}</span>
+                      </div>
+                      <div class="col-md-3">
+                        <h3 class="text-right" style="color: orangered;">Delivered</h3>
+                      </div>
+                    </div>
+                    <table class="table mt-3 text-center">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Unit Price</th>
+                          <th scope="col">Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for item in items_list %}
+                        <tr>
+                          <td style="max-width: 10px;">
+                            <img src="{{baseUrl}}/{{item.furnitureId.furnitureImg}}" alt="" style="width: 80px; height: 80px;">
+                          </td>
+                          <td class="align-middle">{{ item.furnitureId.furnitureName}}</td>
+                          <td class="align-middle">{{ item.furnitureId.unitPrice}}</td>
+                          <td class="align-middle">{{ item.quantity }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                    <hr>
+                    <div class="row">
+                      <div class="col">
+                        <h4><b>Total Amount: ${{ order.amount }}</b></h4>
+                      </div>
+                      {% if order.isReceived == False %}
+                      <div class="col">
+                        <form action="" method="POST" enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <input type="hidden" name="hdfOrderId" value="{{ order.orderId }}">
+                          <input type="submit" class="btn btn-secondary" name="btnReceive" value="Receive" {% if order.isDelivered == False %} disabled {% endif %}/>
+                        </form>
+                      </div>
+                    {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <br><br>
                 {% endif %}
               </div>
-            </div>
-          </div>
-          <br><br>
+              
+              <!-- Completed Order -->
+              <div id="completed-order" style="display: none;">
+                {% if order.isReceived == True and order.isDelivered == True %}
+                <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+                  <div class="card-body py-4 px-5">
+                    <h3><b>Order ID :</b> {{ order.orderId }}</h3><hr>
+                    <div class="row"> 
+                      <div class="col-md-9">
+                        <span><b>Date :</b> {{ order.orderDate }}</span><br>
+                        <span><b>Address :</b> {{ order.shippingAddress }}</span>
+                      </div>
+                      <div class="col-md-3">
+                        <h3 class="text-right" style="color: orangered;">Completed</h3>
+                      </div>
+                    </div>
+                    <table class="table mt-3 text-center">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Unit Price</th>
+                          <th scope="col">Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for item in items_list %}
+                        <tr>
+                          <td style="max-width: 10px;">
+                            <img src="{{baseUrl}}/{{item.furnitureId.furnitureImg}}" alt="" style="width: 80px; height: 80px;">
+                          </td>
+                          <td class="align-middle">{{ item.furnitureId.furnitureName}}</td>
+                          <td class="align-middle">{{ item.furnitureId.unitPrice}}</td>
+                          <td class="align-middle">{{ item.quantity }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                    <hr>
+                    <div class="row">
+                      <div class="col">
+                        <h4><b>Total Amount: ${{ order.amount }}</b></h4>
+                      </div>
+                      {% if order.isReceived == False %}
+                        <div class="col">
+                          <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="hdfOrderId" value="{{ order.orderId }}">
+                            <input type="submit" class="btn btn-secondary" name="btnReceive" value="Receive" {% if order.isDelivered == False %} disabled {% endif %}/>
+                          </form>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <br><br>
+                {% endif %}
+              </div>
           {% endfor %}
         </section>
 
         <!------------- Donation Area ------------->
         <section id="donation" style="display: none;">
           <h1>&nbsp;My Donation</h1>
-          {% for donation in donations %}
-          <div class="card shadow-sm border-0"  style="color: var(--title-color);">
-            <div class="card-body py-4 px-5">
-              <div class="row">
-                <div class="col-md-9">
-                  <h3>Donation ID: {{ donation.donationId }}</h3>
-                </div>
-                <div class="col-md-3 text-uppercase">
-                  {% if donation.isApproved == True %}
-                  <h2 style="color: orangered;"><b>accepted</b></h2>
-                  {% elif donation.isApproved == False %}
-                  <h2 style="color: orangered;"><b>rejected</b></h2>
-                  {% else %}
-                  <h2 style="color: orangered;"><b>processing</b></h2>
-                  {% endif %}
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-md-3">
-                  <img src="{{baseUrl}}/{{donation.image}}" alt="" style="max-width: 80%;">
-                </div>
-                <div class="col-md-9">
-                  <table class="table table-borderless table-sm">
-                    <tbody>
-                      <tr>
-                        <th>Request Date</th>
-                        <td>{{ donation.dateCreated }}</td>
-                      </tr>
-                      <tr>
-                        <th>Description</th>
-                        <td>{{ donation.description }}</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">Year Purchased</th>
-                        <td>{{ donation.yearPurchased }}</td>
-                      </tr>
-                      <tr>
-                        <th>Original Price</th>
-                        <td>{{ donation.originalPrice }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+          <div class="btn-group w-100 my-3" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-secondary btn-donate-process btn-active">Processing</button>
+            <button type="button" class="btn btn-secondary btn-reject">Rejected</button>
+            <button type="button" class="btn btn-secondary btn-accept">Accepted</button>
           </div>
-          <br>
+
+          {% for donation in donations %}
+            <!-- Donation Accepted  -->
+            <div id="donate-accepted" style="display: none;">
+            {% if donation.isApproved == True %}
+              <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+                <div class="card-body py-4 px-5">
+                  <div class="row">
+                    <div class="col-md-9">
+                      <h3>Donation ID: {{ donation.donationId }}</h3>
+                    </div>
+                    <div class="col-md-3 text-uppercase">
+                      <h2 style="color: orangered;"><b>ACCEPTED</b></h2>                   
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <img src="{{baseUrl}}/{{donation.image}}" alt="" style="max-width: 80%;">
+                    </div>
+                    <div class="col-md-9">
+                      <table class="table table-borderless table-sm">
+                        <tbody>
+                          <tr>
+                            <th>Request Date</th>
+                            <td>{{ donation.dateCreated }}</td>
+                          </tr>
+                          <tr>
+                            <th>Description</th>
+                            <td>{{ donation.description }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Year Purchased</th>
+                            <td>{{ donation.yearPurchased }}</td>
+                          </tr>
+                          <tr>
+                            <th>Original Price</th>
+                            <td>{{ donation.originalPrice }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>    
+            {% endif %}
+            </div>
+
+            <!-- Donation Rejected  -->
+            <div id="donate-rejected" style="display: none;">
+            {% if donation.isApproved == False %}
+              <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+                <div class="card-body py-4 px-5">
+                  <div class="row">
+                    <div class="col-md-9">
+                      <h3>Donation ID: {{ donation.donationId }}</h3>
+                    </div>
+                    <div class="col-md-3 text-uppercase">
+                      <h2 style="color: orangered;"><b>REJECTED</b></h2>                   
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <img src="{{baseUrl}}/{{donation.image}}" alt="" style="max-width: 80%;">
+                    </div>
+                    <div class="col-md-9">
+                      <table class="table table-borderless table-sm">
+                        <tbody>
+                          <tr>
+                            <th>Request Date</th>
+                            <td>{{ donation.dateCreated }}</td>
+                          </tr>
+                          <tr>
+                            <th>Description</th>
+                            <td>{{ donation.description }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Year Purchased</th>
+                            <td>{{ donation.yearPurchased }}</td>
+                          </tr>
+                          <tr>
+                            <th>Original Price</th>
+                            <td>{{ donation.originalPrice }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>              
+            {% endif %}
+            </div>
+
+            <!-- Donation in processing -->
+            <div id="donate-process" style="display: display;">
+            {% if donation.isApproved == NULL %}
+              <div class="card shadow-sm border-0"  style="color: var(--title-color);">
+                <div class="card-body py-4 px-5">
+                  <div class="row">
+                    <div class="col-md-9">
+                      <h3>Donation ID: {{ donation.donationId }}</h3>
+                    </div>
+                    <div class="col-md-3 text-uppercase">
+                      <h2 style="color: orangered;"><b>PROCESSING</b></h2>                   
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <img src="{{baseUrl}}/{{donation.image}}" alt="" style="max-width: 80%;">
+                    </div>
+                    <div class="col-md-9">
+                      <table class="table table-borderless table-sm">
+                        <tbody>
+                          <tr>
+                            <th>Request Date</th>
+                            <td>{{ donation.dateCreated }}</td>
+                          </tr>
+                          <tr>
+                            <th>Description</th>
+                            <td>{{ donation.description }}</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Year Purchased</th>
+                            <td>{{ donation.yearPurchased }}</td>
+                          </tr>
+                          <tr>
+                            <th>Original Price</th>
+                            <td>{{ donation.originalPrice }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>              
+            {% endif %}
+
           {% endfor %}
         </section>
       </div>
@@ -392,6 +611,89 @@
         showSettings(); 
       }
     });
+
+    $(".btn-group > .btn").click(function(){
+      $(".btn-group > .btn").removeClass("btn-active");
+      $(this).addClass("btn-active");
+
+    });
+
+
+
+    $('.btn.btn-process').on('click',function(e){
+      var w = document.getElementById("processing-order");
+      var x = document.getElementById("delivered-order");
+      var y = document.getElementById("completed-order");
+
+      if (w.style.display === "none") {
+        w.style.display = "block";
+        x.style.display = "none";
+        y.style.display = "none";
+      }
+    })
+
+
+    $('.btn.btn-deliver').on('click',function(e){
+      var w = document.getElementById("processing-order");
+      var x = document.getElementById("delivered-order");
+      var y = document.getElementById("completed-order");
+
+      if (x.style.display === "none") {
+        x.style.display = "block";
+        w.style.display = "none";
+        y.style.display = "none";
+      }    
+    })
+
+    $('.btn.btn-complete').on('click',function(e){
+      var w = document.getElementById("processing-order");
+      var x = document.getElementById("delivered-order");
+      var y = document.getElementById("completed-order");
+
+      console.log(w)
+      if (y.style.display === "none") {
+        y.style.display = "block";
+        x.style.display = "none";
+        w.style.display = "none";
+      }
+    })
+
+
+    $('.btn.btn-donate-process').on('click',function(e){
+      var w = document.getElementById("donate-process");
+      var x = document.getElementById("donate-accepted");
+      var y = document.getElementById("donate-rejected");
+
+      if (w.style.display === "none") {
+        w.style.display = "block";
+        x.style.display = "none";
+        y.style.display = "none";
+      }
+    })
+
+    $('.btn.btn-reject').on('click',function(e){
+      var w = document.getElementById("donate-process");
+      var x = document.getElementById("donate-accepted");
+      var y = document.getElementById("donate-rejected");
+
+      if (y.style.display === "none") {
+        w.style.display = "none";
+        x.style.display = "none";
+        y.style.display = "block";
+      }
+    })
+
+    $('.btn.btn-accept').on('click',function(e){
+      var w = document.getElementById("donate-process");
+      var x = document.getElementById("donate-accepted");
+      var y = document.getElementById("donate-rejected");
+
+      if (x.style.display === "none") {
+        w.style.display = "none";
+        x.style.display = "block";
+        y.style.display = "none";
+      }
+    })
 
     function showProfile() {
       var w = document.getElementById("settings");

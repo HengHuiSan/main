@@ -25,7 +25,7 @@ def recommendToNewUser():
 PART 2: Recommend Items to Users Who Has NO Purchased History
 
  a) Inspired by your browsing history :
-    Model-based collaborative filtering using Matrix Factorization
+    Model-based collaborative filtering using TruncatedSVD
     based on active user's page views and  page views by 
     other users who views items similar items
 
@@ -46,7 +46,7 @@ def recommendToNormalUser(uid, role):
     and item features to generate item-item recommendations
 
  b) Inspired by your browsing history :
-    Model-based collaborative filtering using Matrix Factorization
+    Model-based collaborative filtering using TruncatedSVD
     based on customer's purchase history and page views by
     other users who views items similar items
 

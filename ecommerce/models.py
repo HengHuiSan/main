@@ -164,6 +164,5 @@ class Donation(models.Model):
         })
 
 
-
 class Image(models.Model):
     img = models.ImageField(upload_to='testing')
