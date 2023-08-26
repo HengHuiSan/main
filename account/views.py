@@ -18,11 +18,8 @@ def registerView(request):
                 messages.success(request, 'Register Successfully!')
             except ValidationError as e:
                 print(e)
-    else:
-        form = UserRegistrationForm()
-
+    form = UserRegistrationForm()
     context = {'form':form}
-
     return render(request, 'account/register.html', context)
 
 
@@ -62,10 +59,9 @@ def logoutUser(request):
     # get the previous URL path
     previous_url = request.META.get('HTTP_REFERER')
     logout(request)
-
     # if the current URL contains 'user'
-    if previous_url.find('ecommerce') == -1:
-	    return redirect('account:admin_login')
+    if previous_url.find('ecommerce') == -1: 
+        return redirect('account:admin_login')
     else:
 	    return redirect('account:user_login')
 

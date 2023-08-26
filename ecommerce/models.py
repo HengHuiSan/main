@@ -140,7 +140,7 @@ class Donation(models.Model):
     itemType = models.CharField(max_length=20)
     description = models.CharField(max_length=500)
     image = models.ImageField(upload_to='donation')
-    yearPurchased = models.PositiveIntegerField()
+    yearPurchased = models.PositiveIntegerField(default=None, null=True, blank=True)
     originalPrice = models.DecimalField(max_digits=8, decimal_places=2, null=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     isApproved = models.BooleanField(null=True)

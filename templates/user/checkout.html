@@ -91,7 +91,7 @@
                                         <select class="form-select" id="ddlState" name="ddlState" required>
                                             {% for state in states %}
                                             <option value="{{ state }}"
-                                                {% ifequal state profile.state %} selected {% endifequal %}>
+                                                {% if state == profile.state %} selected {% endif %}>
                                                 {{ state }}
                                             </option>
                                             {% endfor %}

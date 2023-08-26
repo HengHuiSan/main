@@ -30,7 +30,7 @@
                           <select class="form-control" name="ddlCategory" required>
                             {% for c in category %}
                             <option value="{{ c.categoryId }}"
-                                {% ifequal c.categoryName object.categoryId.categoryName %} selected {% endifequal %}>
+                                {% if c.categoryName == object.categoryId.categoryName %} selected {% endif %}>
                                 {{ c.categoryName }}
                             </option>
                             {% endfor %}
