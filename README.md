@@ -10,7 +10,14 @@
 
 ## 🚀 Demo
 
-<!--[https://res.cloudinary.com/dj90bmvon/image/upload/c\_padb\_auto:predominantfl\_preserve\_transparency/v1692502257/1\_Flow\_of\_User\_Login\_and\_Register\_wbl5yr.jpg?\_s=public-apps](https://res.cloudinary.com/dj90bmvon/image/upload/c_padb_auto:predominantfl_preserve_transparency/v1692502257/1_Flow_of_User_Login_and_Register_wbl5yr.jpg?_s=public-apps) -->
+### Furniture Store
+
+
+https://github.com/henghuisan/furniture-store-recommendation-system/assets/76814491/3c0a6cd8-8a31-4f1c-a4cb-a4b8eb5298e9
+
+
+
+### Admin Dashboard
 
 ---
 
