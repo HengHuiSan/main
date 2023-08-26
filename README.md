@@ -13,11 +13,18 @@
 ### Furniture Store
 
 
-https://github.com/henghuisan/furniture-store-recommendation-system/assets/76814491/3c0a6cd8-8a31-4f1c-a4cb-a4b8eb5298e9
+
+https://github.com/henghuisan/furniture-store-recommendation-system/assets/76814491/c418b750-101b-44d5-b8f3-493fdc04aaec
 
 
+
+<br />
 
 ### Admin Dashboard
+
+
+https://github.com/henghuisan/furniture-store-recommendation-system/assets/76814491/28a5eb7b-0dba-4db3-b8bb-7c4eda15b3e9
+
 
 ---
 
